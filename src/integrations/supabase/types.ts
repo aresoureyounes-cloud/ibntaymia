@@ -156,27 +156,36 @@ export type Database = {
           direction: string
           gate_id: string | null
           id: string
+          mode: string
+          note: string | null
           scanned_at: string
           scanned_by: string | null
           student_id: string | null
+          visitor_name: string | null
         }
         Insert: {
           card_uid: string
           direction?: string
           gate_id?: string | null
           id?: string
+          mode?: string
+          note?: string | null
           scanned_at?: string
           scanned_by?: string | null
           student_id?: string | null
+          visitor_name?: string | null
         }
         Update: {
           card_uid?: string
           direction?: string
           gate_id?: string | null
           id?: string
+          mode?: string
+          note?: string | null
           scanned_at?: string
           scanned_by?: string | null
           student_id?: string | null
+          visitor_name?: string | null
         }
         Relationships: [
           {
@@ -681,6 +690,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_overview_stats: { Args: never; Returns: Json }
       get_user_roles: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]
