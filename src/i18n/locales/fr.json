@@ -1,0 +1,358 @@
+{
+  "brand": {
+    "name": "IDAROOM",
+    "tagline": "Système numérique intégré pour les établissements scolaires algériens"
+  },
+  "nav": {
+    "home": "Accueil",
+    "about": "À propos",
+    "login": "Connexion",
+    "dashboard": "Tableau de bord",
+    "logout": "Déconnexion",
+    "students": "Élèves",
+    "cards": "Cartes RFID",
+    "gate": "Portail",
+    "attendance": "Présence",
+    "notifications": "Notifications",
+    "decisions": "Décisions",
+    "behavior": "Comportement",
+    "library": "Bibliothèque",
+    "trips": "Sorties",
+    "exams": "Examens",
+    "guidance": "Orientation",
+    "import": "Importer des comptes",
+    "users": "Comptes et rôles",
+    "console": "Terminal",
+    "diagnostics": "Rapport de diagnostic",
+    "settings": "Paramètres",
+    "print_cards": "Imprimer les cartes",
+    "profile": "Profil",
+    "gate_log": "Journal de porte",
+    "my_profile": "Mon profil",
+    "reports": "Rapports",
+    "appearance": "Apparence",
+    "schedule": "Emploi du temps",
+    "absence_report": "Rapport d'absences du jour"
+  },
+  "landing": {
+    "hero_title": "Une gestion scolaire intelligente, sécurisée, qui fonctionne hors ligne",
+    "hero_subtitle": "Une plateforme hybride pour gérer élèves, enseignants, présences, convocations et rapports — avec un badge numérique unifié et des notifications en temps réel aux parents.",
+    "cta_get_started": "Commencer",
+    "cta_learn_more": "En savoir plus sur Idaroom",
+    "features_title": "Douze modules interconnectés",
+    "features_subtitle": "Chaque fonctionnalité reste manuellement contrôlable. Chaque décision automatique est révocable.",
+    "preview_engagement": "Engagement actif",
+    "preview_growth": "Croissance",
+    "preview_growth_period": "cette semaine",
+    "preview_next_session": "Prochaine séance",
+    "preview_room_time": "Salle 402 • 10h30",
+    "modules_label": "12 Modules"
+  },
+  "features": {
+    "gate": {
+      "title": "Portail & badge numérique",
+      "desc": "Scan QR/Code-barres, alertes colorées, anti-passback"
+    },
+    "attendance": {
+      "title": "App enseignant & présence",
+      "desc": "Pointage numérique avec notification instantanée aux parents"
+    },
+    "notifications": {
+      "title": "Notifications multi-canaux",
+      "desc": "App + Email + SMS"
+    },
+    "admin": {
+      "title": "Administration & décisions",
+      "desc": "Annulation de cours, suspension, convocations"
+    },
+    "data": {
+      "title": "Données élèves & classes",
+      "desc": "Archivage, emplois du temps, génération de badges"
+    },
+    "library": {
+      "title": "Bibliothèque & manuels",
+      "desc": "Emprunt par scan, distribution des manuels"
+    },
+    "trips": {
+      "title": "Sorties & clubs",
+      "desc": "Autorisations numériques, présence par scan"
+    },
+    "exams": {
+      "title": "Organisation des examens",
+      "desc": "Affectation des salles, convocations, résultats"
+    },
+    "guidance": {
+      "title": "Orientation & statistiques",
+      "desc": "Suivi du décrochage, graphiques, rapports PDF"
+    },
+    "behavior": {
+      "title": "Comportement & motivation",
+      "desc": "Points, attestations, dossier comportemental"
+    },
+    "comms": {
+      "title": "Communication aux parents",
+      "desc": "Avis, convocations, entretiens"
+    },
+    "offline": {
+      "title": "Fonctionnement hors ligne",
+      "desc": "PWA avec synchronisation différée"
+    }
+  },
+  "about": {
+    "title": "À propos d'IDAROOM",
+    "intro": "IDAROOM est un environnement numérique hybride (Online/Offline) conçu pour les collèges et lycées algériens.",
+    "principles_title": "Principes de conception",
+    "p1_title": "Hybridation intelligente",
+    "p1_desc": "Fonctionnement complet hors ligne avec synchronisation sélective (textes d'abord, images ensuite).",
+    "p2_title": "Contrôle manuel total",
+    "p2_desc": "Toute décision automatique reste révocable et modifiable manuellement par l'autorité concernée.",
+    "p3_title": "Identité unifiée",
+    "p3_desc": "Le badge numérique (Barcode/NFC/QR) sert d'identifiant unique pour élèves, enseignants et visiteurs.",
+    "p4_title": "Livraison garantie des messages",
+    "p4_desc": "Application + SMS + Gmail + notification instantanée multi-canal.",
+    "p5_title": "Rôles et permissions",
+    "p5_desc": "Chaque utilisateur n'accède qu'à ce que sa fonction autorise; le directeur a tous les droits."
+  },
+  "auth": {
+    "sign_in": "Se connecter",
+    "sign_up": "Créer un compte",
+    "email": "Email",
+    "password": "Mot de passe",
+    "full_name": "Nom complet",
+    "have_account": "Vous avez déjà un compte ?",
+    "no_account": "Pas encore de compte ?",
+    "continue_google": "Continuer avec Google",
+    "or": "ou",
+    "signing_in": "Connexion...",
+    "signing_up": "Création du compte...",
+    "welcome_back": "Bon retour",
+    "create_account": "Créez votre compte",
+    "auth_subtitle": "Accédez à IDAROOM avec votre compte scolaire",
+    "choose_role": "Choisir le rôle (mode test)",
+    "role_test_notice": "Vous pouvez choisir n'importe quel rôle pour tester. Sera désactivé plus tard.",
+    "contact_admin_for_account": "Pour obtenir un compte, veuillez contacter l'administration de votre établissement."
+  },
+  "dashboard": {
+    "welcome": "Bienvenue",
+    "your_role": "Votre rôle",
+    "no_role": "Aucun rôle ne vous est encore attribué. Contactez l'administrateur.",
+    "switch_role": "Changer de tableau",
+    "coming_soon": "Bientôt",
+    "phase_pending": "Cette fonctionnalité fera partie d'une prochaine étape",
+    "back_to_dashboard": "Retour au tableau de bord"
+  },
+  "roles": {
+    "developer": "Développeur / mainteneur technique",
+    "admin": "Administrateur plateforme",
+    "director": "Directeur d'établissement",
+    "supervisor": "Conseiller pédagogique",
+    "teacher": "Enseignant",
+    "parent": "Parent",
+    "student": "Élève",
+    "gate_monitor": "Agent portail"
+  },
+  "common": {
+    "language": "Langue",
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "ok": "OK",
+    "no_data": "Aucune donnée",
+    "add": "Ajouter",
+    "delete": "Supprimer"
+  },
+  "attendance": {
+    "status_present": "Présent",
+    "status_absent": "Absent",
+    "status_late": "En retard",
+    "status_excused": "Excusé"
+  },
+  "library": {
+    "active": "En cours",
+    "returned": "Rendu"
+  },
+  "student": {
+    "present": "Présences",
+    "absent": "Absences",
+    "points": "Points",
+    "active_loans": "Emprunts actifs",
+    "not_linked": "Votre compte n'est pas encore lié à une fiche élève."
+  },
+  "parent": {
+    "select_child": "Choisir l'enfant"
+  },
+  "teacher": {
+    "recent_sessions": "Séances récentes",
+    "new_session": "Nouvelle séance",
+    "my_classes": "Mes classes"
+  },
+  "footer": {
+    "rights": "Tous droits réservés"
+  },
+  "overview": {
+    "subtitle": "Vue d'ensemble en temps réel",
+    "quick_actions": "Actions rapides",
+    "classes": "Classes",
+    "scans": "Scans de badges",
+    "recent_scans": "Scans récents",
+    "dir_in": "Entrée",
+    "dir_out": "Sortie",
+    "digital_badge": "Badge numérique",
+    "chart_traffic": "Trafic du portail — 7 derniers jours",
+    "chart_attendance": "Répartition des présences",
+    "chart_weekly": "Scans hebdomadaires"
+  },
+  "legal": {
+    "updated": "Dernière mise à jour",
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "meta_title": "Politique de confidentialité — IDAROOM",
+      "meta_description": "Politique de confidentialité d'IDAROOM : données collectées, utilisation, droits des utilisateurs et durée de conservation.",
+      "og_description": "Comment IDAROOM protège la vie privée des élèves, des parents et du personnel.",
+      "intro": "Nous respectons votre vie privée. Cette page explique clairement comment nous traitons les données des élèves, des parents et du personnel sur IDAROOM.",
+      "s1_title": "Données collectées",
+      "s1_body": "Nous collectons uniquement ce qui est nécessaire au fonctionnement de l'école : nom complet, e-mail, classe, présences, notes de comportement, notes scolaires et identifiant de la carte RFID lors de son émission. Aucune donnée de localisation, aucun traceur publicitaire.",
+      "s2_title": "Utilisation des données",
+      "s2_body": "Les données servent uniquement aux fonctionnalités demandées par l'utilisateur ou l'établissement : affichage des présences au parent, émission d'attestations, notifications de l'école et rapports administratifs. Nous ne vendons jamais de données à des tiers.",
+      "s3_title": "Qui peut voir vos données",
+      "s3_body": "L'accès est limité par des politiques RLS : l'élève voit uniquement ses propres données, le parent voit uniquement ses enfants, l'enseignant voit uniquement ses élèves, et l'administration voit les données de l'établissement. Personne à l'extérieur de l'établissement n'accède aux données.",
+      "s4_title": "Durée de conservation",
+      "s4_body": "L'établissement conserve les données pendant la scolarité de l'élève ou l'activité du personnel. À la suppression du compte, les données personnelles sont effacées sous 30 jours ; seuls les documents scolaires légalement requis (relevés, attestations) sont conservés.",
+      "s5_title": "Vos droits",
+      "s5_body": "Vous avez le droit d'accéder à vos données, de les corriger ou d'en demander la suppression. Contactez l'administration de l'établissement ou utilisez votre page de profil pour mettre à jour vos informations.",
+      "s6_title": "Sécurité",
+      "s6_body": "Tout le trafic est chiffré via HTTPS. Les mots de passe sont hachés. Les photos de profil sont stockées dans des buckets privés. Nous effectuons des sauvegardes quotidiennes."
+    },
+    "terms": {
+      "title": "Conditions d'utilisation",
+      "meta_title": "Conditions d'utilisation — IDAROOM",
+      "meta_description": "Conditions d'utilisation d'IDAROOM : responsabilités, restrictions, droits d'usage et politique de suspension des comptes.",
+      "og_description": "Les conditions qui régissent l'utilisation d'IDAROOM par les établissements et les utilisateurs.",
+      "intro": "Les conditions qui régissent votre utilisation d'IDAROOM. Merci de les lire attentivement.",
+      "s1_title": "Acceptation des conditions",
+      "s1_body": "En utilisant IDAROOM, vous acceptez ces conditions. Si vous ne les acceptez pas, n'utilisez pas la plateforme.",
+      "s2_title": "Comptes",
+      "s2_body": "Les comptes sont créés par l'établissement scolaire. L'utilisateur est responsable de la confidentialité de son mot de passe et de toute activité effectuée depuis son compte. Signalez immédiatement toute utilisation non autorisée.",
+      "s3_title": "Usage acceptable",
+      "s3_body": "Il est interdit d'utiliser la plateforme à des fins illégales, d'y saisir des données fausses, de harceler autrui ou de tenter d'intruser le système. L'établissement peut suspendre tout compte qui enfreint ces conditions.",
+      "s4_title": "Propriété intellectuelle",
+      "s4_body": "La plateforme, sa marque et ses interfaces appartiennent au propriétaire d'IDAROOM. Les données saisies par les utilisateurs ou l'établissement restent leur propriété ; la plateforme les traite uniquement pour fournir le service.",
+      "s5_title": "Clause de non-responsabilité",
+      "s5_body": "Le service est fourni « en l'état ». Nous faisons de notre mieux pour en assurer la disponibilité et protéger les données, mais nous ne garantissons pas l'absence d'erreurs ou d'interruptions. Les décisions administratives et pédagogiques restent de la responsabilité de l'établissement.",
+      "s6_title": "Modifications",
+      "s6_body": "Nous pouvons mettre à jour ces conditions. Les établissements sont informés de toute modification substantielle au moins 15 jours avant son entrée en vigueur.",
+      "s7_title": "Droit applicable",
+      "s7_body": "Ces conditions sont régies par le droit algérien ; les litiges sont réglés à l'amiable ou devant les juridictions compétentes."
+    }
+  },
+  "tour": {
+    "next": "Suivant",
+    "back": "Précédent",
+    "skip": "Passer la visite",
+    "done": "Terminer",
+    "restart": "Relancer la visite guidée",
+    "steps": {
+      "welcome": {
+        "title": "Bienvenue sur IDAROOM",
+        "body": "Une visite rapide du tableau de bord, du rapport de diagnostic et de la console. Moins d'une minute, et vous pouvez passer à tout moment."
+      },
+      "sidebar": {
+        "title": "Menu latéral",
+        "body": "Naviguez entre tous les modules : élèves, présence, cartes, notifications, etc. Seules les sections autorisées pour votre rôle s'affichent."
+      },
+      "diagnostics": {
+        "title": "Rapport de diagnostic",
+        "body": "Exécute des tests en direct sur toutes les fonctions clés (connexion, tables, CRUD, présence, export et impression) avec succès/échec et la cause."
+      },
+      "console": {
+        "title": "Console intégrée",
+        "body": "Tapez des commandes comme help, status, health et routes pour naviguer et diagnostiquer rapidement, comme l'outil en ligne de commande Linux."
+      },
+      "tools": {
+        "title": "Outils rapides",
+        "body": "Changez la langue de l'interface ou basculez entre le mode clair et sombre ici."
+      },
+      "help": {
+        "title": "Revoir la visite",
+        "body": "Cliquez sur le point d'interrogation pour relancer cette visite quand vous voulez. Bonne visite !"
+      }
+    }
+  },
+  "myprofile": {
+    "account": "Informations du compte",
+    "account_hint": "Informations en lecture seule ; seule l'administration peut les modifier.",
+    "email": "E-mail",
+    "my_roles": "Rôles et permissions",
+    "user_id": "Identifiant du compte",
+    "locked": "Non modifiable",
+    "title": "Mon profil",
+    "subtitle": "Modifiez votre nom, votre photo et votre langue, et personnalisez l'apparence.",
+    "identity": "Identité",
+    "photo": "Photo de profil",
+    "photo_hint": "JPG, PNG ou WEBP, 2 Mo maximum.",
+    "upload": "Téléverser",
+    "uploaded": "Photo téléversée — pensez à enregistrer",
+    "bad_type": "Type de fichier non pris en charge.",
+    "too_big": "L'image dépasse 2 Mo.",
+    "full_name": "Nom complet",
+    "name_short": "Nom trop court",
+    "saved": "Modifications enregistrées",
+    "language": "Langue préférée",
+    "language_hint": "L'arabe passe l'interface de droite à gauche automatiquement.",
+    "appearance": "Apparence",
+    "mode": "Mode",
+    "light": "Clair",
+    "dark": "Sombre",
+    "accent": "Couleur d'accent",
+    "text_size": "Taille du texte",
+    "density": "Style des coins",
+    "density_compact": "Net",
+    "density_cozy": "Équilibré",
+    "density_roomy": "Arrondi",
+    "reduced_motion": "Réduire les animations",
+    "reduced_motion_hint": "Désactiver animations et transitions.",
+    "reset": "Réinitialiser"
+  },
+  "st": {
+    "tab_overview": "Aperçu",
+    "tab_schedule": "Emploi du temps",
+    "tab_homework": "Devoirs",
+    "tab_attendance": "Présence",
+    "tab_notifications": "Notifications",
+    "next_class": "Prochain cours",
+    "streak": "Jours consécutifs",
+    "no_schedule": "Aucun emploi du temps publié.",
+    "no_homework": "Aucun devoir pour le moment.",
+    "upcoming_exams": "Examens à venir",
+    "justifications": "Justifications d'absence",
+    "request_justif": "Demander une justification",
+    "justif_reason": "Motif de l'absence",
+    "justif_sent": "Demande envoyée à l'administration.",
+    "status_pending": "En attente",
+    "status_approved": "Acceptée",
+    "status_rejected": "Refusée",
+    "mark_read": "Marquer comme lu",
+    "day_sun": "Dimanche",
+    "day_mon": "Lundi",
+    "day_tue": "Mardi",
+    "day_wed": "Mercredi",
+    "day_thu": "Jeudi",
+    "day_fri": "Vendredi",
+    "day_sat": "Samedi"
+  },
+  "sched": {
+    "description": "Créer les séances et publier les devoirs.",
+    "pick_class": "Choisir une classe",
+    "slots": "Séances",
+    "add_slot": "Ajouter une séance",
+    "add_homework": "Ajouter un devoir",
+    "subject": "Matière",
+    "room": "Salle",
+    "title": "Titre",
+    "details": "Détails",
+    "bad_time": "L'heure de fin doit suivre le début.",
+    "slot_added": "Séance ajoutée.",
+    "homework_added": "Devoir ajouté."
+  }
+}

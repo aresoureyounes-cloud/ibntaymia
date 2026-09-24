@@ -1,0 +1,25 @@
+[Desktop Entry]
+Type=Application
+Name=IDAROOM
+GenericName=School Management
+Comment=منصة إدارة المدارس — الحضور، البطاقات، الإشعارات
+Exec=idaroom %U
+TryExec=idaroom
+Icon=idaroom
+Terminal=false
+Categories=Education;Office;
+Keywords=school;attendance;rfid;idaroom;مدرسة;
+StartupWMClass=IDAROOM
+Actions=Dashboard;Console;Settings;
+
+[Desktop Action Dashboard]
+Name=لوحة التحكم
+Exec=idaroom dashboard
+
+[Desktop Action Console]
+Name=الطرفية
+Exec=idaroom console
+
+[Desktop Action Settings]
+Name=الإعدادات
+Exec=idaroom settings

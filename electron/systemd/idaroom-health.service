@@ -1,0 +1,24 @@
+[Unit]
+Description=IDAROOM health check (فحص صحة الخدمة)
+Documentation=man:idaroom(1)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/idaroom/idaroom.env
+Environment=IDAROOM_NO_COLOR=1
+Environment=IDAROOM_JSON=1
+Environment=IDAROOM_LOG_LEVEL=info
+# رموز الخروج: 0 سليم · 1 خلل خدمة · 2 شبكة · 4 رد غير صالح · 5 خطأ داخلي
+ExecStart=/usr/bin/idaroom health
+SyslogIdentifier=idaroom-health
+# تقييد الصلاحيات — الفحص لا يحتاج أي وصول للنظام
+DynamicUser=yes
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6

@@ -1,0 +1,944 @@
+#!/usr/bin/env node
+/**
+ * IDAROOM — standalone Linux command line tool.
+ *
+ * Pure Node.js (>= 18), zero dependencies, no Electron and no desktop
+ * environment required. Works over SSH, in scripts, cron jobs and CI.
+ *
+ *   idaroom help
+ *   idaroom status --json
+ *   idaroom health && echo "OK"
+ *   idaroom doctor
+ *   idaroom open /dashboard/students
+ */
+
+"use strict";
+
+const fs = require("fs");
+const os = require("os");
+const path = require("path");
+const { spawn, execFileSync } = require("child_process");
+
+const CLI_VERSION = "1.3.0";
+const DEFAULT_URL = "https://idarroom.lovable.app";
+
+const EXIT = {
+  OK: 0,
+  UNHEALTHY: 1,
+  NETWORK: 2,
+  USAGE: 3,
+  PROTOCOL: 4,
+  INTERNAL: 5,
+  NEEDROOT: 6,
+  FIXFAILED: 7,
+};
+
+/* ------------------------------------------------------------------ config */
+
+const CONFIG_FILES = [
+  "/etc/idaroom/idaroom.env",
+  path.join(os.homedir(), ".config", "idaroom", "idaroom.env"),
+  process.env.IDAROOM_CONFIG || "",
+].filter(Boolean);
+
+function loadEnvFiles() {
+  const loaded = [];
+  for (const file of CONFIG_FILES) {
+    try {
+      if (!fs.existsSync(file)) continue;
+      const text = fs.readFileSync(file, "utf8");
+      for (const rawLine of text.split(/\r?\n/)) {
+        const line = rawLine.trim();
+        if (!line || line.startsWith("#")) continue;
+        const eq = line.indexOf("=");
+        if (eq === -1) continue;
+        const key = line.slice(0, eq).trim();
+        let value = line.slice(eq + 1).trim();
+        if (
+          (value.startsWith('"') && value.endsWith('"')) ||
+          (value.startsWith("'") && value.endsWith("'"))
+        ) {
+          value = value.slice(1, -1);
+        }
+        if (key && process.env[key] === undefined) process.env[key] = value;
+      }
+      loaded.push(file);
+    } catch {
+      /* unreadable config files are reported by `doctor` */
+    }
+  }
+  return loaded;
+}
+
+/* ------------------------------------------------------------------ logger */
+
+const LEVELS = { silent: 0, error: 1, warn: 2, info: 3, debug: 4, trace: 5 };
+
+const log = {
+  level: "warn",
+  json: false,
+  color: true,
+  write(level, tag, message, extra) {
+    if (LEVELS[level] > LEVELS[this.level]) return;
+    if (this.json) {
+      process.stderr.write(
+        JSON.stringify({ ts: new Date().toISOString(), level, tag, message, ...(extra || {}) }) + "\n",
+      );
+      return;
+    }
+    const colors = { error: "\x1b[31m", warn: "\x1b[33m", info: "\x1b[36m", debug: "\x1b[90m", trace: "\x1b[90m" };
+    const c = this.color ? colors[level] || "" : "";
+    const r = this.color ? "\x1b[0m" : "";
+    process.stderr.write(`${c}[${level}]${r} ${tag ? tag + ": " : ""}${message}\n`);
+  },
+  error: (t, m, e) => log.write("error", t, m, e),
+  warn: (t, m, e) => log.write("warn", t, m, e),
+  info: (t, m, e) => log.write("info", t, m, e),
+  debug: (t, m, e) => log.write("debug", t, m, e),
+  trace: (t, m, e) => log.write("trace", t, m, e),
+};
+
+function out(line) {
+  process.stdout.write(String(line) + "\n");
+}
+function emit(obj, textLines, opts) {
+  if (opts.json) out(JSON.stringify(obj, null, opts.pretty ? 2 : 0));
+  else textLines.forEach(out);
+}
+
+/* -------------------------------------------------------------------- args */
+
+function parseArgs(argv) {
+  const opts = {
+    json: !!process.env.IDAROOM_JSON,
+    pretty: true,
+    url: process.env.IDAROOM_URL || DEFAULT_URL,
+    timeout: Number(process.env.IDAROOM_TIMEOUT || 10000),
+    fix: !!process.env.IDAROOM_FIX,
+    dryRun: false,
+    color: !process.env.IDAROOM_NO_COLOR && process.stderr.isTTY !== false,
+    level: process.env.IDAROOM_LOG_LEVEL || (process.env.IDAROOM_VERBOSE ? "debug" : "warn"),
+    adminEmail: process.env.IDAROOM_ADMIN_EMAIL || "",
+    adminPassword: process.env.IDAROOM_ADMIN_PASSWORD || "",
+    role: "",
+    name: "",
+    className: "",
+    cardUid: "",
+    newPassword: "",
+  };
+  const rest = [];
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === "--json") opts.json = true;
+    else if (a === "--no-pretty") opts.pretty = false;
+    else if (a === "--no-color") opts.color = false;
+    else if (a === "--fix") opts.fix = true;
+    else if (a === "-n" || a === "--dry-run") opts.dryRun = true;
+    else if (a === "-q" || a === "--quiet") opts.level = "error";
+    else if (a === "-V" || a === "--verbose") opts.level = "debug";
+    else if (a === "-vv") opts.level = "trace";
+    else if (a === "--log-level") opts.level = argv[++i];
+    else if (a.startsWith("--log-level=")) opts.level = a.split("=")[1];
+    else if (a === "--url") opts.url = argv[++i];
+    else if (a.startsWith("--url=")) opts.url = a.split("=").slice(1).join("=");
+    else if (a === "--timeout") opts.timeout = Number(argv[++i]);
+    else if (a.startsWith("--timeout=")) opts.timeout = Number(a.split("=")[1]);
+    else if (a === "--role") opts.role = argv[++i];
+    else if (a.startsWith("--role=")) opts.role = a.split("=")[1];
+    else if (a === "--name") opts.name = argv[++i];
+    else if (a.startsWith("--name=")) opts.name = a.split("=").slice(1).join("=");
+    else if (a === "--class") opts.className = argv[++i];
+    else if (a.startsWith("--class=")) opts.className = a.split("=").slice(1).join("=");
+    else if (a === "--card") opts.cardUid = argv[++i];
+    else if (a.startsWith("--card=")) opts.cardUid = a.split("=")[1];
+    else if (a === "--password") opts.newPassword = argv[++i];
+    else if (a.startsWith("--password=")) opts.newPassword = a.split("=").slice(1).join("=");
+    else if (a === "--admin-email") opts.adminEmail = argv[++i];
+    else if (a.startsWith("--admin-email=")) opts.adminEmail = a.split("=")[1];
+    else if (a === "--admin-password") opts.adminPassword = argv[++i];
+    else if (a.startsWith("--admin-password=")) opts.adminPassword = a.split("=").slice(1).join("=");
+    else rest.push(a);
+  }
+  opts.url = String(opts.url || DEFAULT_URL).replace(/\/+$/, "");
+  if (!LEVELS[opts.level]) opts.level = "warn";
+  if (!Number.isFinite(opts.timeout) || opts.timeout <= 0) opts.timeout = 10000;
+  log.level = opts.level;
+  log.json = opts.json;
+  log.color = opts.color;
+  return { opts, rest };
+}
+
+/* -------------------------------------------------------------------- http */
+
+async function api(opts, pathname = "/api/public/cli") {
+  const target = `${opts.url}${pathname}`;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), opts.timeout);
+  const started = Date.now();
+  log.debug("http", `GET ${target} (timeout ${opts.timeout}ms)`);
+  try {
+    const res = await fetch(target, {
+      headers: { accept: "application/json", "user-agent": `idaroom-cli/${CLI_VERSION}` },
+      signal: controller.signal,
+    });
+    const ms = Date.now() - started;
+    log.debug("http", `${res.status} in ${ms}ms`);
+    if (!res.ok) {
+      const err = new Error(`HTTP ${res.status}`);
+      err.code = EXIT.PROTOCOL;
+      throw err;
+    }
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      const err = new Error("الرد ليس بصيغة JSON صالحة");
+      err.code = EXIT.PROTOCOL;
+      throw err;
+    }
+    return { data, ms };
+  } catch (e) {
+    if (e.code === EXIT.PROTOCOL) throw e;
+    const err = new Error(e.name === "AbortError" ? `انتهت المهلة بعد ${opts.timeout}ms` : e.message);
+    err.code = EXIT.NETWORK;
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/* ---------------------------------------------------------------- commands */
+
+const HELP = `IDAROOM CLI v${CLI_VERSION} — أداة سطر أوامر لنظام لينكس
+
+الاستعمال:
+  idaroom <command> [options]
+
+الأوامر:
+  status            حالة التطبيق والخدمات
+  health            فحص الصحة (رمز خروج 0 سليم / 1 خلل)
+  ping              قياس زمن الاستجابة
+  version           إصدار الأداة وإصدار الخادم
+  changelog [n]     آخر تغييرات المنصّة
+  routes            الصفحات العامة والمسارات المتاحة
+  config            الإعدادات الفعّالة وملفات البيئة
+  doctor [--fix]    فحص شامل للبيئة والإعدادات مع إصلاح اختياري
+  open [path]       فتح صفحة في المتصفح الافتراضي
+  watch [--every s] مراقبة مستمرة للصحة
+  demo <sub>        إدارة الحسابات التجريبية (list/create/disable/enable/password/link)
+  shell | repl      وضع تفاعلي: موجه مباشر بحالة الخادم وأوامر متسلسلة
+  help              هذه الشاشة
+
+الخيارات:
+      --url <url>        عنوان الخادم (افتراضي ${DEFAULT_URL})
+      --timeout <ms>     مهلة الطلب (افتراضي 10000)
+      --json             إخراج JSON للسكربتات
+  -V, --verbose / -vv    سجلات تشخيصية على stderr
+  -q, --quiet            أخطاء فقط
+      --log-level <lvl>  silent|error|warn|info|debug|trace
+      --no-color         تعطيل الألوان
+      --role/--name/--class/--card/--password   خيارات أوامر demo
+      --admin-email/--admin-password            اعتماد مسؤول لأوامر demo
+  -n, --dry-run          مع --fix: معاينة دون تنفيذ
+
+البيئة:
+  IDAROOM_URL · IDAROOM_TIMEOUT · IDAROOM_LOG_LEVEL · IDAROOM_JSON · IDAROOM_NO_COLOR
+  IDAROOM_ADMIN_EMAIL · IDAROOM_ADMIN_PASSWORD (لأوامر demo)
+  ملفات: /etc/idaroom/idaroom.env · ~/.config/idaroom/idaroom.env · $IDAROOM_CONFIG
+
+رموز الخروج: 0 نجاح · 1 خلل · 2 اتصال · 3 استعمال · 4 رد غير صالح · 5 داخلي · 6 يحتاج sudo · 7 فشل إصلاح
+
+أمثلة:
+  idaroom shell
+  idaroom demo list --json | jq '.accounts[].email'
+  idaroom demo create teacher.chem --role teacher --name "أستاذ كيمياء"
+  idaroom demo link student6 --class "أولى ثانوي - علوم" --card 04A1B2C9
+  idaroom health && echo OK
+  idaroom status --json | jq .services
+  IDAROOM_URL=http://localhost:8080 idaroom ping -V
+  watch -n 30 'idaroom health -q'`;
+
+async function cmdStatus(opts) {
+  const { data, ms } = await api(opts);
+  emit({ ...data, latencyMs: ms, cli: CLI_VERSION }, [
+    `IDAROOM v${data.version} (${data.releaseDate || "—"})`,
+    `الخادم:   ${data.origin}`,
+    `الويب:    ${data.services?.web ? "OK" : "FAIL"}`,
+    `الخلفية:  ${data.services?.backend ? "OK" : "FAIL"}`,
+    `الحالة:   ${data.healthy ? "سليم" : "يوجد خلل"}`,
+    `الاستجابة: ${ms} ms`,
+    `CLI:      v${CLI_VERSION} (node ${process.versions.node})`,
+  ], opts);
+  return data.healthy ? EXIT.OK : EXIT.UNHEALTHY;
+}
+
+async function cmdHealth(opts) {
+  const { data, ms } = await api(opts);
+  emit({ healthy: !!data.healthy, services: data.services, latencyMs: ms }, [
+    `web=${data.services?.web ? "ok" : "fail"} backend=${data.services?.backend ? "ok" : "fail"} ${ms}ms`,
+    data.healthy ? "سليم" : "يوجد خلل",
+  ], opts);
+  return data.healthy ? EXIT.OK : EXIT.UNHEALTHY;
+}
+
+async function cmdPing(opts) {
+  const { ms } = await api(opts);
+  emit({ latencyMs: ms, url: opts.url }, [`${ms} ms — ${opts.url}`], opts);
+  return EXIT.OK;
+}
+
+async function cmdVersion(opts) {
+  let server = null;
+  try {
+    server = (await api(opts)).data;
+  } catch (e) {
+    log.warn("version", `تعذّر جلب إصدار الخادم: ${e.message}`);
+  }
+  emit({ cli: CLI_VERSION, node: process.versions.node, server: server?.version ?? null }, [
+    `idaroom-cli v${CLI_VERSION} (node ${process.versions.node})`,
+    `الخادم: ${server ? "v" + server.version : "غير متاح"}`,
+  ], opts);
+  return EXIT.OK;
+}
+
+async function cmdChangelog(opts, rest) {
+  const n = Math.max(1, parseInt(rest[0] ?? "3", 10) || 3);
+  const { data } = await api(opts);
+  const notes = (data.notes || []).slice(0, n);
+  emit({ version: data.version, notes }, [`v${data.version} — ${data.releaseDate || ""}`, ...notes.map((x) => `  • ${x}`)], opts);
+  return EXIT.OK;
+}
+
+const ROUTES = [
+  "/",
+  "/about",
+  "/login",
+  "/trust",
+  "/privacy",
+  "/terms",
+  "/dashboard",
+  "/dashboard/students",
+  "/dashboard/attendance",
+  "/dashboard/gate",
+  "/dashboard/cards",
+  "/dashboard/exams",
+  "/dashboard/notifications",
+  "/dashboard/diagnostics",
+  "/dashboard/console",
+  "/dashboard/settings",
+];
+
+function cmdRoutes(opts) {
+  emit({ base: opts.url, routes: ROUTES }, ["المسارات:", ...ROUTES.map((r) => `  ${opts.url}${r}`)], opts);
+  return EXIT.OK;
+}
+
+function cmdConfig(opts, loadedFiles) {
+  const files = CONFIG_FILES.map((f) => ({ path: f, exists: fs.existsSync(f), loaded: loadedFiles.includes(f) }));
+  emit(
+    {
+      url: opts.url,
+      timeout: opts.timeout,
+      logLevel: opts.level,
+      json: opts.json,
+      color: opts.color,
+      files,
+      cli: CLI_VERSION,
+      node: process.versions.node,
+      platform: `${os.platform()} ${os.release()}`,
+    },
+    [
+      `URL:       ${opts.url}`,
+      `Timeout:   ${opts.timeout} ms`,
+      `Log level: ${opts.level}`,
+      `Platform:  ${os.platform()} ${os.release()} · node ${process.versions.node}`,
+      "ملفات الإعداد:",
+      ...files.map((f) => `  ${f.exists ? (f.loaded ? "✔ مُحمّل" : "• موجود") : "✖ مفقود"}  ${f.path}`),
+    ],
+    opts,
+  );
+  return EXIT.OK;
+}
+
+function openBrowser(url) {
+  const openers = ["xdg-open", "gio", "sensible-browser", "x-www-browser", "open"];
+  for (const bin of openers) {
+    try {
+      execFileSync("which", [bin], { stdio: "ignore" });
+      const args = bin === "gio" ? ["open", url] : [url];
+      spawn(bin, args, { detached: true, stdio: "ignore" }).unref();
+      return bin;
+    } catch {
+      /* try next opener */
+    }
+  }
+  return null;
+}
+
+function cmdOpen(opts, rest) {
+  const target = rest[0] ? (rest[0].startsWith("http") ? rest[0] : `${opts.url}${rest[0].startsWith("/") ? "" : "/"}${rest[0]}`) : opts.url;
+  const opener = openBrowser(target);
+  if (!opener) {
+    log.error("open", "لم يُعثر على متصفح (xdg-open غير متوفّر).");
+    emit({ opened: false, url: target }, [`تعذّر فتح المتصفح — افتح يدوياً: ${target}`], opts);
+    return EXIT.INTERNAL;
+  }
+  emit({ opened: true, url: target, opener }, [`فُتح: ${target}`], opts);
+  return EXIT.OK;
+}
+
+async function cmdWatch(opts, rest) {
+  let every = 30;
+  const idx = rest.indexOf("--every");
+  if (idx !== -1 && rest[idx + 1]) every = Math.max(5, Number(rest[idx + 1]) || 30);
+  out(`مراقبة ${opts.url} كل ${every}s — Ctrl+C للإيقاف`);
+  for (;;) {
+    const stamp = new Date().toLocaleTimeString();
+    try {
+      const { data, ms } = await api(opts);
+      out(`${stamp}  ${data.healthy ? "OK  " : "FAIL"}  ${ms}ms  web=${data.services?.web ? 1 : 0} backend=${data.services?.backend ? 1 : 0}`);
+    } catch (e) {
+      out(`${stamp}  DOWN  ${e.message}`);
+    }
+    await new Promise((r) => setTimeout(r, every * 1000));
+  }
+}
+
+/* -------------------------------------------------------- demo accounts */
+
+async function postJson(opts, pathname, payload) {
+  const target = `${opts.url}${pathname}`;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), opts.timeout);
+  log.debug("http", `POST ${target}`);
+  try {
+    const res = await fetch(target, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+        "user-agent": `idaroom-cli/${CLI_VERSION}`,
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+    let data = null;
+    try {
+      data = await res.json();
+    } catch {
+      const err = new Error("الرد ليس بصيغة JSON صالحة");
+      err.code = EXIT.PROTOCOL;
+      throw err;
+    }
+    log.debug("http", `${res.status}`);
+    return { status: res.status, data };
+  } catch (e) {
+    if (e.code) throw e;
+    const err = new Error(e.name === "AbortError" ? `انتهت المهلة بعد ${opts.timeout}ms` : e.message);
+    err.code = EXIT.NETWORK;
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function askHidden(question) {
+  return new Promise((resolve) => {
+    if (!process.stdin.isTTY) return resolve("");
+    const readline = require("readline");
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout, terminal: true });
+    const onData = (char) => {
+      if (["\n", "\r", "\u0004"].includes(String(char))) process.stdin.removeListener("data", onData);
+      else process.stdout.write("\x1b[2K\x1b[200D" + question + "*".repeat(rl.line.length));
+    };
+    process.stdin.on("data", onData);
+    rl.question(question, (answer) => {
+      rl.close();
+      process.stdout.write("\n");
+      resolve(answer);
+    });
+  });
+}
+
+const DEMO_HELP = `idaroom demo — إدارة الحسابات التجريبية (يتطلب صلاحية admin)
+
+  idaroom demo list
+  idaroom demo create <email|prefix> --role <role> [--name "الاسم"] [--password <pw>]
+  idaroom demo disable <email|prefix>
+  idaroom demo enable  <email|prefix>
+  idaroom demo password <email|prefix> --password <new>
+  idaroom demo link <email|prefix> [--class "أولى ثانوي - علوم"] [--card 04A1B2C3]
+
+  الأدوار: admin | director | supervisor | teacher | parent | student | gate_monitor
+  الاعتماد: --admin-email / --admin-password أو IDAROOM_ADMIN_EMAIL / IDAROOM_ADMIN_PASSWORD
+  ملاحظة: العمليات مقيّدة بنطاق البريد demo.idarroom.dz فقط.`;
+
+async function cmdDemo(opts, rest) {
+  const sub = (rest.shift() || "").toLowerCase();
+  const actions = ["list", "create", "disable", "enable", "password", "link"];
+  if (!sub || sub === "help" || !actions.includes(sub)) {
+    out(DEMO_HELP);
+    return sub && sub !== "help" ? EXIT.USAGE : EXIT.OK;
+  }
+
+  let adminEmail = opts.adminEmail;
+  let adminPassword = opts.adminPassword;
+  if (!adminEmail) {
+    log.error("demo", "بريد المسؤول مفقود (--admin-email أو IDAROOM_ADMIN_EMAIL)");
+    out("مطلوب: --admin-email <email>");
+    return EXIT.USAGE;
+  }
+  if (!adminPassword) adminPassword = await askHidden("كلمة مرور المسؤول: ");
+  if (!adminPassword) {
+    out("مطلوب: --admin-password <pw> أو IDAROOM_ADMIN_PASSWORD");
+    return EXIT.USAGE;
+  }
+
+  const target = rest[0] || "";
+  if (sub !== "list" && !target) {
+    out(`مطلوب تحديد الحساب: idaroom demo ${sub} <email|prefix>`);
+    return EXIT.USAGE;
+  }
+  if (sub === "create" && !opts.role) {
+    out("مطلوب: --role <admin|director|supervisor|teacher|parent|student|gate_monitor>");
+    return EXIT.USAGE;
+  }
+  if (sub === "password" && !opts.newPassword) {
+    out("مطلوب: --password <كلمة المرور الجديدة>");
+    return EXIT.USAGE;
+  }
+  if (sub === "link" && !opts.className && !opts.cardUid) {
+    out("مطلوب: --class و/أو --card");
+    return EXIT.USAGE;
+  }
+
+  const payload = {
+    email: adminEmail,
+    password: adminPassword,
+    action: sub,
+    ...(target ? { target } : {}),
+    ...(opts.role ? { role: opts.role } : {}),
+    ...(opts.name ? { name: opts.name } : {}),
+    ...(opts.newPassword ? { newPassword: opts.newPassword } : {}),
+    ...(opts.className ? { className: opts.className } : {}),
+    ...(opts.cardUid ? { cardUid: opts.cardUid } : {}),
+  };
+
+  const { status, data } = await postJson(opts, "/api/public/cli-demo", payload);
+  if (!data || data.ok !== true) {
+    const msg = (data && (data.error || data.hint)) || `HTTP ${status}`;
+    log.error("demo", msg);
+    emit({ ok: false, status, error: msg, details: data?.details ?? null }, [`فشل: ${msg}`], opts);
+    if (status === 401 || status === 403) return EXIT.USAGE;
+    if (status === 404) return EXIT.UNHEALTHY;
+    return status >= 500 ? EXIT.INTERNAL : EXIT.USAGE;
+  }
+
+  if (sub === "list") {
+    const lines = [`الحسابات التجريبية: ${data.count}`];
+    for (const a of data.accounts) {
+      const st = a.student ? `  قسم=${a.student.className || "—"} بطاقة=${a.student.cardUid || "—"}` : "";
+      lines.push(
+        `  ${a.disabled ? "✖" : "✔"} ${String(a.email).padEnd(34)} [${a.role || "بلا دور"}]${st}`,
+      );
+    }
+    emit(data, lines, opts);
+    return EXIT.OK;
+  }
+
+  const summary = {
+    create: () => `أُنشئ/حُدّث ${data.email} [${data.role}] — كلمة المرور: ${data.password}`,
+    disable: () => `عُطّل ${data.email}`,
+    enable: () => `فُعّل ${data.email}`,
+    password: () => `تم تغيير كلمة مرور ${data.email}`,
+    link: () => `رُبط ${data.email} — قسم=${data.className || "—"} بطاقة=${data.cardUid || "—"}`,
+  }[sub]();
+  emit(data, [summary], opts);
+  return EXIT.OK;
+}
+
+/* ------------------------------------------------------------------ doctor */
+
+function checkWritable(dir) {
+  try {
+    fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
+    fs.accessSync(dir, fs.constants.W_OK);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const USER_ENV = path.join(os.homedir(), ".config", "idaroom", "idaroom.env");
+const ENV_TEMPLATE = `# IDAROOM CLI configuration
+IDAROOM_URL=${DEFAULT_URL}
+IDAROOM_LOG_LEVEL=warn
+IDAROOM_TIMEOUT=10000
+`;
+
+async function cmdDoctor(opts, loadedFiles) {
+  const checks = [];
+  const add = (category, name, ok, detail, fixable = null) =>
+    checks.push({ category, name, ok, detail, fixable });
+
+  const major = Number(process.versions.node.split(".")[0]);
+  add("runtime", "Node.js >= 18", major >= 18, `node ${process.versions.node}`);
+  add("runtime", "fetch API", typeof fetch === "function", typeof fetch === "function" ? "متوفّر" : "غير متوفّر");
+  add("runtime", "المنصّة", os.platform() === "linux", `${os.platform()} ${os.arch()}`);
+  const cfgDir = path.dirname(USER_ENV);
+  const cfgOk = checkWritable(cfgDir);
+  add("config", "مجلد الإعداد قابل للكتابة", cfgOk, cfgDir, cfgOk ? null : "mkdir");
+  const userEnvOk = fs.existsSync(USER_ENV);
+  add("config", "ملف إعداد المستخدم", userEnvOk, USER_ENV, userEnvOk ? null : "userenv");
+  for (const f of CONFIG_FILES) {
+    if (f === USER_ENV) continue;
+    add("config", `ملف ${f}`, true, fs.existsSync(f) ? (loadedFiles.includes(f) ? "مُحمّل" : "موجود") : "غير موجود (اختياري)");
+  }
+
+  add("env", "IDAROOM_URL صالح", /^https?:\/\//.test(opts.url), opts.url);
+  add("env", "IDAROOM_TIMEOUT صالح", opts.timeout >= 1000, `${opts.timeout} ms`);
+  add("env", "مستوى السجلات صالح", !!LEVELS[opts.level], opts.level);
+
+  const inPath = (() => {
+    try {
+      execFileSync("which", ["idaroom"], { stdio: "ignore" });
+      return true;
+    } catch {
+      return false;
+    }
+  })();
+  add("install", "الأمر idaroom في PATH", inPath, inPath ? "نعم" : "غير مثبّت عالمياً", inPath ? null : "symlink");
+
+  let serverOk = false;
+  try {
+    const { data, ms } = await api(opts);
+    serverOk = !!data.healthy;
+    add("server", "الاتصال بالخادم", true, `${ms} ms`);
+    add("server", "الويب", !!data.services?.web, data.services?.web ? "OK" : "FAIL");
+    add("server", "الخلفية", !!data.services?.backend, data.services?.backend ? "OK" : "FAIL");
+    add("server", "الإصدار", true, `v${data.version}`);
+  } catch (e) {
+    add("server", "الاتصال بالخادم", false, e.message);
+  }
+
+  const fixes = [];
+  if (opts.fix) {
+    for (const c of checks.filter((x) => !x.ok && x.fixable)) {
+      if (opts.dryRun) {
+        fixes.push({ item: c.name, action: c.fixable, applied: false, dryRun: true });
+        continue;
+      }
+      try {
+        if (c.fixable === "mkdir") fs.mkdirSync(cfgDir, { recursive: true, mode: 0o700 });
+        if (c.fixable === "userenv") {
+          fs.mkdirSync(cfgDir, { recursive: true, mode: 0o700 });
+          fs.writeFileSync(USER_ENV, ENV_TEMPLATE, { mode: 0o600 });
+        }
+        if (c.fixable === "symlink") {
+          if (process.getuid && process.getuid() !== 0) {
+            fixes.push({ item: c.name, action: c.fixable, applied: false, needsRoot: true });
+            continue;
+          }
+          fs.mkdirSync("/usr/local/bin", { recursive: true });
+          fs.copyFileSync(process.argv[1], "/usr/local/bin/idaroom");
+          fs.chmodSync("/usr/local/bin/idaroom", 0o755);
+        }
+        fixes.push({ item: c.name, action: c.fixable, applied: true });
+        c.ok = true;
+      } catch (e) {
+        fixes.push({ item: c.name, action: c.fixable, applied: false, error: e.message });
+      }
+    }
+  }
+
+  const failed = checks.filter((c) => !c.ok);
+  const needsRoot = fixes.some((f) => f.needsRoot);
+  const fixFailed = fixes.some((f) => !f.applied && !f.dryRun && !f.needsRoot);
+
+  emit(
+    {
+      summary: { total: checks.length, passed: checks.length - failed.length, failed: failed.length, serverHealthy: serverOk },
+      checks,
+      fixes,
+    },
+    [
+      `فحص IDAROOM — ${checks.length - failed.length}/${checks.length} ناجح`,
+      ...checks.map((c) => `  ${c.ok ? "✔" : "✖"} [${c.category}] ${c.name} — ${c.detail}`),
+      ...(fixes.length
+        ? ["الإصلاحات:", ...fixes.map((f) => `  ${f.applied ? "✔" : f.dryRun ? "…" : "✖"} ${f.item} (${f.action})${f.needsRoot ? " — يحتاج sudo" : ""}${f.error ? " — " + f.error : ""}`)]
+        : failed.length
+          ? ["نصيحة: نفّذ idaroom doctor --fix للإصلاح التلقائي."]
+          : []),
+    ],
+    opts,
+  );
+
+  if (fixFailed) return EXIT.FIXFAILED;
+  if (needsRoot) return EXIT.NEEDROOT;
+  return failed.length ? EXIT.UNHEALTHY : EXIT.OK;
+}
+
+/* ------------------------------------------------------------------- shell */
+
+const SHELL_COMMANDS = [
+  "help", "status", "health", "ping", "version", "changelog", "routes", "config",
+  "doctor", "open", "browser", "dashboard", "console", "watch", "demo",
+  "set", "get", "clear", "exit", "quit",
+];
+
+const SHELL_HELP = `الوضع التفاعلي — اكتب الأوامر مباشرة بدون كلمة idaroom.
+
+  status | health | ping | version | changelog [n] | routes | config
+  doctor [--fix] [--dry-run]      فحص وإصلاح البيئة
+  open /dashboard/students        فتح صفحة في المتصفح
+  watch --every 30                مراقبة مستمرة (Ctrl+C للعودة)
+  demo list | demo create <email> --role teacher | demo password <email> --password ...
+  demo disable/enable <email> | demo link <email> --class "..." --card 04A1B2C3
+
+أوامر الجلسة:
+  set url <url>        تغيير عنوان الخادم للجلسة
+  set timeout <ms>     تغيير المهلة
+  set log <level>      silent|error|warn|info|debug|trace
+  set json on|off      تبديل إخراج JSON
+  set admin <email>    بريد المسؤول لأوامر demo
+  set admin-password <pw>  كلمة مرور المسؤول (تبقى في الذاكرة فقط)
+  get                  عرض إعدادات الجلسة
+  clear                مسح الشاشة
+  exit | quit | Ctrl+D الخروج
+
+الموجه يعرض حالة الخادم مباشرة: ● سليم · ● خلل · ● لا اتصال، مع زمن الاستجابة
+ورمز خروج آخر أمر.`;
+
+async function probe(opts) {
+  try {
+    const { data, ms } = await api(opts);
+    return { state: data.healthy ? "ok" : "bad", ms, version: data.version };
+  } catch {
+    return { state: "down", ms: null, version: null };
+  }
+}
+
+function shellPrompt(opts, st, lastCode) {
+  const c = (code, s) => (opts.color ? `\x1b[${code}m${s}\x1b[0m` : s);
+  const dot = st.state === "ok" ? c(32, "●") : st.state === "bad" ? c(33, "●") : c(31, "●");
+  const label = st.state === "ok" ? "سليم" : st.state === "bad" ? "خلل" : "لا اتصال";
+  const lat = st.ms == null ? "—" : `${st.ms}ms`;
+  const host = opts.url.replace(/^https?:\/\//, "");
+  const exit = lastCode === 0 ? c(90, "0") : c(31, String(lastCode));
+  return `${dot} ${c(90, label)} ${c(90, host)} ${c(90, lat)} ${c(90, "[" + exit + "]")} ${c(36, "idaroom")}${c(90, ">")} `;
+}
+
+async function cmdShell(opts, loadedFiles) {
+  if (!process.stdin.isTTY) {
+    log.error("shell", "الوضع التفاعلي يحتاج طرفية (TTY).");
+    return EXIT.USAGE;
+  }
+  const readline = require("readline");
+  let st = await probe(opts);
+  let lastCode = EXIT.OK;
+
+  out(`IDAROOM CLI v${CLI_VERSION} — الوضع التفاعلي. اكتب help للأوامر و exit للخروج.`);
+  out(`الخادم: ${opts.url}${st.version ? ` · إصدار ${st.version}` : ""}`);
+
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    prompt: shellPrompt(opts, st, lastCode),
+    historySize: 200,
+    completer: (line) => {
+      const hits = SHELL_COMMANDS.filter((c) => c.startsWith(line.trim()));
+      return [hits.length ? hits : SHELL_COMMANDS, line];
+    },
+  });
+
+  const refresh = async () => {
+    st = await probe(opts);
+    rl.setPrompt(shellPrompt(opts, st, lastCode));
+  };
+  const timer = setInterval(() => {
+    void refresh();
+  }, 30000);
+  timer.unref?.();
+
+  rl.prompt();
+
+  await new Promise((resolve) => {
+    let queue = Promise.resolve();
+    rl.on("line", (line) => {
+      queue = queue.then(() => handleLine(line));
+    });
+    async function handleLine(line) {
+      const input = line.trim();
+      if (input) {
+        const parsed = parseArgs(input.split(/\s+/));
+        const local = { ...opts, ...parsed.opts };
+        // keep session defaults unless the line overrode them explicitly
+        local.url = /--url/.test(input) ? parsed.opts.url : opts.url;
+        local.timeout = /--timeout/.test(input) ? parsed.opts.timeout : opts.timeout;
+        local.json = /--json/.test(input) ? true : opts.json;
+        local.level = /--log-level|-V|--verbose|-vv|-q|--quiet/.test(input) ? parsed.opts.level : opts.level;
+        log.level = local.level;
+        log.json = local.json;
+        log.color = local.color = opts.color;
+        local.adminEmail = parsed.opts.adminEmail || opts.adminEmail;
+        local.adminPassword = parsed.opts.adminPassword || opts.adminPassword;
+
+        const cmd = (parsed.rest.shift() || "").toLowerCase();
+        const rest = parsed.rest;
+        try {
+          if (cmd === "exit" || cmd === "quit") {
+            rl.close();
+            return;
+          } else if (cmd === "help" || cmd === "?") {
+            out(SHELL_HELP);
+            lastCode = EXIT.OK;
+          } else if (cmd === "clear") {
+            process.stdout.write("\x1b[2J\x1b[H");
+            lastCode = EXIT.OK;
+          } else if (cmd === "get") {
+            lastCode = cmdConfig(opts, loadedFiles);
+          } else if (cmd === "set") {
+            lastCode = shellSet(opts, rest);
+          } else {
+            lastCode = (await dispatch(cmd, rest, local, loadedFiles)) ?? EXIT.OK;
+          }
+        } catch (e) {
+          log.error("shell", e.message);
+          out(`خطأ: ${e.message}`);
+          lastCode = e.code || EXIT.INTERNAL;
+        }
+        await refresh();
+      }
+      rl.setPrompt(shellPrompt(opts, st, lastCode));
+      rl.prompt();
+    }
+    rl.on("close", () => {
+      clearInterval(timer);
+      void queue.then(() => {
+        out("إلى اللقاء.");
+        resolve();
+      });
+    });
+  });
+
+  return lastCode;
+}
+
+function shellSet(opts, rest) {
+  const [key, ...vals] = rest;
+  const value = vals.join(" ");
+  switch ((key || "").toLowerCase()) {
+    case "url":
+      if (!value) return out("استعمال: set url https://example.com"), EXIT.USAGE;
+      opts.url = value.replace(/\/+$/, "");
+      out(`الخادم: ${opts.url}`);
+      return EXIT.OK;
+    case "timeout": {
+      const n = Number(value);
+      if (!Number.isFinite(n) || n <= 0) return out("استعمال: set timeout 5000"), EXIT.USAGE;
+      opts.timeout = n;
+      out(`المهلة: ${opts.timeout}ms`);
+      return EXIT.OK;
+    }
+    case "log":
+    case "log-level":
+      if (!LEVELS[value]) return out("القيم: silent|error|warn|info|debug|trace"), EXIT.USAGE;
+      opts.level = value;
+      log.level = value;
+      out(`مستوى السجل: ${value}`);
+      return EXIT.OK;
+    case "json":
+      opts.json = value !== "off" && value !== "false";
+      log.json = opts.json;
+      out(`JSON: ${opts.json ? "on" : "off"}`);
+      return EXIT.OK;
+    case "admin":
+    case "admin-email":
+      if (!value) return out("استعمال: set admin admin@demo.idarroom.dz"), EXIT.USAGE;
+      opts.adminEmail = value;
+      out(`مسؤول demo: ${opts.adminEmail}`);
+      return EXIT.OK;
+    case "admin-password":
+      if (!value) return out("استعمال: set admin-password <pw>"), EXIT.USAGE;
+      opts.adminPassword = value;
+      out("تم ضبط كلمة مرور المسؤول للجلسة.");
+      return EXIT.OK;
+    case "color":
+      opts.color = value !== "off" && value !== "false";
+      log.color = opts.color;
+      out(`الألوان: ${opts.color ? "on" : "off"}`);
+      return EXIT.OK;
+    default:
+      out("المفاتيح: url | timeout | log | json | color | admin | admin-password");
+      return EXIT.USAGE;
+  }
+}
+
+/* -------------------------------------------------------------------- main */
+
+async function dispatch(cmd, rest, opts, loadedFiles) {
+  switch (cmd) {
+    case "help":
+    case "-h":
+    case "--help":
+      out(HELP);
+      return EXIT.OK;
+    case "version":
+    case "-v":
+    case "--version":
+      return cmdVersion(opts);
+    case "status":
+    case "info":
+      return cmdStatus(opts);
+    case "health":
+      return cmdHealth(opts);
+    case "ping":
+      return cmdPing(opts);
+    case "changelog":
+      return cmdChangelog(opts, rest);
+    case "routes":
+      return cmdRoutes(opts);
+    case "config":
+      return cmdConfig(opts, loadedFiles);
+    case "doctor":
+      return cmdDoctor(opts, loadedFiles);
+    case "open":
+    case "browser":
+      return cmdOpen(opts, rest);
+    case "dashboard":
+      return cmdOpen(opts, ["/dashboard"]);
+    case "console":
+      return cmdOpen(opts, ["/dashboard/console"]);
+    case "watch":
+      return cmdWatch(opts, rest);
+    case "demo":
+    case "accounts":
+      return cmdDemo(opts, rest);
+    default:
+      log.error("cli", `أمر غير معروف: ${cmd}`);
+      out(`أمر غير معروف: ${cmd} — جرّب: help`);
+      return EXIT.USAGE;
+  }
+}
+
+async function main() {
+  const loadedFiles = loadEnvFiles();
+  const { opts, rest } = parseArgs(process.argv.slice(2));
+  const cmd = (rest.shift() || process.env.IDAROOM_COMMAND || "help").toLowerCase();
+  log.debug("cli", `command=${cmd} url=${opts.url}`);
+
+  if (cmd === "shell" || cmd === "repl" || cmd === "interactive" || cmd === "-i" || cmd === "--interactive") {
+    return cmdShell(opts, loadedFiles);
+  }
+  return dispatch(cmd, rest, opts, loadedFiles);
+}
+
+main()
+  .then((code) => process.exit(code ?? EXIT.OK))
+  .catch((e) => {
+    log.error("cli", e.message);
+    if (process.env.IDAROOM_JSON) out(JSON.stringify({ error: e.message }));
+    else out(`خطأ: ${e.message}`);
+    process.exit(e.code || EXIT.INTERNAL);
+  });
+
