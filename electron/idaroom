@@ -1,0 +1,35 @@
+#!/bin/sh
+# IDAROOM command line launcher — installed to /usr/bin/idaroom by the .deb
+# package. Works both as a GUI launcher and as a real terminal tool: headless
+# commands print to stdout and return proper exit codes.
+BIN="/opt/IDAROOM/idaroom"
+[ -x "$BIN" ] || BIN="/usr/lib/idaroom/idaroom"
+
+# Silence Electron/Chromium noise so stdout stays script-friendly, unless the
+# user asked for diagnostics (--verbose / -V / -vv / --log-level / IDAROOM_LOG_LEVEL).
+export ELECTRON_DISABLE_SECURITY_WARNINGS=1
+
+VERBOSE=0
+for arg in "$@"; do
+  case "$arg" in
+    --verbose|-V|-vv|--log-level|--log-level=*) VERBOSE=1 ;;
+  esac
+done
+[ -n "$IDAROOM_LOG_LEVEL" ] && VERBOSE=1
+
+case "$1" in
+  status|health|info|routes|config|ping|doctor|version|help|-h|--help|-v|--version)
+    if [ "$VERBOSE" = "1" ]; then
+      exec "$BIN" --no-sandbox --enable-logging=stderr "$@"
+    fi
+    exec "$BIN" --no-sandbox --enable-logging=stderr "$@" 2>/dev/null
+    ;;
+  ""|open|dashboard|console|settings|browser|url|/*|-*)
+    exec "$BIN" --no-sandbox "$@"
+    ;;
+  *)
+    # Let the app itself report the unknown command with exit code 3.
+    exec "$BIN" --no-sandbox "$@"
+    ;;
+esac
+

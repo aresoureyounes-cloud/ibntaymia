@@ -1,0 +1,15 @@
+# IDAROOM — إداروم
+
+> Hybrid (online/offline) school management platform for Algerian schools. Unified digital badge, attendance, parent notifications, library, exams, trips, and behavior tracking.
+
+IDAROOM is a complete school operating system designed for Algerian institutions. It supports Arabic, French, and English, works without the internet, and centralizes all daily operations around a single RFID badge.
+
+## Pages
+
+- [Home](/): Overview of the platform, the 12 modules, and how the unified badge works.
+- [About](/about): Design principles — hybrid online/offline, manual override, unified digital identity, multi-channel notifications, and security.
+- [Trust & Security](/trust): How student, parent, and staff data is protected — access control, encryption, storage, retention, and incident reporting.
+
+## Optional
+
+- [Sign in](/login): Authentication for school staff, teachers, parents, and students.

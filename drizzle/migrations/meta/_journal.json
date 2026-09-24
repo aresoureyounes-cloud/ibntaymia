@@ -1,0 +1,55 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1789213052950,
+      "tag": "0000_add_developer_enum_value",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789213070081,
+      "tag": "0001_developer_role_overrides",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789213228239,
+      "tag": "0002_owner_gets_developer_role",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789213255017,
+      "tag": "0003_protect_developer_role_grants",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789213266723,
+      "tag": "0004_fix_user_roles_policy_recursion",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789815859637,
+      "tag": "0005_parent_portal_meeting_requests",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789815870310,
+      "tag": "0006_parent_exams_read",
+      "breakpoints": true
+    }
+  ]
+}
