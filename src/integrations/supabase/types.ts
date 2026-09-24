@@ -18,6 +18,9 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          justification_note: string | null
+          justified_at: string | null
+          justified_by: string | null
           note: string | null
           session_id: string
           status: string
@@ -27,6 +30,9 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          justification_note?: string | null
+          justified_at?: string | null
+          justified_by?: string | null
           note?: string | null
           session_id: string
           status?: string
@@ -36,6 +42,9 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          justification_note?: string | null
+          justified_at?: string | null
+          justified_by?: string | null
           note?: string | null
           session_id?: string
           status?: string
@@ -197,6 +206,41 @@ export type Database = {
           },
         ]
       }
+      class_teachers: {
+        Row: {
+          class_id: string
+          created_at: string
+          id: string
+          subject: string | null
+          teacher_id: string
+          updated_at: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          id?: string
+          subject?: string | null
+          teacher_id: string
+          updated_at?: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          id?: string
+          subject?: string | null
+          teacher_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_teachers_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       classes: {
         Row: {
           branch: string | null
@@ -264,6 +308,57 @@ export type Database = {
             columns: ["class_id"]
             isOneToOne: false
             referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grades: {
+        Row: {
+          created_at: string
+          entered_by: string | null
+          exam_id: string
+          id: string
+          max_score: number
+          remark: string | null
+          score: number | null
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          entered_by?: string | null
+          exam_id: string
+          id?: string
+          max_score?: number
+          remark?: string | null
+          score?: number | null
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          entered_by?: string | null
+          exam_id?: string
+          id?: string
+          max_score?: number
+          remark?: string | null
+          score?: number | null
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grades_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "grades_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
             referencedColumns: ["id"]
           },
         ]
@@ -401,6 +496,68 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      parent_student: {
+        Row: {
+          created_at: string
+          id: string
+          parent_user_id: string
+          relation: string | null
+          student_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          parent_user_id: string
+          relation?: string | null
+          student_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          parent_user_id?: string
+          relation?: string | null
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_student_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profile_audit_log: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          id: string
+          ip: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -554,6 +711,7 @@ export type Database = {
       staff_whitelist: {
         Row: {
           created_at: string
+          email: string | null
           full_name: string
           id: string
           note: string | null
@@ -561,6 +719,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          email?: string | null
           full_name: string
           id?: string
           note?: string | null
@@ -568,6 +727,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          email?: string | null
           full_name?: string
           id?: string
           note?: string | null
