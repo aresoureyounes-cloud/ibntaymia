@@ -160,6 +160,8 @@ export type Database = {
           note: string | null
           period: string | null
           session_date: string
+          session_type: string
+          slot_id: string | null
           subject: string | null
           teacher_id: string
           updated_at: string
@@ -171,6 +173,8 @@ export type Database = {
           note?: string | null
           period?: string | null
           session_date?: string
+          session_type?: string
+          slot_id?: string | null
           subject?: string | null
           teacher_id: string
           updated_at?: string
@@ -182,6 +186,8 @@ export type Database = {
           note?: string | null
           period?: string | null
           session_date?: string
+          session_type?: string
+          slot_id?: string | null
           subject?: string | null
           teacher_id?: string
           updated_at?: string
@@ -192,6 +198,13 @@ export type Database = {
             columns: ["class_id"]
             isOneToOne: false
             referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attendance_sessions_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "schedule_slots"
             referencedColumns: ["id"]
           },
         ]
@@ -819,8 +832,11 @@ export type Database = {
           class_id: string
           created_at: string
           end_time: string
+          group_label: string
           id: string
+          is_active: boolean
           note: string | null
+          period_no: number | null
           room: string | null
           start_time: string
           subject: string
@@ -832,8 +848,11 @@ export type Database = {
           class_id: string
           created_at?: string
           end_time: string
+          group_label?: string
           id?: string
+          is_active?: boolean
           note?: string | null
+          period_no?: number | null
           room?: string | null
           start_time: string
           subject: string
@@ -845,8 +864,11 @@ export type Database = {
           class_id?: string
           created_at?: string
           end_time?: string
+          group_label?: string
           id?: string
+          is_active?: boolean
           note?: string | null
+          period_no?: number | null
           room?: string | null
           start_time?: string
           subject?: string
@@ -1136,6 +1158,13 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      list_teachers: {
+        Args: never
+        Returns: {
+          full_name: string
+          id: string
+        }[]
       }
     }
     Enums: {
