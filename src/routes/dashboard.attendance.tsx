@@ -44,6 +44,16 @@ export const Route = createFileRoute("/dashboard/attendance")({
 });
 
 type Status = "present" | "absent" | "late" | "excused";
+type SessionType = "regular" | "replacement" | "extra";
+type SlotRow = {
+  id: string;
+  class_id: string;
+  teacher_id: string | null;
+  subject: string;
+  start_time: string;
+  period_no: number | null;
+  classes: { name: string } | null;
+};
 type ClassRow = { id: string; name: string; level: string | null };
 type Student = { id: string; full_name: string };
 type SessionRow = {
@@ -88,6 +98,47 @@ function AttendancePage() {
   );
   const [justifyNote, setJustifyNote] = useState("");
   const [search, setSearch] = useState("");
+  const [slotId, setSlotId] = useState<string | null>(null);
+  const [sessionType, setSessionType] = useState<SessionType>("regular");
+  const weekday = new Date(date + "T12:00:00").getDay();
+
+  const { data: mySlots } = useQuery({
+    queryKey: ["my-slots", user?.id, weekday],
+    enabled: !!user,
+    queryFn: async (): Promise<SlotRow[]> => {
+      const { data } = await supabase
+        .from("schedule_slots")
+        .select("id, class_id, teacher_id, subject, start_time, period_no, classes(name)")
+        .eq("teacher_id", user!.id)
+        .eq("weekday", weekday)
+        .eq("is_active" as never, true as never)
+        .order("start_time");
+      return (data as unknown as SlotRow[]) ?? [];
+    },
+  });
+
+  const { data: classSlots } = useQuery({
+    queryKey: ["class-slots", classId, weekday],
+    enabled: !!classId,
+    queryFn: async (): Promise<SlotRow[]> => {
+      const { data } = await supabase
+        .from("schedule_slots")
+        .select("id, class_id, teacher_id, subject, start_time, period_no, classes(name)")
+        .eq("class_id", classId)
+        .eq("weekday", weekday)
+        .eq("is_active" as never, true as never)
+        .order("start_time");
+      return (data as unknown as SlotRow[]) ?? [];
+    },
+  });
+
+  const pickSlot = (s: SlotRow) => {
+    setSlotId(s.id);
+    setClassId(s.class_id);
+    setSubject(s.subject);
+    if (s.period_no) setPeriod(String(s.period_no));
+    setSessionType(s.teacher_id && s.teacher_id !== user?.id ? "replacement" : "regular");
+  };
 
   const { data: classes } = useQuery({
     queryKey: ["classes"],
@@ -175,7 +226,9 @@ function AttendancePage() {
           session_date: date,
           period,
           subject: subject || null,
-        })
+          slot_id: slotId,
+          session_type: sessionType,
+        } as never)
         .select("id")
         .single();
       if (error) return toast.error(error.message);
@@ -358,8 +411,26 @@ function AttendancePage() {
               <CalendarDays className="h-5 w-5" /> جلسة جديدة
             </CardTitle>
           </CardHeader>
-          <CardContent className="grid gap-3 md:grid-cols-5">
-            <Select value={classId} onValueChange={setClassId}>
+          <CardContent className="space-y-3">
+            {(mySlots ?? []).length > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-muted-foreground">حصصي في هذا اليوم حسب جدول التوقيت:</p>
+                <div className="flex flex-wrap gap-2">
+                  {(mySlots ?? []).map((s) => (
+                    <Button
+                      key={s.id}
+                      size="sm"
+                      variant={slotId === s.id ? "default" : "outline"}
+                      onClick={() => pickSlot(s)}
+                    >
+                      {s.start_time.slice(0, 5)} · {s.classes?.name ?? ""} · {s.subject}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+            <div className="grid gap-3 md:grid-cols-6">
+            <Select value={classId} onValueChange={(v) => { setClassId(v); setSlotId(null); }}>
               <SelectTrigger>
                 <SelectValue placeholder="القسم" />
               </SelectTrigger>
@@ -371,7 +442,7 @@ function AttendancePage() {
                 ))}
               </SelectContent>
             </Select>
-            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+            <Input type="date" value={date} onChange={(e) => { setDate(e.target.value); setSlotId(null); }} />
             <Select value={period} onValueChange={setPeriod}>
               <SelectTrigger>
                 <SelectValue placeholder="الحصة" />
@@ -389,9 +460,35 @@ function AttendancePage() {
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
             />
+            <Select value={sessionType} onValueChange={(v) => setSessionType(v as SessionType)}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="regular">حصة عادية</SelectItem>
+                <SelectItem value="replacement">استخلاف</SelectItem>
+                <SelectItem value="extra">حصة إضافية</SelectItem>
+              </SelectContent>
+            </Select>
             <Button onClick={startSession} disabled={!classId}>
               <Clock className="me-2 h-4 w-4" /> فتح
             </Button>
+            </div>
+            {classId && (classSlots ?? []).length > 0 && !slotId && (
+              <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                <span>حصص هذا القسم في هذا اليوم:</span>
+                {(classSlots ?? []).map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    className="rounded border px-2 py-0.5 hover:bg-muted"
+                    onClick={() => pickSlot(s)}
+                  >
+                    {s.start_time.slice(0, 5)} {s.subject}
+                  </button>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
