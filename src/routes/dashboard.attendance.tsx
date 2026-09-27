@@ -72,7 +72,9 @@ function AttendancePage() {
   useRealtimeTable("attendance_sessions", ["att_sessions"]);
   useRealtimeTable("attendance_records", ["att_records"]);
   const qc = useQueryClient();
-  const { user } = useAuth();
+  const { user, hasRole } = useAuth();
+  const canOverrideLate =
+    hasRole("teacher") || hasRole("admin") || hasRole("director") || hasRole("supervisor");
 
   const [classId, setClassId] = useState<string>("");
   const [date, setDate] = useState<string>(new Date().toISOString().slice(0, 10));
@@ -145,6 +147,7 @@ function AttendancePage() {
   }, [activeSessionId]);
 
   const isLocked = (studentId: string) => {
+    if (canOverrideLate) return false;
     const r = existing[studentId];
     return r?.status === "late" && !r.justified_at;
   };
@@ -300,7 +303,7 @@ function AttendancePage() {
               <span className="underline-sketch">تسجيل الحضور</span>
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              افتح جلسة لقسم وتاريخ محدّدين، ثم أشّر حالة كل تلميذ
+              افتح جلسة لأي قسم (حصتك، استخلاف، أو حصة إضافية)، وأعد فتحها لتصحيح أي خطأ
             </p>
           </div>
         </div>
