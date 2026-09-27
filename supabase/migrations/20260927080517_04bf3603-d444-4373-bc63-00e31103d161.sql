@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.check_schedule_conflict() FROM authenticated;
