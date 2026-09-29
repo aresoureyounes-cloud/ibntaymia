@@ -5,10 +5,12 @@ const { app, BrowserWindow, Menu, shell } = require("electron");
 const path = require("path");
 const { spawn } = require("child_process");
 
-const DEFAULT_URL = "https://idarroom.lovable.app";
+const DEFAULT_URL = "https://test25.lovable.app";
 const APP_URL = process.env.IDAROOM_URL || DEFAULT_URL;
 
-const APP_VERSION = "1.0.1";
+const APP_VERSION = "1.1.0";
+// Local server on the school network (router). Used when the internet is down.
+const LOCAL_URL = process.env.IDAROOM_LOCAL_URL || "";
 
 // Commands that never open a window — they behave like any Linux utility.
 const HEADLESS = new Set(["version", "help", "status", "health", "info", "routes", "config", "ping", "doctor"]);
@@ -866,6 +868,38 @@ function targetUrl(opts) {
   }
 }
 
+// Desktop update check: compares this build with /version.json on the server.
+// Page content always updates by itself (it is loaded from the server);
+// this only concerns the desktop shell.
+async function checkDesktopUpdate(baseUrl) {
+  try {
+    const { dialog } = require("electron");
+    const res = await fetch(new URL("/version.json?t=" + Date.now(), baseUrl).toString());
+    if (!res.ok) return;
+    const data = await res.json();
+    const cmp = (a, b) => {
+      const x = String(a).split(".").map(Number), y = String(b).split(".").map(Number);
+      for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0); }
+      return 0;
+    };
+    if (!data.version || cmp(data.version, APP_VERSION) <= 0) return;
+    const r = await dialog.showMessageBox(mainWin, {
+      type: "info",
+      buttons: ["تحميل التحديث", "لاحقاً"],
+      defaultId: 0,
+      title: "تحديث متوفر",
+      message: `يتوفر إصدار جديد v${data.version} (الإصدار الحالي v${APP_VERSION}).`,
+      detail: (data.notes || []).join("\n"),
+    });
+    if (r.response === 0) {
+      const url = process.platform === "win32" ? data.windows : data.linux;
+      shell.openExternal(url ? new URL(url, baseUrl).toString() : new URL("/download", baseUrl).toString());
+    }
+  } catch (e) {
+    logger.debug("update", "update check failed", { error: String(e) });
+  }
+}
+
 function createSplash() {
   splashWin = new BrowserWindow({
     width: 520,
@@ -898,9 +932,18 @@ function createMain(opts) {
   });
 
   mainWin.loadURL(targetUrl(opts));
+  let triedLocal = false;
+  setTimeout(() => checkDesktopUpdate(opts.url), 8000);
 
   mainWin.webContents.on("did-fail-load", (_e, errorCode, errorDescription, validatedURL) => {
     logger.error("window", "page failed to load", { errorCode, errorDescription, url: validatedURL });
+    if (errorCode === -3) return; // aborted navigation
+    const local = LOCAL_URL || process.env.IDAROOM_LOCAL_URL;
+    if (local && !triedLocal && !String(validatedURL).startsWith(local)) {
+      triedLocal = true;
+      logger.warn("window", "online unreachable, switching to local server", { local });
+      mainWin.loadURL(targetUrl({ ...opts, url: local }));
+    }
   });
   mainWin.webContents.on("render-process-gone", (_e, details) => {
     logger.error("window", "renderer process gone", { reason: details.reason, exitCode: details.exitCode });
