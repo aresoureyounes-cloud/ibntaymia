@@ -203,43 +203,17 @@ function AttendancePage() {
     return r?.status === "late" && !r.justified_at;
   };
 
-  const startSession = async () => {
-    if (!classId || !user) return toast.error("اختر القسم أولاً");
+  const [duplicate, setDuplicate] = useState<{
+    id: string;
+    className: string | null;
+    subject: string | null;
+    count: number;
+  } | null>(null);
 
-    // Reuse an existing session for the same class/date/period instead of duplicating it.
-    const { data: found } = await supabase
-      .from("attendance_sessions")
-      .select("id")
-      .eq("class_id", classId)
-      .eq("session_date", date)
-      .eq("period", period)
-      .limit(1)
-      .maybeSingle();
-
-    let sessionId = found?.id ?? null;
-    if (!sessionId) {
-      const { data, error } = await supabase
-        .from("attendance_sessions")
-        .insert({
-          class_id: classId,
-          teacher_id: user.id,
-          session_date: date,
-          period,
-          subject: subject || null,
-          slot_id: slotId,
-          session_type: sessionType,
-        } as never)
-        .select("id")
-        .single();
-      if (error) return toast.error(error.message);
-      sessionId = data.id;
-    }
-
+  const openSession = async (sessionId: string, isExisting: boolean) => {
     setActiveSessionId(sessionId);
     const next: Record<string, Status> = {};
     (students ?? []).forEach((s) => (next[s.id] = "present"));
-
-    // Pre-fill from whatever was already recorded for this session.
     const { data: prev } = await supabase
       .from("attendance_records")
       .select("student_id, status")
@@ -248,7 +222,52 @@ function AttendancePage() {
       next[r.student_id] = r.status as Status;
     });
     setMarks(next);
-    toast.success(found ? "تم فتح الجلسة الموجودة لهذه الحصة" : "تم فتح جلسة جديدة");
+    toast.success(isExisting ? "تم فتح السجل الموجود للتعديل" : "تم فتح جلسة جديدة");
+  };
+
+  const startSession = async () => {
+    if (!classId || !user) return toast.error("اختر القسم أولاً");
+
+    // Check for an existing record for the same class/date/period before creating one.
+    const { data: found, error: findErr } = await supabase
+      .from("attendance_sessions")
+      .select("id, subject, classes(name)")
+      .eq("class_id", classId)
+      .eq("session_date", date)
+      .eq("period", period)
+      .limit(1)
+      .maybeSingle();
+    if (findErr) return toast.error(findErr.message);
+
+    if (found) {
+      const { count } = await supabase
+        .from("attendance_records")
+        .select("id", { count: "exact", head: true })
+        .eq("session_id", found.id);
+      setDuplicate({
+        id: found.id,
+        className: (found as { classes?: { name?: string } | null }).classes?.name ?? null,
+        subject: found.subject ?? null,
+        count: count ?? 0,
+      });
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("attendance_sessions")
+      .insert({
+        class_id: classId,
+        teacher_id: user.id,
+        session_date: date,
+        period,
+        subject: subject || null,
+        slot_id: slotId,
+        session_type: sessionType,
+      } as never)
+      .select("id")
+      .single();
+    if (error) return toast.error(error.message);
+    await openSession(data.id, false);
   };
 
   const markAll = (status: Status) => {
@@ -655,6 +674,41 @@ function AttendancePage() {
             </Button>
             <Button onClick={submitJustify}>
               <ShieldCheck className="me-2 h-4 w-4" /> حفظ التبرير
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!duplicate} onOpenChange={(o) => !o && setDuplicate(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>يوجد تسجيل حضور سابق لهذه الحصة</DialogTitle>
+          </DialogHeader>
+          {duplicate && (
+            <div className="space-y-1 text-sm">
+              <p>
+                القسم: <b>{duplicate.className ?? "—"}</b> · التاريخ:{" "}
+                <span className="ltr">{date}</span> · الحصة: {period}
+              </p>
+              <p>المادة: {duplicate.subject ?? "—"}</p>
+              <p>عدد التلاميذ المسجلين: {duplicate.count}</p>
+              <p className="text-muted-foreground">
+                لا يمكن إنشاء سجل ثانٍ لنفس القسم والحصة. افتح السجل الموجود لتعديله.
+              </p>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setDuplicate(null)}>
+              إلغاء
+            </Button>
+            <Button
+              onClick={() => {
+                const id = duplicate!.id;
+                setDuplicate(null);
+                void openSession(id, true);
+              }}
+            >
+              فتح السجل الموجود للتعديل
             </Button>
           </DialogFooter>
         </DialogContent>
