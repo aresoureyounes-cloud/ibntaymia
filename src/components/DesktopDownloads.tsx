@@ -1,14 +1,12 @@
 import { useState } from "react";
-import { Download, Monitor, Apple, HardDrive, RefreshCw, Sparkles, CheckCircle2, Terminal } from "lucide-react";
+import { Download, Monitor, HardDrive, RefreshCw, Sparkles, CheckCircle2, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { APP_VERSION, RELEASE_DATE, CHANGELOG } from "@/lib/app-version";
-import debAsset from "../../public/downloads/IDAROOM-linux-amd64.deb.asset.json";
 import linuxZipAsset from "../../public/downloads/IDAROOM-linux-x64.zip.asset.json";
 import windowsAsset from "../../public/downloads/IDAROOM-windows-x64.zip.asset.json";
-import macAsset from "../../public/downloads/IDAROOM-macos-x64.zip.asset.json";
 
 function mb(bytes: number) {
   return `${Math.round(bytes / 1024 / 1024)} MB`;
@@ -40,22 +38,11 @@ const BUILDS: Build[] = [
   {
     key: "linux",
     icon: HardDrive,
-    title: "Linux (Debian / Ubuntu)",
-    hint: "حزمة .deb — ثبّتها بالأمر: sudo dpkg -i IDAROOM-*.deb",
-    url: debAsset.url,
-    size: debAsset.size,
-    label: "تحميل .deb",
-    primary: true,
-    extra: { label: "نسخة محمولة .zip", url: linuxZipAsset.url, size: linuxZipAsset.size },
-  },
-  {
-    key: "macos",
-    icon: Apple,
-    title: "macOS (Intel / Rosetta)",
-    hint: "فُك الضغط وانقل IDAROOM.app إلى مجلد Applications.",
-    url: macAsset.url,
-    size: macAsset.size,
-    label: "تحميل لماك",
+    title: "Linux (Mint / Ubuntu / Debian)",
+    hint: "فُك الضغط ثم شغّل الملف IDAROOM داخل المجلد.",
+    url: linuxZipAsset.url,
+    size: linuxZipAsset.size,
+    label: "تحميل لينكس",
     primary: true,
   },
 ];
@@ -96,8 +83,8 @@ export function DesktopDownloads() {
             حمّل تطبيق إداروم
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
-            نفس المنصة، لكن كتطبيق مكتبي كامل يعمل أونلاين وأوفلاين على جهازك — متوفّر الآن
-            لويندوز، لينكس، وماك. مناسب للحراس، الإدارة، والمعلمين في المؤسسات ذات الاتصال المحدود.
+            نفس المنصة في نافذة مكتبية لويندوز ولينكس. تعمل عبر الإنترنت، وتتحول إلى الخادم المحلي للمؤسسة
+            عند انقطاع الإنترنت (بعد تجهيز جهاز الخادم المحلي).
           </p>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
@@ -192,7 +179,7 @@ idaroom help                   # كل الأوامر والخيارات`}
               </pre>
 
               <p className="text-[11px] text-muted-foreground">
-                حزمة .deb تثبّت نفس الأمر <span dir="ltr" className="font-mono">idaroom</span> مع التطبيق المكتبي
+                النسخة المحمولة لينكس تحتوي نفس الأمر <span dir="ltr" className="font-mono">idaroom</span> مع التطبيق المكتبي
                 وخدمات systemd وإكمال Bash تلقائياً.
               </p>
             </CardContent>

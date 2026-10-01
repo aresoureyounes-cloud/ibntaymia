@@ -1,7 +1,7 @@
 /** Central metadata for the IDAROOM app version + changelog. */
 
-export const APP_VERSION = "1.0.1";
-export const RELEASE_DATE = "2026-07-22";
+export const APP_VERSION = "1.1.0";
+export const RELEASE_DATE = "2026-09-29";
 
 export type ChangelogEntry = {
   version: string;
@@ -10,6 +10,15 @@ export type ChangelogEntry = {
 };
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: "1.1.0",
+    date: "2026-09-29",
+    notes: [
+      "نسختا ويندوز ولينكس جديدتان مرتبطتان بالمنصة الحالية.",
+      "تحول تلقائي إلى الخادم المحلي للمؤسسة عند انقطاع الإنترنت.",
+      "تنبيه داخل البرنامج عند توفر إصدار جديد.",
+    ],
+  },
   {
     version: "1.0.1",
     date: "2026-07-22",
