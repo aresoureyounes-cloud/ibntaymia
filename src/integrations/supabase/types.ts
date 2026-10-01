@@ -71,6 +71,27 @@ export type Database = {
           },
         ]
       }
+      access_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: number
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: number
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: number
+        }
+        Relationships: []
+      }
       appearance_settings: {
         Row: {
           created_at: string
@@ -827,6 +848,30 @@ export type Database = {
           },
         ]
       }
+      role_permissions: {
+        Row: {
+          allowed: boolean
+          permission: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          allowed?: boolean
+          permission: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          allowed?: boolean
+          permission?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       schedule_slots: {
         Row: {
           class_id: string
@@ -1121,6 +1166,33 @@ export type Database = {
           },
         ]
       }
+      user_permission_overrides: {
+        Row: {
+          allowed: boolean
+          note: string | null
+          permission: string
+          updated_at: string
+          updated_by: string | null
+          user_id: string
+        }
+        Insert: {
+          allowed: boolean
+          note?: string | null
+          permission: string
+          updated_at?: string
+          updated_by?: string | null
+          user_id: string
+        }
+        Update: {
+          allowed?: boolean
+          note?: string | null
+          permission?: string
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           assigned_at: string
@@ -1152,6 +1224,10 @@ export type Database = {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"][]
       }
+      has_permission: {
+        Args: { _perm: string; _user_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1159,6 +1235,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_management: { Args: { _uid: string }; Returns: boolean }
       list_teachers: {
         Args: never
         Returns: {
