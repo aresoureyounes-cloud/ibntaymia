@@ -83,8 +83,8 @@ export function DesktopDownloads() {
             حمّل تطبيق إداروم
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-sm text-muted-foreground sm:text-base">
-            نفس المنصة، لكن كتطبيق مكتبي كامل يعمل أونلاين وأوفلاين على جهازك — متوفّر الآن
-            لويندوز، لينكس، وماك. مناسب للحراس، الإدارة، والمعلمين في المؤسسات ذات الاتصال المحدود.
+            نفس المنصة في نافذة مكتبية لويندوز ولينكس. تعمل عبر الإنترنت، وتتحول إلى الخادم المحلي للمؤسسة
+            عند انقطاع الإنترنت (بعد تجهيز جهاز الخادم المحلي).
           </p>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
@@ -179,7 +179,7 @@ idaroom help                   # كل الأوامر والخيارات`}
               </pre>
 
               <p className="text-[11px] text-muted-foreground">
-                حزمة .deb تثبّت نفس الأمر <span dir="ltr" className="font-mono">idaroom</span> مع التطبيق المكتبي
+                النسخة المحمولة لينكس تحتوي نفس الأمر <span dir="ltr" className="font-mono">idaroom</span> مع التطبيق المكتبي
                 وخدمات systemd وإكمال Bash تلقائياً.
               </p>
             </CardContent>
