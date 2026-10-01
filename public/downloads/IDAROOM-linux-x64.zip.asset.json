@@ -1,11 +1,11 @@
 {
   "version": 1,
-  "asset_id": "1c829065-04d5-40ce-9b8c-4049a806162b",
-  "project_id": "f96da6f0-4bd5-47ca-b39e-e4b9167a460d",
-  "url": "/__l5e/assets-v1/1c829065-04d5-40ce-9b8c-4049a806162b/IDAROOM-1.0.1-linux-x64.zip",
-  "r2_key": "a/v1/f96da6f0-4bd5-47ca-b39e-e4b9167a460d/1c829065-04d5-40ce-9b8c-4049a806162b/IDAROOM-1.0.1-linux-x64.zip",
-  "original_filename": "IDAROOM-1.0.1-linux-x64.zip",
-  "size": 107327459,
+  "asset_id": "f720cc72-a475-4d6e-8eb7-15e3507f2416",
+  "project_id": "e980123c-a16a-46ce-92db-5ff3f53a7b9f",
+  "url": "/__l5e/assets-v1/f720cc72-a475-4d6e-8eb7-15e3507f2416/IDAROOM-linux-x64.zip",
+  "r2_key": "a/v1/e980123c-a16a-46ce-92db-5ff3f53a7b9f/f720cc72-a475-4d6e-8eb7-15e3507f2416/IDAROOM-linux-x64.zip",
+  "original_filename": "IDAROOM-linux-x64.zip",
+  "size": 107189384,
   "content_type": "application/zip",
-  "created_at": "2026-07-27T18:57:49Z"
+  "created_at": "2026-10-01T04:54:07Z"
 }
