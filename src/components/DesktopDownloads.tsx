@@ -5,10 +5,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { APP_VERSION, RELEASE_DATE, CHANGELOG } from "@/lib/app-version";
-import debAsset from "../../public/downloads/IDAROOM-linux-amd64.deb.asset.json";
 import linuxZipAsset from "../../public/downloads/IDAROOM-linux-x64.zip.asset.json";
 import windowsAsset from "../../public/downloads/IDAROOM-windows-x64.zip.asset.json";
-import macAsset from "../../public/downloads/IDAROOM-macos-x64.zip.asset.json";
 
 function mb(bytes: number) {
   return `${Math.round(bytes / 1024 / 1024)} MB`;
@@ -40,22 +38,11 @@ const BUILDS: Build[] = [
   {
     key: "linux",
     icon: HardDrive,
-    title: "Linux (Debian / Ubuntu)",
-    hint: "حزمة .deb — ثبّتها بالأمر: sudo dpkg -i IDAROOM-*.deb",
-    url: debAsset.url,
-    size: debAsset.size,
-    label: "تحميل .deb",
-    primary: true,
-    extra: { label: "نسخة محمولة .zip", url: linuxZipAsset.url, size: linuxZipAsset.size },
-  },
-  {
-    key: "macos",
-    icon: Apple,
-    title: "macOS (Intel / Rosetta)",
-    hint: "فُك الضغط وانقل IDAROOM.app إلى مجلد Applications.",
-    url: macAsset.url,
-    size: macAsset.size,
-    label: "تحميل لماك",
+    title: "Linux (Mint / Ubuntu / Debian)",
+    hint: "فُك الضغط ثم شغّل الملف IDAROOM داخل المجلد.",
+    url: linuxZipAsset.url,
+    size: linuxZipAsset.size,
+    label: "تحميل لينكس",
     primary: true,
   },
 ];
