@@ -70,6 +70,7 @@ export const NAV_ITEMS: NavItem[] = [
   },
   { url: "/dashboard/import", labelKey: "nav.import", roles: ["admin"] },
   { url: "/dashboard/users", labelKey: "nav.users", roles: ["admin", "developer"] },
+  { url: "/dashboard/permissions", labelKey: "nav.permissions", roles: ["admin", "developer"] },
   {
     url: "/dashboard/schedule",
     labelKey: "nav.schedule",
