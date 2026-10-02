@@ -1,3 +1,4 @@
+import { usePermission } from "@/lib/permissions";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
@@ -83,8 +84,9 @@ function AttendancePage() {
   useRealtimeTable("attendance_records", ["att_records"]);
   const qc = useQueryClient();
   const { user, hasRole } = useAuth();
+  const latePerm = usePermission("attendance.override_late", user?.id);
   const canOverrideLate =
-    hasRole("teacher") || hasRole("admin") || hasRole("director") || hasRole("supervisor");
+    hasRole("admin") || hasRole("director") || hasRole("supervisor") || (hasRole("teacher") && latePerm === true);
 
   const [classId, setClassId] = useState<string>("");
   const [date, setDate] = useState<string>(new Date().toISOString().slice(0, 10));
