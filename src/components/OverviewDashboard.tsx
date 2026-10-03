@@ -1,3 +1,4 @@
+import { useAuth } from "@/lib/use-auth";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -104,10 +105,13 @@ export function OverviewDashboard({
 }) {
   const { t } = useTranslation();
   useOverviewRealtime();
+  const { hasRole } = useAuth();
+  const isMgmt = hasRole("admin") || hasRole("director") || hasRole("supervisor");
 
   // Single round-trip for all counters (was 6 parallel HEAD requests).
   const { data: stats } = useQuery({
     queryKey: ["overview-stats"],
+    enabled: isMgmt,
     queryFn: async () => {
       const { data } = await db.rpc("get_overview_stats");
       return (data ?? {}) as Record<string, number>;

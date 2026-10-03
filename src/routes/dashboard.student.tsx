@@ -117,7 +117,7 @@ function StudentDashboard() {
         .select("card_uid")
         .eq("student_id", me!.id)
         .maybeSingle();
-      return data?.card_uid as string | undefined;
+      return (data?.card_uid as string | undefined) ?? null;
     },
   });
 
@@ -368,7 +368,7 @@ function StudentDashboard() {
           <DigitalBadge
             fullName={me.full_name}
             className={me.classes?.name}
-            cardUid={myCard}
+            cardUid={myCard ?? undefined}
             role="student"
           />
         </Suspense>
