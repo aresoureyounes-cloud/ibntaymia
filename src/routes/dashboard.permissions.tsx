@@ -107,7 +107,7 @@ function RoleMatrix({ userId }: { userId?: string }) {
         <Card key={g.title}>
           <CardHeader><CardTitle className="text-base">{g.title}</CardTitle></CardHeader>
           <CardContent className="overflow-x-auto">
-            <table className="w-full min-w-[640px] text-sm">
+            <table dir="rtl" className="w-full min-w-[640px] text-sm">
               <thead>
                 <tr className="text-muted-foreground">
                   <th className="py-2 text-start font-medium">الصلاحية</th>
