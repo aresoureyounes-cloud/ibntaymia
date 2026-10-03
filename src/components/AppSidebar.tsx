@@ -66,7 +66,7 @@ const ICONS: Record<string, typeof LayoutDashboard> = {
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { roles, signOut, user } = useAuth();
   const path = useRouterState({ select: (s) => s.location.pathname });
 
@@ -89,7 +89,7 @@ export function AppSidebar() {
   });
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border bg-sidebar/80 backdrop-blur-md">
+    <Sidebar side={i18n.dir() === "rtl" ? "right" : "left"} collapsible="icon" className="border-border bg-sidebar/80 backdrop-blur-md">
       <SidebarHeader className="border-b border-sidebar-border px-4 py-5">
         <Link to="/" className="flex items-center gap-2 text-sidebar-primary">
           <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-primary text-primary-foreground shadow-sm">
