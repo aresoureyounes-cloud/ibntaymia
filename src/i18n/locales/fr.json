@@ -26,6 +26,7 @@
     "console": "Terminal",
     "diagnostics": "Rapport de diagnostic",
     "settings": "Paramètres",
+    "offline": "Pages hors ligne",
     "print_cards": "Imprimer les cartes",
     "profile": "Profil",
     "gate_log": "Journal de porte",
