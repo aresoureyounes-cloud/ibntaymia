@@ -22,6 +22,7 @@ import { watchAppearance } from "@/lib/appearance";
 import { AppearanceProvider } from "@/lib/cosma-appearance";
 
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { registerAppServiceWorker } from "@/lib/pwa-register";
 import { APP_VERSION } from "@/lib/app-version";
 import { applyAppUpdate, type UpdateProgress, type RemoteVersion } from "@/lib/use-app-update";
 import { UpdateProgressDialog } from "@/components/UpdateProgressDialog";
@@ -76,6 +77,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "إداروم — النظام الرقمي للمؤسسات التعليمية" },
+      { name: "theme-color", content: "#0f1a14" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "IDAROOM" },
       {
         name: "description",
         content:
@@ -180,12 +185,9 @@ function RootComponent() {
     return () => subscription.unsubscribe();
   }, [router]);
 
-  // Register the offline service worker (production only)
+  // Register the offline service worker (published app only)
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!("serviceWorker" in navigator)) return;
-    if (!import.meta.env.PROD) return;
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
+    registerAppServiceWorker();
   }, []);
 
   // Background auto-check for app updates (production only).
