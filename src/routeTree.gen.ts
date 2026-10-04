@@ -38,6 +38,7 @@ import { Route as DashboardImportRouteImport } from './routes/dashboard.import'
 import { Route as DashboardLibraryRouteImport } from './routes/dashboard.library'
 import { Route as DashboardMeRouteImport } from './routes/dashboard.me'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.notifications'
+import { Route as DashboardOfflineRouteImport } from './routes/dashboard.offline'
 import { Route as DashboardParentRouteImport } from './routes/dashboard.parent'
 import { Route as DashboardPermissionsRouteImport } from './routes/dashboard.permissions'
 import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
@@ -199,6 +200,11 @@ const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardOfflineRoute = DashboardOfflineRouteImport.update({
+  id: '/offline',
+  path: '/offline',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardParentRoute = DashboardParentRouteImport.update({
   id: '/parent',
   path: '/parent',
@@ -304,6 +310,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/me': typeof DashboardMeRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/offline': typeof DashboardOfflineRoute
   '/dashboard/parent': typeof DashboardParentRoute
   '/dashboard/permissions': typeof DashboardPermissionsRoute
   '/dashboard/profile': typeof DashboardProfileRoute
@@ -349,6 +356,7 @@ export interface FileRoutesByTo {
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/me': typeof DashboardMeRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/offline': typeof DashboardOfflineRoute
   '/dashboard/parent': typeof DashboardParentRoute
   '/dashboard/permissions': typeof DashboardPermissionsRoute
   '/dashboard/profile': typeof DashboardProfileRoute
@@ -396,6 +404,7 @@ export interface FileRoutesById {
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/me': typeof DashboardMeRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
+  '/dashboard/offline': typeof DashboardOfflineRoute
   '/dashboard/parent': typeof DashboardParentRoute
   '/dashboard/permissions': typeof DashboardPermissionsRoute
   '/dashboard/profile': typeof DashboardProfileRoute
@@ -444,6 +453,7 @@ export interface FileRouteTypes {
     | '/dashboard/library'
     | '/dashboard/me'
     | '/dashboard/notifications'
+    | '/dashboard/offline'
     | '/dashboard/parent'
     | '/dashboard/permissions'
     | '/dashboard/profile'
@@ -489,6 +499,7 @@ export interface FileRouteTypes {
     | '/dashboard/library'
     | '/dashboard/me'
     | '/dashboard/notifications'
+    | '/dashboard/offline'
     | '/dashboard/parent'
     | '/dashboard/permissions'
     | '/dashboard/profile'
@@ -535,6 +546,7 @@ export interface FileRouteTypes {
     | '/dashboard/library'
     | '/dashboard/me'
     | '/dashboard/notifications'
+    | '/dashboard/offline'
     | '/dashboard/parent'
     | '/dashboard/permissions'
     | '/dashboard/profile'
@@ -773,6 +785,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardNotificationsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/offline': {
+      id: '/dashboard/offline'
+      path: '/offline'
+      fullPath: '/dashboard/offline'
+      preLoaderRoute: typeof DashboardOfflineRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/parent': {
       id: '/dashboard/parent'
       path: '/parent'
@@ -912,6 +931,7 @@ interface DashboardRouteChildren {
   DashboardLibraryRoute: typeof DashboardLibraryRoute
   DashboardMeRoute: typeof DashboardMeRoute
   DashboardNotificationsRoute: typeof DashboardNotificationsRoute
+  DashboardOfflineRoute: typeof DashboardOfflineRoute
   DashboardParentRoute: typeof DashboardParentRoute
   DashboardPermissionsRoute: typeof DashboardPermissionsRoute
   DashboardProfileRoute: typeof DashboardProfileRoute
@@ -946,6 +966,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardLibraryRoute: DashboardLibraryRoute,
   DashboardMeRoute: DashboardMeRoute,
   DashboardNotificationsRoute: DashboardNotificationsRoute,
+  DashboardOfflineRoute: DashboardOfflineRoute,
   DashboardParentRoute: DashboardParentRoute,
   DashboardPermissionsRoute: DashboardPermissionsRoute,
   DashboardProfileRoute: DashboardProfileRoute,
