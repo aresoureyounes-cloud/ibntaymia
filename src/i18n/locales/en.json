@@ -26,6 +26,7 @@
     "console": "Terminal",
     "diagnostics": "Diagnostics Report",
     "settings": "Settings",
+    "offline": "Offline pages",
     "print_cards": "Print Cards",
     "profile": "Profile",
     "gate_log": "Gate Log",

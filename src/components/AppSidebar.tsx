@@ -21,6 +21,7 @@ import {
   BarChart3,
   UserCog,
   GraduationCap as BrandIcon,
+  WifiOff,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -43,6 +44,7 @@ import { useRealtimeTable } from "@/lib/use-realtime-table";
 import { Badge } from "./ui/badge";
 
 const ICONS: Record<string, typeof LayoutDashboard> = {
+  "/dashboard/offline": WifiOff,
   "/dashboard": LayoutDashboard,
   "/dashboard/students": Users,
   "/dashboard/attendance": CalendarCheck,

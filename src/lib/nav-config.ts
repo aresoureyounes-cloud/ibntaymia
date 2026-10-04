@@ -144,6 +144,10 @@ export const NAV_ITEMS: NavItem[] = [
     roles: ["developer"],
   },
   {
+    url: "/dashboard/offline",
+    labelKey: "nav.offline",
+  },
+  {
     url: "/dashboard/settings",
     labelKey: "nav.settings",
   },
