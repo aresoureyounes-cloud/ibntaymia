@@ -1,12 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { RefreshCw, Trash2, WifiOff, FileText, Search, Loader2 } from "lucide-react";
+import { RefreshCw, Trash2, WifiOff, FileText } from "lucide-react";
 import { toast } from "sonner";
-import { useServerFn } from "@tanstack/react-start";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { searchSavedPages } from "@/lib/page-search.functions";
+import { AiPageFinder } from "@/components/AiPageFinder";
 
 export const Route = createFileRoute("/dashboard/offline")({
   head: () => ({
