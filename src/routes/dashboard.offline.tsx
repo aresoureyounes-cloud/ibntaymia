@@ -4,6 +4,7 @@ import { RefreshCw, Trash2, WifiOff, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AiPageFinder } from "@/components/AiPageFinder";
 
 export const Route = createFileRoute("/dashboard/offline")({
   head: () => ({
@@ -144,6 +145,9 @@ function OfflinePagesScreen() {
               </CardContent>
             </Card>
           </div>
+
+          <AiPageFinder entries={entries} />
+
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0">
