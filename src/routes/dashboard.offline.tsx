@@ -103,18 +103,7 @@ function OfflinePagesScreen() {
     }
     setRefreshing(url);
     try {
-      const res = await fetch(url, {
-        cache: "no-store",
-        credentials: "same-origin",
-        headers: { accept: "text/html" },
-      });
-      if (!res.ok) throw new Error(String(res.status));
-      const body = await res.blob();
-      const headers = new Headers(res.headers);
-      headers.set("date", new Date().toUTCString());
-      headers.set("content-length", String(body.size));
-      const cache = await caches.open(PAGES_CACHE);
-      await cache.put(url, new Response(body, { status: 200, headers }));
+      await fetchAndStore(url);
       toast.success("تم تحديث النسخة المحفوظة");
       void load();
     } catch {
@@ -123,6 +112,38 @@ function OfflinePagesScreen() {
       setRefreshing(null);
     }
   };
+
+  const refreshAll = async () => {
+    if (!navigator.onLine) {
+      toast.error("التحديث يحتاج اتصالاً بالإنترنت.");
+      return;
+    }
+    if (!entries.length) return;
+    setBulk({ done: 0, total: entries.length, current: entries[0]?.path ?? "", failed: 0 });
+    let failed = 0;
+    let done = 0;
+    for (const e of entries) {
+      setBulk((b) => (b ? { ...b, current: e.path } : b));
+      try {
+        await fetchAndStore(e.url);
+      } catch {
+        failed += 1;
+      }
+      done += 1;
+      setBulk((b) => (b ? { ...b, done, failed } : b));
+    }
+    setBulk(null);
+    void load();
+    if (failed === 0) {
+      toast.success(`تم تحديث ${entries.length} صفحة بنجاح`);
+    } else if (failed === entries.length) {
+      toast.error("تعذر تحديث جميع الصفحات، بقيت النسخ القديمة.");
+    } else {
+      toast.warning(`تم تحديث ${entries.length - failed} صفحة، وفشل تحديث ${failed}.`);
+    }
+  };
+
+  const bulkRunning = bulk !== null;
 
   const removeOne = async (url: string) => {
     const cache = await caches.open(PAGES_CACHE);
