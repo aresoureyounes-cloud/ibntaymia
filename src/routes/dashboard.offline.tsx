@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { RefreshCw, Trash2, WifiOff, FileText } from "lucide-react";
+import { RefreshCw, Trash2, WifiOff, FileText, Download, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -79,6 +79,22 @@ function OfflinePagesScreen() {
   }, [load]);
 
   const [refreshing, setRefreshing] = useState<string | null>(null);
+  const [bulk, setBulk] = useState<{ done: number; total: number; current: string; failed: number } | null>(null);
+
+  const fetchAndStore = async (url: string) => {
+    const res = await fetch(url, {
+      cache: "no-store",
+      credentials: "same-origin",
+      headers: { accept: "text/html" },
+    });
+    if (!res.ok) throw new Error(String(res.status));
+    const body = await res.blob();
+    const headers = new Headers(res.headers);
+    headers.set("date", new Date().toUTCString());
+    headers.set("content-length", String(body.size));
+    const cache = await caches.open(PAGES_CACHE);
+    await cache.put(url, new Response(body, { status: 200, headers }));
+  };
 
   const refreshOne = async (url: string) => {
     if (!navigator.onLine) {
@@ -87,18 +103,7 @@ function OfflinePagesScreen() {
     }
     setRefreshing(url);
     try {
-      const res = await fetch(url, {
-        cache: "no-store",
-        credentials: "same-origin",
-        headers: { accept: "text/html" },
-      });
-      if (!res.ok) throw new Error(String(res.status));
-      const body = await res.blob();
-      const headers = new Headers(res.headers);
-      headers.set("date", new Date().toUTCString());
-      headers.set("content-length", String(body.size));
-      const cache = await caches.open(PAGES_CACHE);
-      await cache.put(url, new Response(body, { status: 200, headers }));
+      await fetchAndStore(url);
       toast.success("تم تحديث النسخة المحفوظة");
       void load();
     } catch {
@@ -107,6 +112,38 @@ function OfflinePagesScreen() {
       setRefreshing(null);
     }
   };
+
+  const refreshAll = async () => {
+    if (!navigator.onLine) {
+      toast.error("التحديث يحتاج اتصالاً بالإنترنت.");
+      return;
+    }
+    if (!entries.length) return;
+    setBulk({ done: 0, total: entries.length, current: entries[0]?.path ?? "", failed: 0 });
+    let failed = 0;
+    let done = 0;
+    for (const e of entries) {
+      setBulk((b) => (b ? { ...b, current: e.path } : b));
+      try {
+        await fetchAndStore(e.url);
+      } catch {
+        failed += 1;
+      }
+      done += 1;
+      setBulk((b) => (b ? { ...b, done, failed } : b));
+    }
+    setBulk(null);
+    void load();
+    if (failed === 0) {
+      toast.success(`تم تحديث ${entries.length} صفحة بنجاح`);
+    } else if (failed === entries.length) {
+      toast.error("تعذر تحديث جميع الصفحات، بقيت النسخ القديمة.");
+    } else {
+      toast.warning(`تم تحديث ${entries.length - failed} صفحة، وفشل تحديث ${failed}.`);
+    }
+  };
+
+  const bulkRunning = bulk !== null;
 
   const removeOne = async (url: string) => {
     const cache = await caches.open(PAGES_CACHE);
@@ -183,15 +220,48 @@ function OfflinePagesScreen() {
             <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0">
               <CardTitle className="text-base">قائمة الصفحات</CardTitle>
               <div className="flex flex-wrap gap-2">
-                <Button variant="outline" size="sm" onClick={removePages} disabled={!entries.length}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => void refreshAll()}
+                  disabled={!entries.length || bulkRunning}
+                >
+                  <Download className="h-4 w-4" /> تحديث الكل
+                </Button>
+                <Button variant="outline" size="sm" onClick={removePages} disabled={!entries.length || bulkRunning}>
                   <Trash2 className="h-4 w-4" /> حذف الصفحات
                 </Button>
-                <Button variant="destructive" size="sm" onClick={removeAll}>
+                <Button variant="destructive" size="sm" onClick={removeAll} disabled={bulkRunning}>
                   <Trash2 className="h-4 w-4" /> حذف كل النسخ
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-3">
+              {bulk && (
+                <div className="rounded-md border bg-muted/40 p-3 space-y-2">
+                  <div className="flex items-center justify-between gap-2 text-sm">
+                    <span className="flex items-center gap-2">
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      جارٍ تحديث الصفحات… {bulk.done} من {bulk.total}
+                    </span>
+                    {bulk.failed > 0 && (
+                      <span className="flex items-center gap-1 text-destructive">
+                        <XCircle className="h-4 w-4" /> فشل: {bulk.failed}
+                      </span>
+                    )}
+                  </div>
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all"
+                      style={{ width: `${Math.round((bulk.done / Math.max(bulk.total, 1)) * 100)}%` }}
+                    />
+                  </div>
+                  <div dir="ltr" className="truncate font-mono text-xs text-muted-foreground">
+                    {bulk.current}
+                  </div>
+                </div>
+              )}
+
               {loading ? (
                 <div className="py-8 text-center text-sm text-muted-foreground">جارٍ التحميل…</div>
               ) : entries.length === 0 ? (
@@ -227,7 +297,7 @@ function OfflinePagesScreen() {
                         size="icon"
                         aria-label="تحديث النسخة"
                         title="تحديث النسخة من الموقع"
-                        disabled={refreshing === e.url}
+                        disabled={refreshing === e.url || bulkRunning}
                         onClick={() => void refreshOne(e.url)}
                       >
                         <RefreshCw
