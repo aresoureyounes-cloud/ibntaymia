@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { RefreshCw, Trash2, WifiOff, FileText, Download, CheckCircle2, XCircle } from "lucide-react";
+import { RefreshCw, Trash2, WifiOff, FileText, Download, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
