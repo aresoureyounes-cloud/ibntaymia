@@ -220,15 +220,48 @@ function OfflinePagesScreen() {
             <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0">
               <CardTitle className="text-base">قائمة الصفحات</CardTitle>
               <div className="flex flex-wrap gap-2">
-                <Button variant="outline" size="sm" onClick={removePages} disabled={!entries.length}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => void refreshAll()}
+                  disabled={!entries.length || bulkRunning}
+                >
+                  <Download className="h-4 w-4" /> تحديث الكل
+                </Button>
+                <Button variant="outline" size="sm" onClick={removePages} disabled={!entries.length || bulkRunning}>
                   <Trash2 className="h-4 w-4" /> حذف الصفحات
                 </Button>
-                <Button variant="destructive" size="sm" onClick={removeAll}>
+                <Button variant="destructive" size="sm" onClick={removeAll} disabled={bulkRunning}>
                   <Trash2 className="h-4 w-4" /> حذف كل النسخ
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-3">
+              {bulk && (
+                <div className="rounded-md border bg-muted/40 p-3 space-y-2">
+                  <div className="flex items-center justify-between gap-2 text-sm">
+                    <span className="flex items-center gap-2">
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      جارٍ تحديث الصفحات… {bulk.done} من {bulk.total}
+                    </span>
+                    {bulk.failed > 0 && (
+                      <span className="flex items-center gap-1 text-destructive">
+                        <XCircle className="h-4 w-4" /> فشل: {bulk.failed}
+                      </span>
+                    )}
+                  </div>
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all"
+                      style={{ width: `${Math.round((bulk.done / Math.max(bulk.total, 1)) * 100)}%` }}
+                    />
+                  </div>
+                  <div dir="ltr" className="truncate font-mono text-xs text-muted-foreground">
+                    {bulk.current}
+                  </div>
+                </div>
+              )}
+
               {loading ? (
                 <div className="py-8 text-center text-sm text-muted-foreground">جارٍ التحميل…</div>
               ) : entries.length === 0 ? (
