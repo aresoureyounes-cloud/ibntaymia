@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import { RefreshCw, Trash2, WifiOff, FileText } from "lucide-react";
+import { RefreshCw, Trash2, WifiOff, FileText, Download, CheckCircle2, XCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -79,6 +79,22 @@ function OfflinePagesScreen() {
   }, [load]);
 
   const [refreshing, setRefreshing] = useState<string | null>(null);
+  const [bulk, setBulk] = useState<{ done: number; total: number; current: string; failed: number } | null>(null);
+
+  const fetchAndStore = async (url: string) => {
+    const res = await fetch(url, {
+      cache: "no-store",
+      credentials: "same-origin",
+      headers: { accept: "text/html" },
+    });
+    if (!res.ok) throw new Error(String(res.status));
+    const body = await res.blob();
+    const headers = new Headers(res.headers);
+    headers.set("date", new Date().toUTCString());
+    headers.set("content-length", String(body.size));
+    const cache = await caches.open(PAGES_CACHE);
+    await cache.put(url, new Response(body, { status: 200, headers }));
+  };
 
   const refreshOne = async (url: string) => {
     if (!navigator.onLine) {
