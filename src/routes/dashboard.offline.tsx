@@ -78,6 +78,36 @@ function OfflinePagesScreen() {
     void load();
   }, [load]);
 
+  const [refreshing, setRefreshing] = useState<string | null>(null);
+
+  const refreshOne = async (url: string) => {
+    if (!navigator.onLine) {
+      toast.error("التحديث يحتاج اتصالاً بالإنترنت.");
+      return;
+    }
+    setRefreshing(url);
+    try {
+      const res = await fetch(url, {
+        cache: "no-store",
+        credentials: "same-origin",
+        headers: { accept: "text/html" },
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      const body = await res.blob();
+      const headers = new Headers(res.headers);
+      headers.set("date", new Date().toUTCString());
+      headers.set("content-length", String(body.size));
+      const cache = await caches.open(PAGES_CACHE);
+      await cache.put(url, new Response(body, { status: 200, headers }));
+      toast.success("تم تحديث النسخة المحفوظة");
+      void load();
+    } catch {
+      toast.error("تعذر تحديث الصفحة، بقيت النسخة القديمة.");
+    } finally {
+      setRefreshing(null);
+    }
+  };
+
   const removeOne = async (url: string) => {
     const cache = await caches.open(PAGES_CACHE);
     await cache.delete(url);
@@ -191,6 +221,19 @@ function OfflinePagesScreen() {
                           </div>
                         </div>
                       </div>
+                      <div className="flex shrink-0 items-center">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="تحديث النسخة"
+                        title="تحديث النسخة من الموقع"
+                        disabled={refreshing === e.url}
+                        onClick={() => void refreshOne(e.url)}
+                      >
+                        <RefreshCw
+                          className={`h-4 w-4 ${refreshing === e.url ? "animate-spin" : ""}`}
+                        />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -199,6 +242,7 @@ function OfflinePagesScreen() {
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
+                      </div>
                     </li>
                   ))}
                 </ul>
