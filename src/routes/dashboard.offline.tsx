@@ -297,7 +297,7 @@ function OfflinePagesScreen() {
                         size="icon"
                         aria-label="تحديث النسخة"
                         title="تحديث النسخة من الموقع"
-                        disabled={refreshing === e.url}
+                        disabled={refreshing === e.url || bulkRunning}
                         onClick={() => void refreshOne(e.url)}
                       >
                         <RefreshCw
