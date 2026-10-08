@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "863e1365-3f46-4f62-b4bc-4417a61a5066",
-  "project_id": "e980123c-a16a-46ce-92db-5ff3f53a7b9f",
-  "url": "/__l5e/assets-v1/863e1365-3f46-4f62-b4bc-4417a61a5066/idaroom-logo.png",
-  "r2_key": "a/v1/e980123c-a16a-46ce-92db-5ff3f53a7b9f/863e1365-3f46-4f62-b4bc-4417a61a5066/idaroom-logo.png",
-  "original_filename": "idaroom-logo.png",
-  "size": 877751,
   "content_type": "image/png",
-  "created_at": "2026-10-03T20:01:11Z"
+  "created_at": "2026-10-03T20:01:11Z",
+  "original_filename": "idaroom-logo.png",
+  "project_id": "33cf3f94-9e06-47f5-b6ec-0310180d4de8",
+  "r2_key": "a/v1/33cf3f94-9e06-47f5-b6ec-0310180d4de8/863e1365-3f46-4f62-b4bc-4417a61a5066/idaroom-logo.png",
+  "size": 877751,
+  "url": "/__l5e/assets-v1/863e1365-3f46-4f62-b4bc-4417a61a5066/idaroom-logo.png",
+  "version": 1
 }
