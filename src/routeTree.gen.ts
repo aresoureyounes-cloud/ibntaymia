@@ -25,6 +25,7 @@ import { Route as DashboardAdminRouteImport } from './routes/dashboard.admin'
 import { Route as DashboardAppearanceRouteImport } from './routes/dashboard.appearance'
 import { Route as DashboardAttendanceRouteImport } from './routes/dashboard.attendance'
 import { Route as DashboardBehaviorRouteImport } from './routes/dashboard.behavior'
+import { Route as DashboardCalendarRouteImport } from './routes/dashboard.calendar'
 import { Route as DashboardCardsRouteImport } from './routes/dashboard.cards'
 import { Route as DashboardConsoleRouteImport } from './routes/dashboard.console'
 import { Route as DashboardDecisionsRouteImport } from './routes/dashboard.decisions'
@@ -37,6 +38,7 @@ import { Route as DashboardGuidanceRouteImport } from './routes/dashboard.guidan
 import { Route as DashboardImportRouteImport } from './routes/dashboard.import'
 import { Route as DashboardLibraryRouteImport } from './routes/dashboard.library'
 import { Route as DashboardMeRouteImport } from './routes/dashboard.me'
+import { Route as DashboardMeetingsRouteImport } from './routes/dashboard.meetings'
 import { Route as DashboardNotificationsRouteImport } from './routes/dashboard.notifications'
 import { Route as DashboardOfflineRouteImport } from './routes/dashboard.offline'
 import { Route as DashboardParentRouteImport } from './routes/dashboard.parent'
@@ -47,6 +49,7 @@ import { Route as DashboardScheduleRouteImport } from './routes/dashboard.schedu
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardStudentRouteImport } from './routes/dashboard.student'
 import { Route as DashboardStudentsRouteImport } from './routes/dashboard.students'
+import { Route as DashboardSubstitutionsRouteImport } from './routes/dashboard.substitutions'
 import { Route as DashboardSupervisorRouteImport } from './routes/dashboard.supervisor'
 import { Route as DashboardTeacherRouteImport } from './routes/dashboard.teacher'
 import { Route as DashboardTripsRouteImport } from './routes/dashboard.trips'
@@ -135,6 +138,11 @@ const DashboardBehaviorRoute = DashboardBehaviorRouteImport.update({
   path: '/behavior',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardCalendarRoute = DashboardCalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardCardsRoute = DashboardCardsRouteImport.update({
   id: '/cards',
   path: '/cards',
@@ -195,6 +203,11 @@ const DashboardMeRoute = DashboardMeRouteImport.update({
   path: '/me',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardMeetingsRoute = DashboardMeetingsRouteImport.update({
+  id: '/meetings',
+  path: '/meetings',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardNotificationsRoute = DashboardNotificationsRouteImport.update({
   id: '/notifications',
   path: '/notifications',
@@ -243,6 +256,11 @@ const DashboardStudentRoute = DashboardStudentRouteImport.update({
 const DashboardStudentsRoute = DashboardStudentsRouteImport.update({
   id: '/students',
   path: '/students',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSubstitutionsRoute = DashboardSubstitutionsRouteImport.update({
+  id: '/substitutions',
+  path: '/substitutions',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardSupervisorRoute = DashboardSupervisorRouteImport.update({
@@ -297,6 +315,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/appearance': typeof DashboardAppearanceRoute
   '/dashboard/attendance': typeof DashboardAttendanceRoute
   '/dashboard/behavior': typeof DashboardBehaviorRoute
+  '/dashboard/calendar': typeof DashboardCalendarRoute
   '/dashboard/cards': typeof DashboardCardsRouteWithChildren
   '/dashboard/console': typeof DashboardConsoleRoute
   '/dashboard/decisions': typeof DashboardDecisionsRoute
@@ -309,6 +328,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/me': typeof DashboardMeRoute
+  '/dashboard/meetings': typeof DashboardMeetingsRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/offline': typeof DashboardOfflineRoute
   '/dashboard/parent': typeof DashboardParentRoute
@@ -319,6 +339,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/student': typeof DashboardStudentRoute
   '/dashboard/students': typeof DashboardStudentsRoute
+  '/dashboard/substitutions': typeof DashboardSubstitutionsRoute
   '/dashboard/supervisor': typeof DashboardSupervisorRoute
   '/dashboard/teacher': typeof DashboardTeacherRoute
   '/dashboard/trips': typeof DashboardTripsRoute
@@ -343,6 +364,7 @@ export interface FileRoutesByTo {
   '/dashboard/appearance': typeof DashboardAppearanceRoute
   '/dashboard/attendance': typeof DashboardAttendanceRoute
   '/dashboard/behavior': typeof DashboardBehaviorRoute
+  '/dashboard/calendar': typeof DashboardCalendarRoute
   '/dashboard/cards': typeof DashboardCardsRouteWithChildren
   '/dashboard/console': typeof DashboardConsoleRoute
   '/dashboard/decisions': typeof DashboardDecisionsRoute
@@ -355,6 +377,7 @@ export interface FileRoutesByTo {
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/me': typeof DashboardMeRoute
+  '/dashboard/meetings': typeof DashboardMeetingsRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/offline': typeof DashboardOfflineRoute
   '/dashboard/parent': typeof DashboardParentRoute
@@ -365,6 +388,7 @@ export interface FileRoutesByTo {
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/student': typeof DashboardStudentRoute
   '/dashboard/students': typeof DashboardStudentsRoute
+  '/dashboard/substitutions': typeof DashboardSubstitutionsRoute
   '/dashboard/supervisor': typeof DashboardSupervisorRoute
   '/dashboard/teacher': typeof DashboardTeacherRoute
   '/dashboard/trips': typeof DashboardTripsRoute
@@ -391,6 +415,7 @@ export interface FileRoutesById {
   '/dashboard/appearance': typeof DashboardAppearanceRoute
   '/dashboard/attendance': typeof DashboardAttendanceRoute
   '/dashboard/behavior': typeof DashboardBehaviorRoute
+  '/dashboard/calendar': typeof DashboardCalendarRoute
   '/dashboard/cards': typeof DashboardCardsRouteWithChildren
   '/dashboard/console': typeof DashboardConsoleRoute
   '/dashboard/decisions': typeof DashboardDecisionsRoute
@@ -403,6 +428,7 @@ export interface FileRoutesById {
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/me': typeof DashboardMeRoute
+  '/dashboard/meetings': typeof DashboardMeetingsRoute
   '/dashboard/notifications': typeof DashboardNotificationsRoute
   '/dashboard/offline': typeof DashboardOfflineRoute
   '/dashboard/parent': typeof DashboardParentRoute
@@ -413,6 +439,7 @@ export interface FileRoutesById {
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/student': typeof DashboardStudentRoute
   '/dashboard/students': typeof DashboardStudentsRoute
+  '/dashboard/substitutions': typeof DashboardSubstitutionsRoute
   '/dashboard/supervisor': typeof DashboardSupervisorRoute
   '/dashboard/teacher': typeof DashboardTeacherRoute
   '/dashboard/trips': typeof DashboardTripsRoute
@@ -440,6 +467,7 @@ export interface FileRouteTypes {
     | '/dashboard/appearance'
     | '/dashboard/attendance'
     | '/dashboard/behavior'
+    | '/dashboard/calendar'
     | '/dashboard/cards'
     | '/dashboard/console'
     | '/dashboard/decisions'
@@ -452,6 +480,7 @@ export interface FileRouteTypes {
     | '/dashboard/import'
     | '/dashboard/library'
     | '/dashboard/me'
+    | '/dashboard/meetings'
     | '/dashboard/notifications'
     | '/dashboard/offline'
     | '/dashboard/parent'
@@ -462,6 +491,7 @@ export interface FileRouteTypes {
     | '/dashboard/settings'
     | '/dashboard/student'
     | '/dashboard/students'
+    | '/dashboard/substitutions'
     | '/dashboard/supervisor'
     | '/dashboard/teacher'
     | '/dashboard/trips'
@@ -486,6 +516,7 @@ export interface FileRouteTypes {
     | '/dashboard/appearance'
     | '/dashboard/attendance'
     | '/dashboard/behavior'
+    | '/dashboard/calendar'
     | '/dashboard/cards'
     | '/dashboard/console'
     | '/dashboard/decisions'
@@ -498,6 +529,7 @@ export interface FileRouteTypes {
     | '/dashboard/import'
     | '/dashboard/library'
     | '/dashboard/me'
+    | '/dashboard/meetings'
     | '/dashboard/notifications'
     | '/dashboard/offline'
     | '/dashboard/parent'
@@ -508,6 +540,7 @@ export interface FileRouteTypes {
     | '/dashboard/settings'
     | '/dashboard/student'
     | '/dashboard/students'
+    | '/dashboard/substitutions'
     | '/dashboard/supervisor'
     | '/dashboard/teacher'
     | '/dashboard/trips'
@@ -533,6 +566,7 @@ export interface FileRouteTypes {
     | '/dashboard/appearance'
     | '/dashboard/attendance'
     | '/dashboard/behavior'
+    | '/dashboard/calendar'
     | '/dashboard/cards'
     | '/dashboard/console'
     | '/dashboard/decisions'
@@ -545,6 +579,7 @@ export interface FileRouteTypes {
     | '/dashboard/import'
     | '/dashboard/library'
     | '/dashboard/me'
+    | '/dashboard/meetings'
     | '/dashboard/notifications'
     | '/dashboard/offline'
     | '/dashboard/parent'
@@ -555,6 +590,7 @@ export interface FileRouteTypes {
     | '/dashboard/settings'
     | '/dashboard/student'
     | '/dashboard/students'
+    | '/dashboard/substitutions'
     | '/dashboard/supervisor'
     | '/dashboard/teacher'
     | '/dashboard/trips'
@@ -694,6 +730,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardBehaviorRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/calendar': {
+      id: '/dashboard/calendar'
+      path: '/calendar'
+      fullPath: '/dashboard/calendar'
+      preLoaderRoute: typeof DashboardCalendarRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/cards': {
       id: '/dashboard/cards'
       path: '/cards'
@@ -778,6 +821,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardMeRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/meetings': {
+      id: '/dashboard/meetings'
+      path: '/meetings'
+      fullPath: '/dashboard/meetings'
+      preLoaderRoute: typeof DashboardMeetingsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/notifications': {
       id: '/dashboard/notifications'
       path: '/notifications'
@@ -846,6 +896,13 @@ declare module '@tanstack/react-router' {
       path: '/students'
       fullPath: '/dashboard/students'
       preLoaderRoute: typeof DashboardStudentsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/substitutions': {
+      id: '/dashboard/substitutions'
+      path: '/substitutions'
+      fullPath: '/dashboard/substitutions'
+      preLoaderRoute: typeof DashboardSubstitutionsRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/supervisor': {
@@ -918,6 +975,7 @@ interface DashboardRouteChildren {
   DashboardAppearanceRoute: typeof DashboardAppearanceRoute
   DashboardAttendanceRoute: typeof DashboardAttendanceRoute
   DashboardBehaviorRoute: typeof DashboardBehaviorRoute
+  DashboardCalendarRoute: typeof DashboardCalendarRoute
   DashboardCardsRoute: typeof DashboardCardsRouteWithChildren
   DashboardConsoleRoute: typeof DashboardConsoleRoute
   DashboardDecisionsRoute: typeof DashboardDecisionsRoute
@@ -930,6 +988,7 @@ interface DashboardRouteChildren {
   DashboardImportRoute: typeof DashboardImportRoute
   DashboardLibraryRoute: typeof DashboardLibraryRoute
   DashboardMeRoute: typeof DashboardMeRoute
+  DashboardMeetingsRoute: typeof DashboardMeetingsRoute
   DashboardNotificationsRoute: typeof DashboardNotificationsRoute
   DashboardOfflineRoute: typeof DashboardOfflineRoute
   DashboardParentRoute: typeof DashboardParentRoute
@@ -940,6 +999,7 @@ interface DashboardRouteChildren {
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardStudentRoute: typeof DashboardStudentRoute
   DashboardStudentsRoute: typeof DashboardStudentsRoute
+  DashboardSubstitutionsRoute: typeof DashboardSubstitutionsRoute
   DashboardSupervisorRoute: typeof DashboardSupervisorRoute
   DashboardTeacherRoute: typeof DashboardTeacherRoute
   DashboardTripsRoute: typeof DashboardTripsRoute
@@ -953,6 +1013,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardAppearanceRoute: DashboardAppearanceRoute,
   DashboardAttendanceRoute: DashboardAttendanceRoute,
   DashboardBehaviorRoute: DashboardBehaviorRoute,
+  DashboardCalendarRoute: DashboardCalendarRoute,
   DashboardCardsRoute: DashboardCardsRouteWithChildren,
   DashboardConsoleRoute: DashboardConsoleRoute,
   DashboardDecisionsRoute: DashboardDecisionsRoute,
@@ -965,6 +1026,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardImportRoute: DashboardImportRoute,
   DashboardLibraryRoute: DashboardLibraryRoute,
   DashboardMeRoute: DashboardMeRoute,
+  DashboardMeetingsRoute: DashboardMeetingsRoute,
   DashboardNotificationsRoute: DashboardNotificationsRoute,
   DashboardOfflineRoute: DashboardOfflineRoute,
   DashboardParentRoute: DashboardParentRoute,
@@ -975,6 +1037,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardStudentRoute: DashboardStudentRoute,
   DashboardStudentsRoute: DashboardStudentsRoute,
+  DashboardSubstitutionsRoute: DashboardSubstitutionsRoute,
   DashboardSupervisorRoute: DashboardSupervisorRoute,
   DashboardTeacherRoute: DashboardTeacherRoute,
   DashboardTripsRoute: DashboardTripsRoute,
