@@ -1,5 +1,13 @@
 {
   "version": "7",
   "dialect": "postgresql",
-  "entries": []
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1791537295109,
+      "tag": "0000_substitutions_calendar_bulk",
+      "breakpoints": true
+    }
+  ]
 }
