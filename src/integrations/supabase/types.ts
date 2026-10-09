@@ -970,6 +970,45 @@ export type Database = {
         }
         Relationships: []
       }
+      school_events: {
+        Row: {
+          audience: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          ends_on: string | null
+          event_type: string
+          id: string
+          starts_on: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_on?: string | null
+          event_type?: string
+          id?: string
+          starts_on: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          ends_on?: string | null
+          event_type?: string
+          id?: string
+          starts_on?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       school_trips: {
         Row: {
           created_at: string
@@ -1124,6 +1163,69 @@ export type Database = {
           },
         ]
       }
+      substitution_requests: {
+        Row: {
+          class_id: string | null
+          created_at: string
+          id: string
+          reason: string
+          request_date: string
+          requester_id: string
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          slot_id: string | null
+          status: string
+          substitute_teacher_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          class_id?: string | null
+          created_at?: string
+          id?: string
+          reason: string
+          request_date: string
+          requester_id?: string
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          slot_id?: string | null
+          status?: string
+          substitute_teacher_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          class_id?: string | null
+          created_at?: string
+          id?: string
+          reason?: string
+          request_date?: string
+          requester_id?: string
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          slot_id?: string | null
+          status?: string
+          substitute_teacher_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "substitution_requests_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "substitution_requests_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "schedule_slots"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       trip_participants: {
         Row: {
           attended: boolean
@@ -1242,6 +1344,15 @@ export type Database = {
           full_name: string
           id: string
         }[]
+      }
+      send_bulk_notification: {
+        Args: {
+          _body: string
+          _class_id: string
+          _target: string
+          _title: string
+        }
+        Returns: number
       }
     }
     Enums: {
