@@ -77,6 +77,18 @@ export const NAV_ITEMS: NavItem[] = [
     roles: ["admin", "director", "supervisor", "teacher"],
   },
 
+  {
+    url: "/dashboard/substitutions",
+    labelKey: "nav.substitutions",
+    roles: ["admin", "director", "supervisor", "teacher"],
+  },
+  {
+    url: "/dashboard/meetings",
+    labelKey: "nav.meetings",
+    roles: ["admin", "director", "supervisor"],
+  },
+  { url: "/dashboard/calendar", labelKey: "nav.calendar" },
+
   { url: "/dashboard/admin", labelKey: "roles.admin", roles: ["admin"] },
   {
     url: "/dashboard/director",

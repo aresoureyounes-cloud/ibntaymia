@@ -34,7 +34,10 @@
     "reports": "Rapports",
     "appearance": "Apparence",
     "schedule": "Emploi du temps",
-    "absence_report": "Rapport d'absences du jour"
+    "absence_report": "Rapport d'absences du jour",
+    "substitutions": "Demandes de remplacement",
+    "meetings": "Rendez-vous parents",
+    "calendar": "Calendrier scolaire"
   },
   "landing": {
     "hero_title": "Une gestion scolaire intelligente, sécurisée, qui fonctionne hors ligne",

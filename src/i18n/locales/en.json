@@ -34,7 +34,10 @@
     "reports": "Reports",
     "appearance": "Appearance",
     "schedule": "Timetable",
-    "absence_report": "Daily absence report"
+    "absence_report": "Daily absence report",
+    "substitutions": "Class swap requests",
+    "meetings": "Parent meetings",
+    "calendar": "School calendar"
   },
   "landing": {
     "hero_title": "Smart, secure school management — works offline",
