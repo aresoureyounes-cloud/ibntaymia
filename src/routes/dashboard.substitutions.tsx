@@ -188,7 +188,7 @@ function SubstitutionsPage() {
                   </p>
                   <Badge variant={st.variant}>{st.label}</Badge>
                 </div>
-                <p className="text-muted-foreground">الطالب: {tName(r.requester_id)} · البديل المقترح: {tName(r.substitute_teacher_id)}</p>
+                <p className="text-muted-foreground">صاحب الطلب: {tName(r.requester_id)} · البديل المقترح: {tName(r.substitute_teacher_id)}</p>
                 <p>{r.reason}</p>
                 {r.review_note && <p className="text-muted-foreground">ردّ الإدارة: {r.review_note}</p>}
                 {isMgmt && r.status === "pending" && (
