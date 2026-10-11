@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { PageHeader } from "@/components/PageHeader";
+import { BulkMessageCard } from "@/components/BulkMessageCard";
 import {
   Select,
   SelectContent,
@@ -94,6 +95,8 @@ function NotificationsPage() {
         description="سجل آخر الإشعارات (داخل التطبيق فعلي، البريد/SMS محاكاة في انتظار ربط مزود)"
         icon={<Bell className="h-8 w-8" />}
       />
+
+      <BulkMessageCard />
 
       <Card className="cinema-shadow">
         <CardHeader>
