@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -173,7 +174,7 @@ function AbsenceReportPage() {
     }));
     const { error } = await supabase.from("notifications").insert(notes);
     setSending(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success(`تم إرسال ${notes.length} إشعارًا لأولياء الأمور`);
   };
 

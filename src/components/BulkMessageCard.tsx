@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { Users } from "lucide-react";
@@ -52,7 +53,7 @@ export function BulkMessageCard() {
       _body: body,
     });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     if (!data) toast.warning("لا توجد حسابات في هذه الفئة، لم تُرسل أي رسالة");
     else toast.success(`أُرسلت إلى ${data} حساب`);
     setTitle("");

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -90,7 +91,7 @@ function SubstitutionsPage() {
       reason: reason.trim(),
     });
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("تم إرسال الطلب إلى الإدارة");
     setSlotId("");
     setSubId("");
@@ -104,7 +105,7 @@ function SubstitutionsPage() {
       .from("substitution_requests")
       .update({ status, review_note: note, reviewed_by: user!.id, reviewed_at: new Date().toISOString() })
       .eq("id", row.id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     const title = status === "approved" ? "تم قبول طلب استبدال الحصة" : "تم رفض طلب استبدال الحصة";
     const recipients = [row.requester_id, ...(status === "approved" && row.substitute_teacher_id ? [row.substitute_teacher_id] : [])];
     await supabase.from("notifications").insert(
@@ -123,7 +124,7 @@ function SubstitutionsPage() {
 
   const cancel = async (id: string) => {
     const { error } = await supabase.from("substitution_requests").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     qc.invalidateQueries({ queryKey: ["subs"] });
   };
 

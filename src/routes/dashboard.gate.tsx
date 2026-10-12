@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -278,7 +279,7 @@ function GatePage() {
         visitor_name: vParsed.data,
       });
       if (err) {
-        toast.error(err.message);
+        toast.error(friendlyError(err));
         return;
       }
       setLastResult({
@@ -357,7 +358,7 @@ function GatePage() {
       visitor_name: null,
     });
     if (err) {
-      toast.error(err.message);
+      toast.error(friendlyError(err));
       return;
     }
 

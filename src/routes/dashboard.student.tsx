@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
@@ -300,7 +301,7 @@ function StudentDashboard() {
       .from("notifications")
       .update({ read_at: new Date().toISOString() })
       .eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     qc.invalidateQueries({ queryKey: ["my-notif", user?.id] });
   };
 
@@ -314,7 +315,7 @@ function StudentDashboard() {
       absence_date: justifDate || null,
       reason: justifReason.trim(),
     });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     setJustifOpen(false);
     setJustifReason("");
     setJustifDate("");

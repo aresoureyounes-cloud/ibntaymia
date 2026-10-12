@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -186,7 +187,7 @@ function GateLogPage() {
     const { error } = await supabase.from("notifications").insert(rows);
     setBusyId(null);
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     setNotifiedIds((prev) => new Set(prev).add(row.id));

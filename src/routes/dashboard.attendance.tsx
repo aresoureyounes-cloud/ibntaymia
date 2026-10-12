@@ -1,4 +1,5 @@
 import { usePermission } from "@/lib/permissions";
+import { friendlyError } from "@/lib/friendly-error";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
@@ -239,7 +240,7 @@ function AttendancePage() {
       .eq("period", period)
       .limit(1)
       .maybeSingle();
-    if (findErr) return toast.error(findErr.message);
+    if (findErr) return toast.error(friendlyError(findErr));
 
     if (found) {
       const { count } = await supabase
@@ -268,7 +269,7 @@ function AttendancePage() {
       } as never)
       .select("id")
       .single();
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     await openSession(data.id, false);
   };
 
@@ -297,7 +298,7 @@ function AttendancePage() {
       const { error } = await supabase
         .from("attendance_records")
         .upsert(rows, { onConflict: "session_id,student_id" });
-      if (error) return toast.error(error.message);
+      if (error) return toast.error(friendlyError(error));
     }
 
     const flagged = rows.filter((r) => r.status === "absent" || r.status === "late");
@@ -340,7 +341,7 @@ function AttendancePage() {
       })
       .eq("session_id", activeSessionId)
       .eq("student_id", justifyTarget.studentId);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("تم تبرير التأخر — يمكنك الآن تعديل الحالة");
     setJustifyTarget(null);
     setJustifyNote("");
