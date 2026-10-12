@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -100,7 +101,7 @@ function CardsPage() {
     // Insert as unassigned, then open dialog to assign
     const { error } = await supabase.from("rfid_cards").insert({ card_uid: uid, status: "active" });
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     toast.success(`تم التقاط بطاقة جديدة: ${uid}`);
@@ -114,7 +115,7 @@ function CardsPage() {
       .update({ student_id: studentId, assigned_at: new Date().toISOString() })
       .eq("card_uid", pendingUid);
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     toast.success("تم ربط البطاقة بالتلميذ");
@@ -128,21 +129,21 @@ function CardsPage() {
       .from("rfid_cards")
       .update({ student_id: null, assigned_at: null })
       .eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("تم فك الربط");
   };
 
   const deleteCard = async (id: string) => {
     if (!confirm("حذف هذه البطاقة نهائياً؟")) return;
     const { error } = await supabase.from("rfid_cards").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("تم الحذف");
   };
 
   const toggleStatus = async (id: string, current: string) => {
     const next = current === "active" ? "disabled" : "active";
     const { error } = await supabase.from("rfid_cards").update({ status: next }).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success(next === "active" ? "تم التفعيل" : "تم التعطيل");
   };
 

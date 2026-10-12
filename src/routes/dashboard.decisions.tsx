@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -56,7 +57,7 @@ function DecisionsPage() {
       decision_type: "announcement",
       created_by: user?.id ?? null,
     });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     setTitle("");
     setBody("");
     qc.invalidateQueries({ queryKey: ["school_decisions"] });

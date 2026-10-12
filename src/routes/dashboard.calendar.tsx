@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -50,7 +51,7 @@ function CalendarPage() {
       ends_on: f.ends_on || null,
       description: f.description.trim() || null,
     });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     toast.success("تمت الإضافة");
     setF({ ...f, title: "", starts_on: "", ends_on: "", description: "" });
     qc.invalidateQueries({ queryKey: ["school-events"] });
@@ -58,7 +59,7 @@ function CalendarPage() {
   const remove = async (id: string) => {
     if (!confirm("حذف هذا الموعد؟")) return;
     const { error } = await supabase.from("school_events").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     qc.invalidateQueries({ queryKey: ["school-events"] });
   };
 

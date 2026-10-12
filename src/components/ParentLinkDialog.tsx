@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { friendlyError } from "@/lib/friendly-error";
 import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -78,7 +79,7 @@ export function ParentLinkDialog({
       .from("parent_student")
       .insert({ parent_user_id: parentId, student_id: studentId });
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     toast.success(t("students_link.linked"));
@@ -90,7 +91,7 @@ export function ParentLinkDialog({
   const handleUnlink = async (id: string) => {
     const { error } = await supabase.from("parent_student").delete().eq("id", id);
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     toast.success(t("students_link.unlinked"));

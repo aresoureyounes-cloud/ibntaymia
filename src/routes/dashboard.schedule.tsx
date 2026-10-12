@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useMemo, useState } from "react";
@@ -190,7 +191,7 @@ function SchedulePage() {
   const remove = async (id: string) => {
     if (!confirm("حذف هذه الحصة؟ جلسات الحضور السابقة تبقى محفوظة.")) return;
     const { error } = await supabase.from("schedule_slots").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     refresh();
   };
 
@@ -430,14 +431,14 @@ function HomeworkPanel({ classId, userId }: { classId: string; userId: string | 
       class_id: classId, teacher_id: userId, subject: s.subject.trim(), title: s.title.trim(),
       description: s.desc.trim() || null, due_date: s.due || null,
     });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     setS({ subject: s.subject, title: "", desc: "", due: "" });
     toast.success(t("sched.homework_added"));
     qc.invalidateQueries({ queryKey: ["homework-admin", classId] });
   };
   const del = async (id: string) => {
     const { error } = await supabase.from("homework").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     qc.invalidateQueries({ queryKey: ["homework-admin", classId] });
   };
   return (

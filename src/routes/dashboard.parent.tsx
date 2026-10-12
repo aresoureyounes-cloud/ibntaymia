@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { useMemo, useState } from "react";
@@ -305,7 +306,7 @@ function ParentDashboard() {
     });
     setSavingJust(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     toast.success(t("parent.justif_sent"));
@@ -334,7 +335,7 @@ function ParentDashboard() {
     });
     setSavingMeet(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     toast.success(t("parent.meeting_sent"));
@@ -352,7 +353,7 @@ function ParentDashboard() {
       .eq("id", user.id);
     setSavingPhone(false);
     if (error) {
-      toast.error(error.message);
+      toast.error(friendlyError(error));
       return;
     }
     toast.success(t("parent.phone_saved"));

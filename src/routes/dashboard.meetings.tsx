@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -46,7 +47,7 @@ function MeetingsPage() {
       .from("meeting_requests")
       .update({ status, review_note: note, reviewed_by: user!.id, reviewed_at: new Date().toISOString() })
       .eq("id", r.id);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     if (status !== "done") {
       await supabase.from("notifications").insert({
         recipient_id: r.parent_user_id,

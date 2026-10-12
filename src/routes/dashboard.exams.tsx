@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -92,7 +93,7 @@ function ExamsPage() {
       class_id: classId === "none" ? null : classId,
     };
     const { error } = await db.from("exams").insert(payload);
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     setSubject("");
     setRoom("");
     setExamDate("");
@@ -285,7 +286,7 @@ function GradesDialog({ exam, userId }: { exam: Exam; userId: string | null }) {
       return;
     }
     const { error } = await db.from("grades").upsert(rows, { onConflict: "exam_id,student_id" });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     qc.invalidateQueries({ queryKey: ["exam-grades", exam.id] });
     setDraft({});
     toast.success(`تم حفظ ${rows.length} نقطة`);

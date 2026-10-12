@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -44,7 +45,7 @@ function TripsPage() {
     const { error } = await db
       .from("school_trips")
       .insert({ title: title.trim(), destination: destination.trim() || null });
-    if (error) return toast.error(error.message);
+    if (error) return toast.error(friendlyError(error));
     setTitle("");
     setDestination("");
     qc.invalidateQueries({ queryKey: ["school_trips"] });

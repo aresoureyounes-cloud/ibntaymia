@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { friendlyError } from "@/lib/friendly-error";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -98,7 +99,7 @@ function RoleMatrix({ userId }: { userId?: string }) {
     const { error } = await db
       .from("role_permissions")
       .upsert({ role, permission: perm, allowed, updated_by: userId, updated_at: new Date().toISOString() });
-    if (error) { toast.error(error.message); load(); } else toast.success("تم الحفظ");
+    if (error) { toast.error(friendlyError(error)); load(); } else toast.success("تم الحفظ");
   }
 
   return (
@@ -175,14 +176,14 @@ function UserOverrides({ userId }: { userId?: string }) {
     if (!sel) return;
     if (mode === "inherit") {
       const { error } = await db.from("user_permission_overrides").delete().eq("user_id", sel.id).eq("permission", perm);
-      if (error) return toast.error(error.message);
+      if (error) return toast.error(friendlyError(error));
       setOvr((m) => { const n = { ...m }; delete n[perm]; return n; });
     } else {
       const allowed = mode === "allow";
       const { error } = await db.from("user_permission_overrides").upsert({
         user_id: sel.id, permission: perm, allowed, updated_by: userId, updated_at: new Date().toISOString(),
       });
-      if (error) return toast.error(error.message);
+      if (error) return toast.error(friendlyError(error));
       setOvr((m) => ({ ...m, [perm]: allowed }));
     }
     toast.success("تم الحفظ");
@@ -261,7 +262,7 @@ function Limits({ userId }: { userId?: string }) {
     const n = Number(vals[key]);
     if (!Number.isFinite(n) || n < 0) return toast.error("أدخل رقماً صحيحاً موجباً");
     const { error } = await db.from("access_settings").upsert({ key, value: Math.floor(n), updated_by: userId, updated_at: new Date().toISOString() });
-    if (error) toast.error(error.message); else toast.success("تم الحفظ");
+    if (error) toast.error(friendlyError(error)); else toast.success("تم الحفظ");
   }
   return (
     <Card>
