@@ -36,6 +36,7 @@ import { Route as DashboardGateRouteImport } from './routes/dashboard.gate'
 import { Route as DashboardGateLogRouteImport } from './routes/dashboard.gate-log'
 import { Route as DashboardGuidanceRouteImport } from './routes/dashboard.guidance'
 import { Route as DashboardImportRouteImport } from './routes/dashboard.import'
+import { Route as DashboardInboxRouteImport } from './routes/dashboard.inbox'
 import { Route as DashboardLibraryRouteImport } from './routes/dashboard.library'
 import { Route as DashboardMeRouteImport } from './routes/dashboard.me'
 import { Route as DashboardMeetingsRouteImport } from './routes/dashboard.meetings'
@@ -52,8 +53,10 @@ import { Route as DashboardStudentsRouteImport } from './routes/dashboard.studen
 import { Route as DashboardSubstitutionsRouteImport } from './routes/dashboard.substitutions'
 import { Route as DashboardSupervisorRouteImport } from './routes/dashboard.supervisor'
 import { Route as DashboardTeacherRouteImport } from './routes/dashboard.teacher'
+import { Route as DashboardTodayRouteImport } from './routes/dashboard.today'
 import { Route as DashboardTripsRouteImport } from './routes/dashboard.trips'
 import { Route as DashboardUsersRouteImport } from './routes/dashboard.users'
+import { Route as DashboardWeeklyRouteImport } from './routes/dashboard.weekly'
 import { Route as ApiPublicCliRouteImport } from './routes/api/public/cli'
 import { Route as ApiPublicCliDemoRouteImport } from './routes/api/public/cli-demo'
 import { Route as DashboardCardsPrintRouteImport } from './routes/dashboard.cards.print'
@@ -193,6 +196,11 @@ const DashboardImportRoute = DashboardImportRouteImport.update({
   path: '/import',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardInboxRoute = DashboardInboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardLibraryRoute = DashboardLibraryRouteImport.update({
   id: '/library',
   path: '/library',
@@ -273,6 +281,11 @@ const DashboardTeacherRoute = DashboardTeacherRouteImport.update({
   path: '/teacher',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardTodayRoute = DashboardTodayRouteImport.update({
+  id: '/today',
+  path: '/today',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardTripsRoute = DashboardTripsRouteImport.update({
   id: '/trips',
   path: '/trips',
@@ -281,6 +294,11 @@ const DashboardTripsRoute = DashboardTripsRouteImport.update({
 const DashboardUsersRoute = DashboardUsersRouteImport.update({
   id: '/users',
   path: '/users',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardWeeklyRoute = DashboardWeeklyRouteImport.update({
+  id: '/weekly',
+  path: '/weekly',
   getParentRoute: () => DashboardRoute,
 } as any)
 const ApiPublicCliRoute = ApiPublicCliRouteImport.update({
@@ -326,6 +344,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/gate-log': typeof DashboardGateLogRoute
   '/dashboard/guidance': typeof DashboardGuidanceRoute
   '/dashboard/import': typeof DashboardImportRoute
+  '/dashboard/inbox': typeof DashboardInboxRoute
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/me': typeof DashboardMeRoute
   '/dashboard/meetings': typeof DashboardMeetingsRoute
@@ -342,8 +361,10 @@ export interface FileRoutesByFullPath {
   '/dashboard/substitutions': typeof DashboardSubstitutionsRoute
   '/dashboard/supervisor': typeof DashboardSupervisorRoute
   '/dashboard/teacher': typeof DashboardTeacherRoute
+  '/dashboard/today': typeof DashboardTodayRoute
   '/dashboard/trips': typeof DashboardTripsRoute
   '/dashboard/users': typeof DashboardUsersRoute
+  '/dashboard/weekly': typeof DashboardWeeklyRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/public/cli': typeof ApiPublicCliRoute
   '/api/public/cli-demo': typeof ApiPublicCliDemoRoute
@@ -375,6 +396,7 @@ export interface FileRoutesByTo {
   '/dashboard/gate-log': typeof DashboardGateLogRoute
   '/dashboard/guidance': typeof DashboardGuidanceRoute
   '/dashboard/import': typeof DashboardImportRoute
+  '/dashboard/inbox': typeof DashboardInboxRoute
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/me': typeof DashboardMeRoute
   '/dashboard/meetings': typeof DashboardMeetingsRoute
@@ -391,8 +413,10 @@ export interface FileRoutesByTo {
   '/dashboard/substitutions': typeof DashboardSubstitutionsRoute
   '/dashboard/supervisor': typeof DashboardSupervisorRoute
   '/dashboard/teacher': typeof DashboardTeacherRoute
+  '/dashboard/today': typeof DashboardTodayRoute
   '/dashboard/trips': typeof DashboardTripsRoute
   '/dashboard/users': typeof DashboardUsersRoute
+  '/dashboard/weekly': typeof DashboardWeeklyRoute
   '/dashboard': typeof DashboardIndexRoute
   '/api/public/cli': typeof ApiPublicCliRoute
   '/api/public/cli-demo': typeof ApiPublicCliDemoRoute
@@ -426,6 +450,7 @@ export interface FileRoutesById {
   '/dashboard/gate-log': typeof DashboardGateLogRoute
   '/dashboard/guidance': typeof DashboardGuidanceRoute
   '/dashboard/import': typeof DashboardImportRoute
+  '/dashboard/inbox': typeof DashboardInboxRoute
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/me': typeof DashboardMeRoute
   '/dashboard/meetings': typeof DashboardMeetingsRoute
@@ -442,8 +467,10 @@ export interface FileRoutesById {
   '/dashboard/substitutions': typeof DashboardSubstitutionsRoute
   '/dashboard/supervisor': typeof DashboardSupervisorRoute
   '/dashboard/teacher': typeof DashboardTeacherRoute
+  '/dashboard/today': typeof DashboardTodayRoute
   '/dashboard/trips': typeof DashboardTripsRoute
   '/dashboard/users': typeof DashboardUsersRoute
+  '/dashboard/weekly': typeof DashboardWeeklyRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/api/public/cli': typeof ApiPublicCliRoute
   '/api/public/cli-demo': typeof ApiPublicCliDemoRoute
@@ -478,6 +505,7 @@ export interface FileRouteTypes {
     | '/dashboard/gate-log'
     | '/dashboard/guidance'
     | '/dashboard/import'
+    | '/dashboard/inbox'
     | '/dashboard/library'
     | '/dashboard/me'
     | '/dashboard/meetings'
@@ -494,8 +522,10 @@ export interface FileRouteTypes {
     | '/dashboard/substitutions'
     | '/dashboard/supervisor'
     | '/dashboard/teacher'
+    | '/dashboard/today'
     | '/dashboard/trips'
     | '/dashboard/users'
+    | '/dashboard/weekly'
     | '/dashboard/'
     | '/api/public/cli'
     | '/api/public/cli-demo'
@@ -527,6 +557,7 @@ export interface FileRouteTypes {
     | '/dashboard/gate-log'
     | '/dashboard/guidance'
     | '/dashboard/import'
+    | '/dashboard/inbox'
     | '/dashboard/library'
     | '/dashboard/me'
     | '/dashboard/meetings'
@@ -543,8 +574,10 @@ export interface FileRouteTypes {
     | '/dashboard/substitutions'
     | '/dashboard/supervisor'
     | '/dashboard/teacher'
+    | '/dashboard/today'
     | '/dashboard/trips'
     | '/dashboard/users'
+    | '/dashboard/weekly'
     | '/dashboard'
     | '/api/public/cli'
     | '/api/public/cli-demo'
@@ -577,6 +610,7 @@ export interface FileRouteTypes {
     | '/dashboard/gate-log'
     | '/dashboard/guidance'
     | '/dashboard/import'
+    | '/dashboard/inbox'
     | '/dashboard/library'
     | '/dashboard/me'
     | '/dashboard/meetings'
@@ -593,8 +627,10 @@ export interface FileRouteTypes {
     | '/dashboard/substitutions'
     | '/dashboard/supervisor'
     | '/dashboard/teacher'
+    | '/dashboard/today'
     | '/dashboard/trips'
     | '/dashboard/users'
+    | '/dashboard/weekly'
     | '/dashboard/'
     | '/api/public/cli'
     | '/api/public/cli-demo'
@@ -807,6 +843,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardImportRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/inbox': {
+      id: '/dashboard/inbox'
+      path: '/inbox'
+      fullPath: '/dashboard/inbox'
+      preLoaderRoute: typeof DashboardInboxRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/library': {
       id: '/dashboard/library'
       path: '/library'
@@ -919,6 +962,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardTeacherRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/today': {
+      id: '/dashboard/today'
+      path: '/today'
+      fullPath: '/dashboard/today'
+      preLoaderRoute: typeof DashboardTodayRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/trips': {
       id: '/dashboard/trips'
       path: '/trips'
@@ -931,6 +981,13 @@ declare module '@tanstack/react-router' {
       path: '/users'
       fullPath: '/dashboard/users'
       preLoaderRoute: typeof DashboardUsersRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/weekly': {
+      id: '/dashboard/weekly'
+      path: '/weekly'
+      fullPath: '/dashboard/weekly'
+      preLoaderRoute: typeof DashboardWeeklyRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/api/public/cli': {
@@ -986,6 +1043,7 @@ interface DashboardRouteChildren {
   DashboardGateLogRoute: typeof DashboardGateLogRoute
   DashboardGuidanceRoute: typeof DashboardGuidanceRoute
   DashboardImportRoute: typeof DashboardImportRoute
+  DashboardInboxRoute: typeof DashboardInboxRoute
   DashboardLibraryRoute: typeof DashboardLibraryRoute
   DashboardMeRoute: typeof DashboardMeRoute
   DashboardMeetingsRoute: typeof DashboardMeetingsRoute
@@ -1002,8 +1060,10 @@ interface DashboardRouteChildren {
   DashboardSubstitutionsRoute: typeof DashboardSubstitutionsRoute
   DashboardSupervisorRoute: typeof DashboardSupervisorRoute
   DashboardTeacherRoute: typeof DashboardTeacherRoute
+  DashboardTodayRoute: typeof DashboardTodayRoute
   DashboardTripsRoute: typeof DashboardTripsRoute
   DashboardUsersRoute: typeof DashboardUsersRoute
+  DashboardWeeklyRoute: typeof DashboardWeeklyRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
@@ -1024,6 +1084,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardGateLogRoute: DashboardGateLogRoute,
   DashboardGuidanceRoute: DashboardGuidanceRoute,
   DashboardImportRoute: DashboardImportRoute,
+  DashboardInboxRoute: DashboardInboxRoute,
   DashboardLibraryRoute: DashboardLibraryRoute,
   DashboardMeRoute: DashboardMeRoute,
   DashboardMeetingsRoute: DashboardMeetingsRoute,
@@ -1040,8 +1101,10 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardSubstitutionsRoute: DashboardSubstitutionsRoute,
   DashboardSupervisorRoute: DashboardSupervisorRoute,
   DashboardTeacherRoute: DashboardTeacherRoute,
+  DashboardTodayRoute: DashboardTodayRoute,
   DashboardTripsRoute: DashboardTripsRoute,
   DashboardUsersRoute: DashboardUsersRoute,
+  DashboardWeeklyRoute: DashboardWeeklyRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 
