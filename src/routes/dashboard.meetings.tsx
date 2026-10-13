@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/use-auth";
 import { useRealtimeTable } from "@/lib/use-realtime-table";
 import { PageHeader } from "@/components/PageHeader";
+import { ExportButtons } from "@/components/ExportButtons";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -72,6 +73,19 @@ function MeetingsPage() {
           </Button>
         ))}
       </div>
+      <ExportButtons
+        filename="meetings"
+        title="طلبات مقابلة الأولياء"
+        rows={rows.map((r) => ({
+          التلميذ: r.students?.full_name ?? "",
+          القسم: r.students?.classes?.name ?? "",
+          التاريخ: r.preferred_date ?? "",
+          الوقت: r.preferred_slot ?? "",
+          الرسالة: r.message ?? "",
+          الحالة: LABEL[r.status] ?? r.status,
+          الملاحظة: r.review_note ?? "",
+        }))}
+      />
       {rows.length === 0 && <p className="text-sm text-muted-foreground">لا توجد طلبات.</p>}
       <div className="space-y-3">
         {rows.map((r) => (

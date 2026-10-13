@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/use-auth";
 import { useRealtimeTable } from "@/lib/use-realtime-table";
 import { PageHeader } from "@/components/PageHeader";
+import { ExportButtons } from "@/components/ExportButtons";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -175,6 +176,20 @@ function SubstitutionsPage() {
         </Card>
       )}
 
+      <ExportButtons
+        filename="substitutions"
+        title="طلبات استبدال الحصص"
+        rows={(rows ?? []).map((r) => ({
+          التاريخ: r.request_date,
+          المادة: r.schedule_slots?.subject ?? "",
+          القسم: r.classes?.name ?? "",
+          "صاحب الطلب": tName(r.requester_id),
+          البديل: tName(r.substitute_teacher_id),
+          السبب: r.reason,
+          الحالة: (STATUS[r.status] ?? STATUS.pending).label,
+          "رد الإدارة": r.review_note ?? "",
+        }))}
+      />
       <div className="space-y-3">
         {(rows ?? []).length === 0 && <p className="text-sm text-muted-foreground">لا توجد طلبات.</p>}
         {(rows ?? []).map((r) => {
