@@ -9,6 +9,7 @@ export type NavItem = {
 export const NAV_ITEMS: NavItem[] = [
   { url: "/dashboard", labelKey: "nav.dashboard" },
   { url: "/dashboard/inbox", labelKey: "nav.inbox" },
+  { url: "/dashboard/my-attendance", labelKey: "nav.my_attendance", roles: ["parent", "student"] },
   { url: "/dashboard/today", labelKey: "nav.today", roles: ["teacher"] },
   { url: "/dashboard/weekly", labelKey: "nav.weekly", roles: ["admin", "director", "supervisor"] },
   {

@@ -40,7 +40,8 @@
     "calendar": "Calendrier scolaire",
     "inbox": "Mes messages",
     "today": "Cours du jour",
-    "weekly": "Résumé hebdomadaire"
+    "weekly": "Résumé hebdomadaire",
+    "my_attendance": "Historique des présences"
   },
   "landing": {
     "hero_title": "Une gestion scolaire intelligente, sécurisée, qui fonctionne hors ligne",

@@ -45,6 +45,7 @@ export function MobileBottomNav() {
   else
     items = [
       { to: home, label: "الرئيسية", icon: Home },
+      { to: "/dashboard/my-attendance", label: "الحضور", icon: Users },
       { to: "/dashboard/calendar", label: "التقويم", icon: CalendarDays },
       { to: "/dashboard/inbox", label: "رسائلي", icon: Inbox },
     ];
