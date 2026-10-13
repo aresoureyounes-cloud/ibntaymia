@@ -46,6 +46,7 @@ import { Badge } from "./ui/badge";
 const ICONS: Record<string, typeof LayoutDashboard> = {
   "/dashboard/offline": WifiOff,
   "/dashboard/inbox": Bell,
+  "/dashboard/my-attendance": CalendarCheck,
   "/dashboard/today": CalendarCheck,
   "/dashboard/weekly": BarChart3,
   "/dashboard": LayoutDashboard,

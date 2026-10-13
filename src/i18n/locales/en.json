@@ -40,7 +40,8 @@
     "calendar": "School calendar",
     "inbox": "My messages",
     "today": "Today's classes",
-    "weekly": "Weekly summary"
+    "weekly": "Weekly summary",
+    "my_attendance": "Attendance record"
   },
   "landing": {
     "hero_title": "Smart, secure school management — works offline",
