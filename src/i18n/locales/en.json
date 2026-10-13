@@ -37,7 +37,10 @@
     "absence_report": "Daily absence report",
     "substitutions": "Class swap requests",
     "meetings": "Parent meetings",
-    "calendar": "School calendar"
+    "calendar": "School calendar",
+    "inbox": "My messages",
+    "today": "Today's classes",
+    "weekly": "Weekly summary"
   },
   "landing": {
     "hero_title": "Smart, secure school management — works offline",
@@ -260,7 +263,7 @@
     "steps": {
       "welcome": {
         "title": "Welcome to IDAROOM",
-        "body": "A quick tour of the dashboard, the diagnostics report and the console. It takes less than a minute and you can skip anytime."
+        "body": "A short tour of the pages available to your account. You can skip it anytime."
       },
       "sidebar": {
         "title": "Sidebar navigation",
@@ -281,6 +284,30 @@
       "help": {
         "title": "Replay the tour",
         "body": "Click the question mark whenever you want to run this tour again. Enjoy!"
+      },
+      "today": {
+        "title": "Today's classes",
+        "body": "Your classes for today, with a button to take attendance."
+      },
+      "attendance": {
+        "title": "Attendance",
+        "body": "Open a session, mark absences and save; the office sees it immediately."
+      },
+      "weekly": {
+        "title": "Weekly summary",
+        "body": "This week's absences, pending requests and upcoming dates."
+      },
+      "inbox": {
+        "title": "My messages",
+        "body": "Messages sent to you. The number shows unread ones."
+      },
+      "calendar": {
+        "title": "School calendar",
+        "body": "Holidays, meetings and exams."
+      },
+      "search": {
+        "title": "Quick search",
+        "body": "Press Ctrl+K to find a page, student or class."
       }
     }
   },

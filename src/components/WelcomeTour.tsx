@@ -17,6 +17,12 @@ type Step = {
 const STEPS: Step[] = [
   { id: "welcome" },
   { id: "sidebar", target: '[data-tour="sidebar"]' },
+  { id: "today", target: '[data-tour="nav-/dashboard/today"]' },
+  { id: "attendance", target: '[data-tour="nav-/dashboard/attendance"]' },
+  { id: "weekly", target: '[data-tour="nav-/dashboard/weekly"]' },
+  { id: "inbox", target: '[data-tour="nav-/dashboard/inbox"]' },
+  { id: "calendar", target: '[data-tour="nav-/dashboard/calendar"]' },
+  { id: "search", target: '[data-tour="search"]' },
   { id: "diagnostics", target: '[data-tour="nav-/dashboard/diagnostics"]' },
   { id: "console", target: '[data-tour="nav-/dashboard/console"]' },
   { id: "tools", target: '[data-tour="header-tools"]' },
