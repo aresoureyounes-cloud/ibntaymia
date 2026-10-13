@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/use-auth";
 import { useRealtimeTable } from "@/lib/use-realtime-table";
 import { PageHeader } from "@/components/PageHeader";
+import { ExportButtons } from "@/components/ExportButtons";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -95,9 +96,16 @@ function CalendarPage() {
         </Card>
       )}
 
+      <div className="flex flex-wrap items-center justify-between gap-2">
+      <ExportButtons
+        filename="school-calendar"
+        title="تقويم مواعيد المدرسة"
+        rows={rows.map((e) => ({ العنوان: e.title, النوع: TYPES[e.event_type] ?? e.event_type, من: e.starts_on, إلى: e.ends_on ?? "", التفاصيل: e.description ?? "" }))}
+      />
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" checked={showPast} onChange={(e) => setShowPast(e.target.checked)} /> عرض المواعيد السابقة
       </label>
+      </div>
 
       {rows.length === 0 && <p className="text-sm text-muted-foreground">لا توجد مواعيد قادمة.</p>}
       {Object.entries(groups).map(([month, list]) => (

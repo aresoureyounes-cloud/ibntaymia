@@ -10,6 +10,8 @@ import { WelcomeTour, useWelcomeTour } from "@/components/WelcomeTour";
 import { Button } from "@/components/ui/button";
 import { HelpCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { CommandSearch } from "@/components/CommandSearch";
+import { MobileBottomNav } from "@/components/MobileBottomNav";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardLayout,
@@ -72,6 +74,7 @@ function DashboardLayout() {
           <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/60 bg-background/80 px-4 backdrop-blur-md">
             <SidebarTrigger />
             <div className="flex items-center gap-1" data-tour="header-tools">
+              <span data-tour="search"><CommandSearch /></span>
               <Button
                 variant="ghost"
                 size="icon"
@@ -87,11 +90,12 @@ function DashboardLayout() {
               <ThemeToggle />
             </div>
           </header>
-          <main className="flex-1 overflow-x-hidden p-4 sm:p-5 md:p-8">
+          <main className="flex-1 overflow-x-hidden p-4 pb-24 sm:p-5 sm:pb-24 md:p-8">
             <Outlet />
           </main>
         </div>
       </div>
+      <MobileBottomNav />
       <WelcomeTour open={tour.open} onClose={tour.close} />
     </SidebarProvider>
   );

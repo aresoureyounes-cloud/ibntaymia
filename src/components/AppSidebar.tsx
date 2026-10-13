@@ -45,6 +45,9 @@ import { Badge } from "./ui/badge";
 
 const ICONS: Record<string, typeof LayoutDashboard> = {
   "/dashboard/offline": WifiOff,
+  "/dashboard/inbox": Bell,
+  "/dashboard/today": CalendarCheck,
+  "/dashboard/weekly": BarChart3,
   "/dashboard": LayoutDashboard,
   "/dashboard/students": Users,
   "/dashboard/attendance": CalendarCheck,
@@ -85,7 +88,7 @@ export function AppSidebar() {
         .from("notifications")
         .select("id", { count: "exact", head: true })
         .is("read_at", null)
-        .or(`recipient_id.eq.${user!.id},recipient_id.is.null`);
+        .eq("recipient_id", user!.id);
       return count ?? 0;
     },
   });
@@ -114,7 +117,7 @@ export function AppSidebar() {
                 const active = path === item.url;
                 const Icon = ICONS[item.url] ?? LayoutDashboard;
                 const showBadge =
-                  item.url === "/dashboard/notifications" && unread > 0;
+                  item.url === "/dashboard/inbox" && unread > 0;
                 return (
                   <SidebarMenuItem key={item.url}>
                     <SidebarMenuButton asChild isActive={active}>

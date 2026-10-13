@@ -37,7 +37,10 @@
     "absence_report": "Rapport d'absences du jour",
     "substitutions": "Demandes de remplacement",
     "meetings": "Rendez-vous parents",
-    "calendar": "Calendrier scolaire"
+    "calendar": "Calendrier scolaire",
+    "inbox": "Mes messages",
+    "today": "Cours du jour",
+    "weekly": "Résumé hebdomadaire"
   },
   "landing": {
     "hero_title": "Une gestion scolaire intelligente, sécurisée, qui fonctionne hors ligne",
@@ -260,7 +263,7 @@
     "steps": {
       "welcome": {
         "title": "Bienvenue sur IDAROOM",
-        "body": "Une visite rapide du tableau de bord, du rapport de diagnostic et de la console. Moins d'une minute, et vous pouvez passer à tout moment."
+        "body": "Une courte visite des pages disponibles pour votre compte. Vous pouvez la passer."
       },
       "sidebar": {
         "title": "Menu latéral",
@@ -281,6 +284,30 @@
       "help": {
         "title": "Revoir la visite",
         "body": "Cliquez sur le point d'interrogation pour relancer cette visite quand vous voulez. Bonne visite !"
+      },
+      "today": {
+        "title": "Cours du jour",
+        "body": "Vos cours du jour, avec un bouton pour faire l'appel."
+      },
+      "attendance": {
+        "title": "Appel",
+        "body": "Ouvrez une séance, notez les absents et enregistrez."
+      },
+      "weekly": {
+        "title": "Résumé hebdomadaire",
+        "body": "Absences de la semaine, demandes en attente et dates à venir."
+      },
+      "inbox": {
+        "title": "Mes messages",
+        "body": "Les messages qui vous sont adressés."
+      },
+      "calendar": {
+        "title": "Calendrier scolaire",
+        "body": "Vacances, réunions et examens."
+      },
+      "search": {
+        "title": "Recherche rapide",
+        "body": "Ctrl+K pour trouver une page, un élève ou une classe."
       }
     }
   },
