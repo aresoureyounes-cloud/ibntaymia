@@ -8,6 +8,13 @@
       "when": 1791537295109,
       "tag": "0000_substitutions_calendar_bulk",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792076819707,
+      "tag": "0001_notify_parents_on_absence",
+      "breakpoints": true
     }
   ]
 }
