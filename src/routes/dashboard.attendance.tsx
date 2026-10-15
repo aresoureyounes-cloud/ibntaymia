@@ -301,26 +301,11 @@ function AttendancePage() {
       if (error) return toast.error(friendlyError(error));
     }
 
+    // Parent alerts are created by a database trigger on attendance_records.
     const flagged = rows.filter((r) => r.status === "absent" || r.status === "late");
-    if (flagged.length > 0) {
-      const notes = flagged.map((r) => {
-        const stu = (students ?? []).find((s) => s.id === r.student_id);
-        return {
-          recipient_id: null,
-          recipient_label: `ولي أمر: ${stu?.full_name ?? "—"}`,
-          title: r.status === "absent" ? "إشعار غياب" : "إشعار تأخر",
-          body: `سُجِّل ${r.status === "absent" ? "غياب" : "تأخر"} الابن/الابنة ${stu?.full_name ?? ""} بتاريخ ${date}.`,
-          channel: "sms",
-          status: "simulated",
-          related_student_id: r.student_id,
-          created_by: user?.id ?? null,
-        };
-      });
-      await supabase.from("notifications").insert(notes);
-    }
 
     let msg = `تم حفظ ${rows.length} تسجيلة`;
-    if (flagged.length) msg += ` — ${flagged.length} إشعار محاكاة`;
+    if (flagged.length) msg += ` — أُشعر أولياء ${flagged.length} تلميذ`;
     if (skipped) msg += ` — تم تجاهل ${skipped} متأخر بدون تبرير`;
     toast.success(msg);
     setActiveSessionId(null);
