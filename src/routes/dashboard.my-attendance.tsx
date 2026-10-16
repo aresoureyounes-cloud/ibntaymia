@@ -51,6 +51,11 @@ function MyAttendancePage() {
   const [from, setFrom] = useState(PRESETS[0].from());
   const [to, setTo] = useState(fmt(new Date()));
   const [status, setStatus] = useState("all");
+  const ask = useServerFn(askAttendanceQuestion);
+  const [question, setQuestion] = useState("");
+  const [asking, setAsking] = useState(false);
+  const [qaError, setQaError] = useState<string | null>(null);
+  const [qaLog, setQaLog] = useState<{ q: string; a: string }[]>([]);
   useRealtimeTable("attendance_records", ["my-att"]);
 
   const { data: kids = [] } = useQuery({
