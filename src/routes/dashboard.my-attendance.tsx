@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { ClipboardCheck } from "lucide-react";
+import { ClipboardCheck, Sparkles, Loader2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { askAttendanceQuestion } from "@/lib/attendance-qa.functions";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/use-auth";
 import { useRealtimeTable } from "@/lib/use-realtime-table";
