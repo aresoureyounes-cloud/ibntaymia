@@ -145,8 +145,8 @@
   }
 
   [dir="rtl"] body {
-    font-family: "Lateef", "Tajawal", "Cairo", system-ui, sans-serif;
-    font-size: 1.08em;
+    font-family: "IBM Plex Sans Arabic", "Tajawal", system-ui, sans-serif;
+    font-size: 1.02em;
     line-height: 1.7;
   }
 
@@ -164,23 +164,17 @@
   }
 
   [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3, [dir="rtl"] .font-display {
-    font-family: "Aref Ruqaa", "Lalezar", "Tajawal", "Cairo", system-ui, sans-serif;
+    font-family: "Cairo", "IBM Plex Sans Arabic", system-ui, sans-serif;
     font-weight: 700;
     letter-spacing: 0;
   }
 
-  /* Squircle / organic rounded corners */
-  .card, [data-slot="card"],
-  .rounded-lg, .rounded-xl, .rounded-md {
-    border-radius: 24px;
-  }
-
-  button, [role="button"], .btn {
-    border-radius: 28px;
+  /* Clean, moderately rounded corners */
+  .card, [data-slot="card"] {
+    border-radius: 14px;
   }
 
   input, textarea, select {
-    border-radius: 20px;
     border-width: 1.5px;
     border-style: solid;
   }
