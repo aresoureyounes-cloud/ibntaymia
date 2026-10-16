@@ -257,6 +257,53 @@ function MyAttendancePage() {
           </Card>
 
           <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Sparkles className="h-4 w-4" /> اسأل عن سجل الحضور
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Textarea
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="مثال: كم مرة غاب هذا الشهر؟ في أي المواد يتأخر أكثر؟ لخّص لي وضع الحضور."
+                rows={2}
+                maxLength={500}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    void askQuestion();
+                  }
+                }}
+              />
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs text-muted-foreground">
+                  تُرسل السجلات المعروضة حالياً (حسب الفترة والتصفية) إلى خدمة الذكاء الاصطناعي. يتطلب اتصالاً.
+                </p>
+                <Button
+                  size="sm"
+                  onClick={() => void askQuestion()}
+                  disabled={asking || !sid || question.trim().length < 2}
+                >
+                  {asking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}{" "}
+                  اسأل
+                </Button>
+              </div>
+              {qaError && <p className="text-sm text-destructive">{qaError}</p>}
+              {qaLog.length > 0 && (
+                <ul className="space-y-3">
+                  {qaLog.map((item, i) => (
+                    <li key={i} className="rounded-md border border-border p-3">
+                      <p className="text-sm font-medium">{item.q}</p>
+                      <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{item.a}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
             <CardHeader><CardTitle className="text-base">التفاصيل ({filtered.length})</CardTitle></CardHeader>
             <CardContent className="space-y-2">
               {isLoading && <p className="text-sm text-muted-foreground">جارٍ التحميل...</p>}
