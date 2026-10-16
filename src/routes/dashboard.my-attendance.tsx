@@ -1,7 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
-import { ClipboardCheck } from "lucide-react";
+import { ClipboardCheck, Sparkles, Loader2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { askAttendanceQuestion } from "@/lib/attendance-qa.functions";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/use-auth";
 import { useRealtimeTable } from "@/lib/use-realtime-table";
@@ -48,6 +51,11 @@ function MyAttendancePage() {
   const [from, setFrom] = useState(PRESETS[0].from());
   const [to, setTo] = useState(fmt(new Date()));
   const [status, setStatus] = useState("all");
+  const ask = useServerFn(askAttendanceQuestion);
+  const [question, setQuestion] = useState("");
+  const [asking, setAsking] = useState(false);
+  const [qaError, setQaError] = useState<string | null>(null);
+  const [qaLog, setQaLog] = useState<{ q: string; a: string }[]>([]);
   useRealtimeTable("attendance_records", ["my-att"]);
 
   const { data: kids = [] } = useQuery({
@@ -109,6 +117,44 @@ function MyAttendancePage() {
   }, [rows]);
   const monthName = (k: string) => new Date(k + "-01T12:00:00").toLocaleDateString("ar-DZ", { month: "long", year: "numeric" });
   const kidName = kids.find((k) => k.id === sid)?.full_name ?? "";
+
+  const askQuestion = async () => {
+    const q = question.trim();
+    if (q.length < 2 || asking || !sid) return;
+    if (!navigator.onLine) {
+      setQaError("هذه الميزة تحتاج اتصالاً بالإنترنت.");
+      return;
+    }
+    setAsking(true);
+    setQaError(null);
+    try {
+      const r = await ask({
+        data: {
+          question: q,
+          studentName: kidName || "التلميذ",
+          from,
+          to,
+          rows: filtered.map((x) => ({
+            date: x.attendance_sessions.session_date,
+            period: x.attendance_sessions.period,
+            subject: x.attendance_sessions.subject,
+            status: x.status,
+            note: x.note,
+          })),
+        },
+      });
+      if (!r.ok) {
+        setQaError(r.error);
+        return;
+      }
+      setQaLog((prev) => [{ q, a: r.answer }, ...prev].slice(0, 10));
+      setQuestion("");
+    } catch {
+      setQaError("تعذر الإجابة الآن، حاول مرة أخرى.");
+    } finally {
+      setAsking(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -206,6 +252,53 @@ function MyAttendancePage() {
                     ))}
                   </tbody>
                 </table>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Sparkles className="h-4 w-4" /> اسأل عن سجل الحضور
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <Textarea
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                placeholder="مثال: كم مرة غاب هذا الشهر؟ في أي المواد يتأخر أكثر؟ لخّص لي وضع الحضور."
+                rows={2}
+                maxLength={500}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    void askQuestion();
+                  }
+                }}
+              />
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-xs text-muted-foreground">
+                  تُرسل السجلات المعروضة حالياً (حسب الفترة والتصفية) إلى خدمة الذكاء الاصطناعي. يتطلب اتصالاً.
+                </p>
+                <Button
+                  size="sm"
+                  onClick={() => void askQuestion()}
+                  disabled={asking || !sid || question.trim().length < 2}
+                >
+                  {asking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}{" "}
+                  اسأل
+                </Button>
+              </div>
+              {qaError && <p className="text-sm text-destructive">{qaError}</p>}
+              {qaLog.length > 0 && (
+                <ul className="space-y-3">
+                  {qaLog.map((item, i) => (
+                    <li key={i} className="rounded-md border border-border p-3">
+                      <p className="text-sm font-medium">{item.q}</p>
+                      <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{item.a}</p>
+                    </li>
+                  ))}
+                </ul>
               )}
             </CardContent>
           </Card>
