@@ -118,6 +118,44 @@ function MyAttendancePage() {
   const monthName = (k: string) => new Date(k + "-01T12:00:00").toLocaleDateString("ar-DZ", { month: "long", year: "numeric" });
   const kidName = kids.find((k) => k.id === sid)?.full_name ?? "";
 
+  const askQuestion = async () => {
+    const q = question.trim();
+    if (q.length < 2 || asking || !sid) return;
+    if (!navigator.onLine) {
+      setQaError("هذه الميزة تحتاج اتصالاً بالإنترنت.");
+      return;
+    }
+    setAsking(true);
+    setQaError(null);
+    try {
+      const r = await ask({
+        data: {
+          question: q,
+          studentName: kidName || "التلميذ",
+          from,
+          to,
+          rows: filtered.map((x) => ({
+            date: x.attendance_sessions.session_date,
+            period: x.attendance_sessions.period,
+            subject: x.attendance_sessions.subject,
+            status: x.status,
+            note: x.note,
+          })),
+        },
+      });
+      if (!r.ok) {
+        setQaError(r.error);
+        return;
+      }
+      setQaLog((prev) => [{ q, a: r.answer }, ...prev].slice(0, 10));
+      setQuestion("");
+    } catch {
+      setQaError("تعذر الإجابة الآن، حاول مرة أخرى.");
+    } finally {
+      setAsking(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <PageHeader
