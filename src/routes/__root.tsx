@@ -77,7 +77,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "إداروم — النظام الرقمي للمؤسسات التعليمية" },
-      { name: "theme-color", content: "#0f1a14" },
+      { name: "theme-color", content: "#0f1b3d" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
       { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-title", content: "IDAROOM" },
@@ -117,7 +117,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Space+Grotesk:wght@300..700&family=Playwrite+BE+VLG:wght@100..400&family=Gloock&family=Tajawal:wght@400;500;700;900&family=Aref+Ruqaa:wght@400;700&family=Lateef:wght@400;700&family=Lalezar&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Outfit:wght@300..700&family=Figtree:ital,wght@0,300..900;1,300..900&family=IBM+Plex+Sans+Arabic:wght@400;500;700&family=Cairo:wght@400;600;700;900&family=Playwrite+BE+VLG:wght@100..400&family=Gloock&display=swap",
       },
       { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "apple-touch-icon", href: "/idaroom-logo.png" },
