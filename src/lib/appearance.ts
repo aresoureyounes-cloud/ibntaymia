@@ -4,7 +4,7 @@
  * instantly without a round-trip.
  */
 
-export type AccentId = "sage" | "terracotta" | "indigo" | "plum" | "teal";
+export type AccentId = "navy" | "sage" | "terracotta" | "indigo" | "plum" | "teal";
 export type DensityId = "compact" | "cozy" | "roomy";
 
 export type Appearance = {
@@ -18,6 +18,21 @@ export const ACCENTS: Record<
   AccentId,
   { swatch: string; light: Record<string, string>; dark: Record<string, string> }
 > = {
+  navy: {
+    swatch: "oklch(0.42 0.09 258)",
+    light: {
+      "--primary": "oklch(0.42 0.09 258)",
+      "--primary-glow": "oklch(0.55 0.11 250)",
+      "--ring": "oklch(0.42 0.09 258)",
+      "--accent": "oklch(0.55 0.11 250)",
+    },
+    dark: {
+      "--primary": "oklch(0.68 0.12 250)",
+      "--primary-glow": "oklch(0.78 0.1 245)",
+      "--ring": "oklch(0.68 0.12 250)",
+      "--accent": "oklch(0.68 0.12 250)",
+    },
+  },
   sage: {
     swatch: "oklch(0.52 0.06 145)",
     light: {
@@ -102,9 +117,9 @@ export const DENSITY_RADIUS: Record<DensityId, string> = {
 };
 
 export const DEFAULT_APPEARANCE: Appearance = {
-  accent: "sage",
+  accent: "navy",
   fontScale: 1,
-  density: "cozy",
+  density: "compact",
   reducedMotion: false,
 };
 
