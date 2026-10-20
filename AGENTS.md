@@ -8,3 +8,6 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Enforce attendance session identity in the database by class, date and normalized period, and recover uniqueness conflicts by offering the existing session; this prevents concurrent duplicate records.
+- Treat external notification simulation as recording only, never successful delivery; this prevents staff relying on unsent parent alerts.
