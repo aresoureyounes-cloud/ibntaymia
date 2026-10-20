@@ -175,7 +175,7 @@ function AbsenceReportPage() {
     const { error } = await supabase.from("notifications").insert(notes);
     setSending(false);
     if (error) return toast.error(friendlyError(error));
-    toast.success(`تم إرسال ${notes.length} إشعارًا لأولياء الأمور`);
+    toast.info(`تم تسجيل ${notes.length} رسالة محاكاة فقط؛ لم تُرسل SMS إلى الأولياء`);
   };
 
   return (

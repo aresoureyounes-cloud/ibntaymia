@@ -43,6 +43,14 @@ import {
 
 export const Route = createFileRoute("/dashboard/attendance")({
   component: AttendancePage,
+  head: () => ({ meta: [
+    { title: "تسجيل الحضور — إداروم" },
+    { name: "description", content: "تسجيل حضور الأقسام وتصحيح السجل السابق حسب صلاحيات الحساب." },
+    { property: "og:title", content: "تسجيل الحضور — إداروم" },
+    { property: "og:description", content: "جلسات الحضور والغياب والاستخلاف والحصص الإضافية." },
+    { property: "og:type", content: "website" },
+    { name: "twitter:card", content: "summary" },
+  ] }),
 });
 
 type Status = "present" | "absent" | "late" | "excused";
@@ -109,10 +117,11 @@ function AttendancePage() {
     queryKey: ["my-slots", user?.id, weekday],
     enabled: !!user,
     queryFn: async (): Promise<SlotRow[]> => {
+      if (!user) return [];
       const { data } = await supabase
         .from("schedule_slots")
         .select("id, class_id, teacher_id, subject, start_time, period_no, classes(name)")
-        .eq("teacher_id", user!.id)
+        .eq("teacher_id", user.id)
         .eq("weekday", weekday)
         .eq("is_active" as never, true as never)
         .order("start_time");
@@ -269,7 +278,26 @@ function AttendancePage() {
       } as never)
       .select("id")
       .single();
-    if (error) return toast.error(friendlyError(error));
+    if (error) {
+      if (error.code === "23505") {
+        const { data: concurrent, error: lookupError } = await supabase
+          .from("attendance_sessions")
+          .select("id, subject, classes(name)")
+          .eq("class_id", classId)
+          .eq("session_date", date)
+          .eq("period", period)
+          .maybeSingle();
+        if (lookupError) return toast.error(friendlyError(lookupError));
+        if (concurrent) {
+          const { count } = await supabase.from("attendance_records")
+            .select("id", { count: "exact", head: true }).eq("session_id", concurrent.id);
+          setDuplicate({ id: concurrent.id, subject: concurrent.subject,
+            className: concurrent.classes?.name ?? null, count: count ?? 0 });
+          return;
+        }
+      }
+      return toast.error(friendlyError(error));
+    }
     await openSession(data.id, false);
   };
 
@@ -305,7 +333,7 @@ function AttendancePage() {
     const flagged = rows.filter((r) => r.status === "absent" || r.status === "late");
 
     let msg = `تم حفظ ${rows.length} تسجيلة`;
-    if (flagged.length) msg += ` — أُشعر أولياء ${flagged.length} تلميذ`;
+    if (flagged.length) msg += " — التنبيهات داخل التطبيق للحسابات المرتبطة فقط، دون SMS";
     if (skipped) msg += ` — تم تجاهل ${skipped} متأخر بدون تبرير`;
     toast.success(msg);
     setActiveSessionId(null);
@@ -691,7 +719,8 @@ function AttendancePage() {
             </Button>
             <Button
               onClick={() => {
-                const id = duplicate!.id;
+                if (!duplicate) return;
+                const id = duplicate.id;
                 setDuplicate(null);
                 void openSession(id, true);
               }}
