@@ -42,10 +42,15 @@ async function rolesOf(userId: string): Promise<Role[]> {
 }
 
 /** Throws unless the caller is admin or developer. Returns caller capabilities. */
-async function authorize(callerId: string) {
-  const roles = await rolesOf(callerId);
-  const isDeveloper = roles.includes("developer");
-  const isAdmin = roles.includes("admin");
+async function authorize(callerId: string, callerDb: Awaited<ReturnType<typeof admin>>) {
+  const [developer, administrator] = await Promise.all([
+    callerDb.rpc("has_role", { _user_id: callerId, _role: "developer" }),
+    callerDb.rpc("has_role", { _user_id: callerId, _role: "admin" }),
+  ]);
+  if (developer.error) throw new Error(developer.error.message);
+  if (administrator.error) throw new Error(administrator.error.message);
+  const isDeveloper = developer.data === true;
+  const isAdmin = administrator.data === true;
   if (!isDeveloper && !isAdmin) throw new Error(DENY_NOT_STAFF);
   return { isDeveloper, isAdmin };
 }
@@ -61,7 +66,7 @@ async function guardTarget(isDeveloper: boolean, targetId: string) {
 export const listAccounts = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    await authorize(context.userId);
+    await authorize(context.userId, context.supabase);
     const db = await admin();
 
     const users: Array<{
@@ -112,7 +117,7 @@ export const createAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => createInput.parse(d))
   .handler(async ({ data, context }) => {
-    const { isDeveloper } = await authorize(context.userId);
+    const { isDeveloper } = await authorize(context.userId, context.supabase);
     if (data.roles.includes("developer") && !isDeveloper) throw new Error(DENY_DEVELOPER_ONLY);
 
     const db = await admin();
@@ -147,7 +152,7 @@ export const updateAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => updateInput.parse(d))
   .handler(async ({ data, context }) => {
-    const { isDeveloper } = await authorize(context.userId);
+    const { isDeveloper } = await authorize(context.userId, context.supabase);
     await guardTarget(isDeveloper, data.userId);
 
     const db = await admin();
@@ -175,7 +180,7 @@ export const setAccountRoles = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => rolesInput.parse(d))
   .handler(async ({ data, context }) => {
-    const { isDeveloper } = await authorize(context.userId);
+    const { isDeveloper } = await authorize(context.userId, context.supabase);
     const current = await rolesOf(data.userId);
     const next = Array.from(new Set(data.roles));
 
@@ -214,7 +219,7 @@ export const setAccountPassword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => passwordInput.parse(d))
   .handler(async ({ data, context }) => {
-    const { isDeveloper } = await authorize(context.userId);
+    const { isDeveloper } = await authorize(context.userId, context.supabase);
     await guardTarget(isDeveloper, data.userId);
     const db = await admin();
     const { error } = await db.auth.admin.updateUserById(data.userId, {
@@ -251,7 +256,7 @@ export const resetAccountPassword = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ userId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { isDeveloper } = await authorize(context.userId);
+    const { isDeveloper } = await authorize(context.userId, context.supabase);
     await guardTarget(isDeveloper, data.userId);
     const db = await admin();
 
@@ -289,7 +294,7 @@ export const setAccountDisabled = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => toggleInput.parse(d))
   .handler(async ({ data, context }) => {
-    const { isDeveloper } = await authorize(context.userId);
+    const { isDeveloper } = await authorize(context.userId, context.supabase);
     await guardTarget(isDeveloper, data.userId);
     if (data.userId === context.userId && data.disabled) {
       throw new Error("مرفوض: لا يمكنك تعطيل حسابك الخاص.");
@@ -308,7 +313,7 @@ export const deleteAccount = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((d: unknown) => z.object({ userId: z.string().uuid() }).parse(d))
   .handler(async ({ data, context }) => {
-    const { isDeveloper } = await authorize(context.userId);
+    const { isDeveloper } = await authorize(context.userId, context.supabase);
     if (data.userId === context.userId) throw new Error(DENY_SELF_DELETE);
     await guardTarget(isDeveloper, data.userId);
     const db = await admin();
