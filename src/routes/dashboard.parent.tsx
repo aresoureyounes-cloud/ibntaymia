@@ -28,12 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -66,6 +61,7 @@ export const Route = createFileRoute("/dashboard/parent")({
 type Child = {
   id: string;
   full_name: string;
+  class_id: string | null;
   classes: { name: string } | null;
 };
 
@@ -103,13 +99,14 @@ function ParentDashboard() {
     queryKey: ["parent-children", user?.id],
     enabled: !!user,
     queryFn: async () => {
+      if (!user) return [];
       const { data, error } = await supabase
         .from("parent_student")
-        .select("student_id, students(id, full_name, classes(name))")
-        .eq("parent_user_id", user!.id);
+        .select("student_id, students(id, full_name, class_id, classes(name))")
+        .eq("parent_user_id", user.id);
       if (error) throw error;
       type Row = {
-        students: { id: string; full_name: string; classes: { name: string } | null } | null;
+        students: Child | null;
       };
       return ((data ?? []) as unknown as Row[])
         .map((r) => r.students)
@@ -183,12 +180,14 @@ function ParentDashboard() {
 
   // ---- homework (next 7 days) ----
   const { data: homework } = useQuery({
-    queryKey: ["parent-homework", selected?.classes?.name],
-    enabled: !!selected,
+    queryKey: ["parent-homework", user?.id, selected?.class_id],
+    enabled: !!selected?.class_id,
     queryFn: async () => {
+      if (!selected?.class_id) return [];
       const { data, error } = await supabase
         .from("homework")
         .select("id, subject, title, description, due_date")
+        .eq("class_id", selected.class_id)
         .gte("due_date", todayISO())
         .lte("due_date", inDaysISO(7))
         .order("due_date", { ascending: true })
@@ -433,9 +432,7 @@ function ParentDashboard() {
                     {value === null ? "—" : value}
                     {key === "rate" && value !== null ? "%" : ""}
                   </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {t(`parent.summary_${key}`)}
-                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t(`parent.summary_${key}`)}</p>
                 </div>
               ))}
             </div>
@@ -461,8 +458,7 @@ function ParentDashboard() {
               >
                 <div>
                   <p className="font-medium">
-                    {a.attendance_sessions?.session_date} —{" "}
-                    {a.attendance_sessions?.subject ?? "—"}
+                    {a.attendance_sessions?.session_date} — {a.attendance_sessions?.subject ?? "—"}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {t(`attendance.status_${a.status}`)}
@@ -581,7 +577,9 @@ function ParentDashboard() {
               <div key={m.id} className="rounded-lg border px-3 py-2 text-sm">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium">
-                    {m.preferred_date} — {MEETING_SLOTS.find((s) => s.value === m.preferred_slot)?.label ?? m.preferred_slot}
+                    {m.preferred_date} —{" "}
+                    {MEETING_SLOTS.find((s) => s.value === m.preferred_slot)?.label ??
+                      m.preferred_slot}
                     {childName ? ` (${childName})` : ""}
                   </span>
                   <Badge
@@ -623,10 +621,7 @@ function ParentDashboard() {
               className="w-56"
             />
           </div>
-          <Button
-            onClick={savePhone}
-            disabled={savingPhone || phone === undefined}
-          >
+          <Button onClick={savePhone} disabled={savingPhone || phone === undefined}>
             {t("common.save")}
           </Button>
         </CardContent>

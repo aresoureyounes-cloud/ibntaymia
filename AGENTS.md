@@ -11,3 +11,5 @@
 
 - Enforce attendance session identity in the database by class, date and normalized period, and recover uniqueness conflicts by offering the existing session; this prevents concurrent duplicate records.
 - Treat external notification simulation as recording only, never successful delivery; this prevents staff relying on unsent parent alerts.
+- Account imports must use cryptographic temporary credentials, enumerate existing auth users across all pages, check every dependent write, and attempt cleanup of newly created incomplete accounts; this prevents false success and duplicate or orphaned accounts.
+- Parent homework queries must use the selected child's class ID in both the filter and query key; class labels are not unique identifiers.

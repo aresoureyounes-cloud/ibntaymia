@@ -29,27 +29,40 @@ const input = z.object({
 });
 
 function slugify(s: string) {
-  return s
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, ".")
-    .replace(/^\.+|\.+$/g, "")
-    .slice(0, 40) || "user";
+  return (
+    s
+      .toLowerCase()
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, ".")
+      .replace(/^\.+|\.+$/g, "")
+      .slice(0, 40) || "user"
+  );
 }
 
 function randomPassword() {
   const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
-  let out = "";
-  for (let i = 0; i < 10; i++) out += chars[Math.floor(Math.random() * chars.length)];
-  return out + "@1";
+  return (
+    Array.from(crypto.getRandomValues(new Uint8Array(20)), (byte) =>
+      chars.charAt(byte % chars.length),
+    ).join("") + "@1Aa"
+  );
 }
 
 function randomBadgeUid() {
-  const hex = "0123456789ABCDEF";
-  let out = "04";
-  for (let i = 0; i < 12; i++) out += hex[Math.floor(Math.random() * 16)];
-  return out;
+  return (
+    "04" +
+    Array.from(crypto.getRandomValues(new Uint8Array(6)), (byte) =>
+      byte.toString(16).padStart(2, "0"),
+    )
+      .join("")
+      .toUpperCase()
+  );
+}
+
+function checked<T extends { error: { message: string } | null }>(result: T): T {
+  if (result.error) throw new Error(result.error.message);
+  return result;
 }
 
 export const bulkImportAccounts = createServerFn({ method: "POST" })
@@ -57,16 +70,35 @@ export const bulkImportAccounts = createServerFn({ method: "POST" })
   .inputValidator((d: unknown) => input.parse(d))
   .handler(async ({ data, context }) => {
     // Authorization: admin only
-    const { data: isAdmin } = await context.supabase.rpc("has_role", {
-      _user_id: context.userId,
-      _role: "admin",
-    });
+    const { data: isAdmin } = checked(
+      await context.supabase.rpc("has_role", {
+        _user_id: context.userId,
+        _role: "admin",
+      }),
+    );
     if (isAdmin !== true) throw new Error("Forbidden: admin only");
 
-    type Role = "student" | "teacher" | "admin" | "director" | "supervisor" | "gate_monitor" | "parent";
+    type Role =
+      "student" | "teacher" | "admin" | "director" | "supervisor" | "gate_monitor" | "parent";
     const role: Role = data.kind === "editor" ? "supervisor" : (data.kind as Role);
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: isDeveloper } = checked(
+      await context.supabase.rpc("has_role", {
+        _user_id: context.userId,
+        _role: "developer",
+      }),
+    );
+    const usersByEmail = new Map<string, string>();
+    for (let page = 1; ; page++) {
+      const { data: list } = checked(
+        await supabaseAdmin.auth.admin.listUsers({ page, perPage: 200 }),
+      );
+      for (const account of list.users) {
+        if (account.email) usersByEmail.set(account.email.toLowerCase(), account.id);
+      }
+      if (list.users.length < 200) break;
+    }
 
     // Preload existing classes for student rows
     const classCache = new Map<string, string>();
@@ -74,12 +106,11 @@ export const bulkImportAccounts = createServerFn({ method: "POST" })
       if (!name) return null;
       const key = name.trim();
       if (!key) return null;
-      if (classCache.has(key)) return classCache.get(key)!;
-      const { data: existing } = await supabaseAdmin
-        .from("classes")
-        .select("id")
-        .eq("name", key)
-        .maybeSingle();
+      const cached = classCache.get(key);
+      if (cached) return cached;
+      const { data: existing } = checked(
+        await supabaseAdmin.from("classes").select("id").eq("name", key).maybeSingle(),
+      );
       if (existing) {
         classCache.set(key, existing.id);
         return existing.id;
@@ -106,28 +137,26 @@ export const bulkImportAccounts = createServerFn({ method: "POST" })
     const emailDomain = "idarroom.local";
 
     for (const row of data.rows) {
+      let createdUserId: string | null = null;
       try {
         const email =
           row.email?.toLowerCase() ||
-          `${slugify(row.full_name)}.${Math.random().toString(36).slice(2, 6)}@${emailDomain}`;
+          `${slugify(row.full_name)}.${crypto.randomUUID()}@${emailDomain}`;
         const password = randomPassword();
 
         // Find or create auth user
         let userId: string | null = null;
         let status: "created" | "existed" = "created";
 
-        // Try to find existing by paginated search (cheap for small batches)
-        {
-          const { data: list } = await supabaseAdmin.auth.admin.listUsers({
-            page: 1,
-            perPage: 200,
-          });
-          const found = list?.users.find(
-            (u) => (u.email ?? "").toLowerCase() === email.toLowerCase(),
+        const existingId = usersByEmail.get(email);
+        if (existingId) {
+          userId = existingId;
+          status = "existed";
+          const { data: roles } = checked(
+            await supabaseAdmin.from("user_roles").select("role").eq("user_id", userId),
           );
-          if (found) {
-            userId = found.id;
-            status = "existed";
+          if (!isDeveloper && roles?.some((r) => r.role === "developer")) {
+            throw new Error("مرفوض: لا يمكن للمدير تعديل حساب يملك دور المبرمج عبر الاستيراد.");
           }
         }
 
@@ -140,58 +169,49 @@ export const bulkImportAccounts = createServerFn({ method: "POST" })
           });
           if (error) throw error;
           userId = created.user.id;
+          createdUserId = userId;
         }
 
         // Profile
-        await supabaseAdmin.from("profiles").upsert({
-          id: userId,
-          full_name: row.full_name,
-          phone: row.phone ?? null,
-          preferred_language: "ar",
-        });
+        checked(
+          await supabaseAdmin.from("profiles").upsert({
+            id: userId,
+            full_name: row.full_name,
+            phone: row.phone ?? null,
+            preferred_language: "ar",
+          }),
+        );
 
-        // Role: replace with the requested one
-        await supabaseAdmin.from("user_roles").delete().eq("user_id", userId).eq("role", role);
-        await supabaseAdmin
-          .from("user_roles")
-          .insert({ user_id: userId, role })
-          .select()
-          .single()
-          .then(() => null, () => null);
-
-        // Staff whitelist (so future re-signups keep role) — not for students/parents
-        if (["admin", "director", "supervisor", "teacher", "gate_monitor"].includes(role)) {
+        // Add the requested role without a delete/insert gap or removing other roles.
+        checked(
           await supabaseAdmin
-            .from("staff_whitelist")
-            .upsert(
-              { email, full_name: row.full_name, role, note: "bulk import" },
-              { onConflict: "full_name" },
-            );
-        }
+            .from("user_roles")
+            .upsert({ user_id: userId, role }, { onConflict: "user_id,role" }),
+        );
 
         let badge_uid: string | null = null;
 
         // Student-specific: create students row + rfid card
         if (role === "student") {
           const classId = await ensureClassId(row.class_name);
-          const { data: existingStudent } = await supabaseAdmin
-            .from("students")
-            .select("id")
-            .eq("user_id", userId)
-            .maybeSingle();
+          const { data: existingStudent } = checked(
+            await supabaseAdmin.from("students").select("id").eq("user_id", userId).maybeSingle(),
+          );
           let studentId = existingStudent?.id ?? null;
           if (studentId) {
-            await supabaseAdmin
-              .from("students")
-              .update({
-                full_name: row.full_name,
-                gender: row.gender ?? null,
-                date_of_birth: row.date_of_birth ?? null,
-                class_id: classId,
-                fake_email: email,
-                fake_phone: row.phone ?? null,
-              })
-              .eq("id", studentId);
+            checked(
+              await supabaseAdmin
+                .from("students")
+                .update({
+                  full_name: row.full_name,
+                  gender: row.gender ?? null,
+                  date_of_birth: row.date_of_birth ?? null,
+                  class_id: classId,
+                  fake_email: email,
+                  fake_phone: row.phone ?? null,
+                })
+                .eq("id", studentId),
+            );
           } else {
             const { data: sIns, error: sErr } = await supabaseAdmin
               .from("students")
@@ -212,18 +232,32 @@ export const bulkImportAccounts = createServerFn({ method: "POST" })
 
           if (data.create_badge && studentId) {
             badge_uid = randomBadgeUid();
-            await supabaseAdmin.from("rfid_cards").insert({
-              card_uid: badge_uid,
-              student_id: studentId,
-              status: "active",
-              assigned_at: new Date().toISOString(),
-            });
+            checked(
+              await supabaseAdmin.from("rfid_cards").insert({
+                card_uid: badge_uid,
+                student_id: studentId,
+                status: "active",
+                assigned_at: new Date().toISOString(),
+              }),
+            );
           }
         } else if (data.create_badge) {
           // For staff badges, we can still generate a UID (no rfid record — table is student-scoped)
           badge_uid = randomBadgeUid();
         }
 
+        // Persist whitelist last, only after the account's dependent writes succeed.
+        if (["admin", "director", "supervisor", "teacher", "gate_monitor"].includes(role)) {
+          checked(
+            await supabaseAdmin
+              .from("staff_whitelist")
+              .upsert(
+                { email, full_name: row.full_name, role, note: "bulk import" },
+                { onConflict: "full_name" },
+              ),
+          );
+        }
+        usersByEmail.set(email, userId);
         results.push({
           full_name: row.full_name,
           email,
@@ -232,13 +266,18 @@ export const bulkImportAccounts = createServerFn({ method: "POST" })
           status,
         });
       } catch (e) {
+        let cleanupError: string | null = null;
+        if (createdUserId) {
+          const cleanup = await supabaseAdmin.auth.admin.deleteUser(createdUserId);
+          cleanupError = cleanup.error?.message ?? null;
+        }
         results.push({
           full_name: row.full_name,
           email: row.email ?? null,
           password: null,
           badge_uid: null,
           status: "error",
-          error: e instanceof Error ? e.message : String(e),
+          error: `${e instanceof Error ? e.message : String(e)}${cleanupError ? " — تعذر حذف الحساب غير المكتمل: " + cleanupError : ""}`,
         });
       }
     }
