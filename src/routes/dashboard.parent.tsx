@@ -66,6 +66,7 @@ export const Route = createFileRoute("/dashboard/parent")({
 type Child = {
   id: string;
   full_name: string;
+  class_id: string | null;
   classes: { name: string } | null;
 };
 
@@ -103,13 +104,14 @@ function ParentDashboard() {
     queryKey: ["parent-children", user?.id],
     enabled: !!user,
     queryFn: async () => {
+      if (!user) return [];
       const { data, error } = await supabase
         .from("parent_student")
-        .select("student_id, students(id, full_name, classes(name))")
-        .eq("parent_user_id", user!.id);
+        .select("student_id, students(id, full_name, class_id, classes(name))")
+        .eq("parent_user_id", user.id);
       if (error) throw error;
       type Row = {
-        students: { id: string; full_name: string; classes: { name: string } | null } | null;
+        students: Child | null;
       };
       return ((data ?? []) as unknown as Row[])
         .map((r) => r.students)
@@ -183,12 +185,14 @@ function ParentDashboard() {
 
   // ---- homework (next 7 days) ----
   const { data: homework } = useQuery({
-    queryKey: ["parent-homework", selected?.classes?.name],
-    enabled: !!selected,
+    queryKey: ["parent-homework", user?.id, selected?.class_id],
+    enabled: !!selected?.class_id,
     queryFn: async () => {
+      if (!selected?.class_id) return [];
       const { data, error } = await supabase
         .from("homework")
         .select("id, subject, title, description, due_date")
+        .eq("class_id", selected.class_id)
         .gte("due_date", todayISO())
         .lte("due_date", inDaysISO(7))
         .order("due_date", { ascending: true })
