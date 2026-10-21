@@ -28,12 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
@@ -437,9 +432,7 @@ function ParentDashboard() {
                     {value === null ? "—" : value}
                     {key === "rate" && value !== null ? "%" : ""}
                   </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    {t(`parent.summary_${key}`)}
-                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">{t(`parent.summary_${key}`)}</p>
                 </div>
               ))}
             </div>
@@ -465,8 +458,7 @@ function ParentDashboard() {
               >
                 <div>
                   <p className="font-medium">
-                    {a.attendance_sessions?.session_date} —{" "}
-                    {a.attendance_sessions?.subject ?? "—"}
+                    {a.attendance_sessions?.session_date} — {a.attendance_sessions?.subject ?? "—"}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {t(`attendance.status_${a.status}`)}
@@ -585,7 +577,9 @@ function ParentDashboard() {
               <div key={m.id} className="rounded-lg border px-3 py-2 text-sm">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium">
-                    {m.preferred_date} — {MEETING_SLOTS.find((s) => s.value === m.preferred_slot)?.label ?? m.preferred_slot}
+                    {m.preferred_date} —{" "}
+                    {MEETING_SLOTS.find((s) => s.value === m.preferred_slot)?.label ??
+                      m.preferred_slot}
                     {childName ? ` (${childName})` : ""}
                   </span>
                   <Badge
@@ -627,10 +621,7 @@ function ParentDashboard() {
               className="w-56"
             />
           </div>
-          <Button
-            onClick={savePhone}
-            disabled={savingPhone || phone === undefined}
-          >
+          <Button onClick={savePhone} disabled={savingPhone || phone === undefined}>
             {t("common.save")}
           </Button>
         </CardContent>

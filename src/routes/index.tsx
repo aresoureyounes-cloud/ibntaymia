@@ -31,8 +31,12 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "منصة إداروم: إدارة هجينة (Online/Offline) للمدارس الجزائرية. شارة رقمية موحدة، تسجيل حضور فوري، إشعارات للأولياء، وتحكم يدوي كامل.",
+          "إداروم لإدارة الثانوية الجزائرية: متابعة الحضور والحصص والحسابات وإشعارات الأولياء داخل التطبيق.",
       },
+      { property: "og:title", content: "إداروم — إدارة الثانوية الجزائرية" },
+      { property: "og:description", content: "متابعة الحضور والحصص والحسابات وإشعارات الأولياء داخل التطبيق." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: Index,
