@@ -36,6 +36,13 @@
       "when": 1792683464822,
       "tag": "0004_student_official_import_identity",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792683525564,
+      "tag": "0005_student_identity_upsert_constraint",
+      "breakpoints": true
     }
   ]
 }
