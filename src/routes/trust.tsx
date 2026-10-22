@@ -5,6 +5,8 @@ import { Shield, Lock, Database, UserCheck, Eye, Mail } from "lucide-react";
 export const Route = createFileRoute("/trust")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "الثقة والأمان — IDAROOM" },
       {
         name: "description",

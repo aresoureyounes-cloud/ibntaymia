@@ -7,6 +7,8 @@ import { ShieldCheck } from "lucide-react";
 export const Route = createFileRoute("/privacy")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: i18n.t("legal.privacy.meta_title") },
       { name: "description", content: i18n.t("legal.privacy.meta_description") },
       { property: "og:title", content: i18n.t("legal.privacy.meta_title") },

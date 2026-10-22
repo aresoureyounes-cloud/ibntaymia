@@ -15,6 +15,8 @@ import { APP_VERSION } from "@/lib/app-version";
 export const Route = createFileRoute("/dashboard/console")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "الطرفية — إداروم" },
       {
         name: "description",
@@ -136,7 +138,10 @@ function ConsolePage() {
             ))}
             <div ref={endRef} />
           </div>
-          <div dir="ltr" className="flex items-center gap-2 border-t border-border bg-[#0d1512] px-4 py-3">
+          <div
+            dir="ltr"
+            className="flex items-center gap-2 border-t border-border bg-[#0d1512] px-4 py-3"
+          >
             <span className="font-mono text-sm text-emerald-400">idaroom&gt;</span>
             <input
               ref={inputRef}
@@ -150,7 +155,12 @@ function ConsolePage() {
               className="flex-1 bg-transparent font-mono text-sm text-emerald-100 outline-none placeholder:text-emerald-100/30"
               placeholder="help"
             />
-            <Button size="sm" variant="secondary" onClick={() => void submit(value)} disabled={busy}>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => void submit(value)}
+              disabled={busy}
+            >
               <CornerDownLeft className="h-4 w-4" />
             </Button>
           </div>

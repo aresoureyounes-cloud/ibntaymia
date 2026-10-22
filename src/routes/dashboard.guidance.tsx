@@ -22,7 +22,19 @@ import { useRealtimeTable } from "@/lib/use-realtime-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/PageHeader";
 
-export const Route = createFileRoute("/dashboard/guidance")({ component: GuidancePage });
+export const Route = createFileRoute("/dashboard/guidance")({
+  head: () => ({
+    meta: [
+      { title: "التوجيه والإحصاء — إداروم" },
+      { name: "description", content: "إداروم: التوجيه والإحصاء في الثانوية الجزائرية." },
+      { property: "og:title", content: "التوجيه والإحصاء — إداروم" },
+      { property: "og:description", content: "إداروم: التوجيه والإحصاء في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: GuidancePage,
+});
 
 function GuidancePage() {
   useRealtimeTable("students", ["guidance_stats"]);
@@ -58,16 +70,14 @@ function GuidancePage() {
           .select("status, created_at")
           .gte("created_at", since)
           .limit(5000),
-        supabase
-          .from("behavior_records")
-          .select("record_type, points")
-          .limit(5000),
+        supabase.from("behavior_records").select("record_type, points").limit(5000),
       ]);
       const attRows = (attRes.data ?? []) as { status: string; created_at: string }[];
       const behRows = (behRes.data ?? []) as { record_type: string; points: number }[];
 
       // Last 14 days attendance trend
-      const days: Record<string, { day: string; present: number; late: number; absent: number }> = {};
+      const days: Record<string, { day: string; present: number; late: number; absent: number }> =
+        {};
       for (let i = 13; i >= 0; i--) {
         const d = new Date(Date.now() - i * 86400000);
         const key = d.toISOString().slice(0, 10);
@@ -110,7 +120,12 @@ function GuidancePage() {
     { label: "البطاقات", value: data?.cards ?? 0, icon: CreditCard },
     { label: "ملاحظات السلوك", value: data?.behavior ?? 0, icon: Award },
   ];
-  const PIE_COLORS = ["hsl(var(--primary))", "hsl(var(--destructive))", "hsl(var(--muted-foreground))", "hsl(var(--accent))"];
+  const PIE_COLORS = [
+    "hsl(var(--primary))",
+    "hsl(var(--destructive))",
+    "hsl(var(--muted-foreground))",
+    "hsl(var(--accent))",
+  ];
 
   return (
     <div className="space-y-6">
@@ -148,9 +163,27 @@ function GuidancePage() {
                 <YAxis fontSize={11} />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="present" name="حاضر" stroke="hsl(var(--primary))" strokeWidth={2} />
-                <Line type="monotone" dataKey="late" name="متأخر" stroke="hsl(var(--accent))" strokeWidth={2} />
-                <Line type="monotone" dataKey="absent" name="غائب" stroke="hsl(var(--destructive))" strokeWidth={2} />
+                <Line
+                  type="monotone"
+                  dataKey="present"
+                  name="حاضر"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth={2}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="late"
+                  name="متأخر"
+                  stroke="hsl(var(--accent))"
+                  strokeWidth={2}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="absent"
+                  name="غائب"
+                  stroke="hsl(var(--destructive))"
+                  strokeWidth={2}
+                />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>

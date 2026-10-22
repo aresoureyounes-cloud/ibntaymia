@@ -15,11 +15,31 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/dashboard/meetings")({
-  head: () => ({ meta: [{ title: "طلبات مقابلة الأولياء — إداروم" }] }),
+  head: () => ({
+    meta: [
+      {
+        name: "description",
+        content: "طلبات مقابلة الأولياء — إداروم: صفحة في منصة إداروم للثانوية الجزائرية.",
+      },
+      { property: "og:title", content: "طلبات مقابلة الأولياء — إداروم" },
+      {
+        property: "og:description",
+        content: "طلبات مقابلة الأولياء — إداروم: صفحة في منصة إداروم للثانوية الجزائرية.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { title: "طلبات مقابلة الأولياء — إداروم" },
+    ],
+  }),
   component: MeetingsPage,
 });
 
-const LABEL: Record<string, string> = { pending: "قيد الانتظار", approved: "مقبول", rejected: "مرفوض", done: "تمت" };
+const LABEL: Record<string, string> = {
+  pending: "قيد الانتظار",
+  approved: "مقبول",
+  rejected: "مرفوض",
+  done: "تمت",
+};
 const FILTERS = ["pending", "approved", "rejected", "done", "all"] as const;
 
 function MeetingsPage() {
@@ -34,7 +54,9 @@ function MeetingsPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("meeting_requests")
-        .select("id, parent_user_id, preferred_date, preferred_slot, message, status, review_note, created_at, students(full_name, classes(name))")
+        .select(
+          "id, parent_user_id, preferred_date, preferred_slot, message, status, review_note, created_at, students(full_name, classes(name))",
+        )
         .order("preferred_date", { ascending: true });
       if (error) throw error;
       return data ?? [];
@@ -42,11 +64,19 @@ function MeetingsPage() {
   });
   const rows = (data ?? []).filter((r) => filter === "all" || r.status === filter);
 
-  const setStatus = async (r: { id: string; parent_user_id: string; preferred_date: string | null }, status: string) => {
+  const setStatus = async (
+    r: { id: string; parent_user_id: string; preferred_date: string | null },
+    status: string,
+  ) => {
     const note = notes[r.id]?.trim() || null;
     const { error } = await supabase
       .from("meeting_requests")
-      .update({ status, review_note: note, reviewed_by: user!.id, reviewed_at: new Date().toISOString() })
+      .update({
+        status,
+        review_note: note,
+        reviewed_by: user!.id,
+        reviewed_at: new Date().toISOString(),
+      })
       .eq("id", r.id);
     if (error) return toast.error(friendlyError(error));
     if (status !== "done") {
@@ -65,11 +95,21 @@ function MeetingsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="طلبات مقابلة الأولياء" description="قبول أو رفض طلبات الأولياء، مع ملاحظة تصل للولي في إشعاراته." icon={<CalendarClock className="h-8 w-8" />} />
+      <PageHeader
+        title="طلبات مقابلة الأولياء"
+        description="قبول أو رفض طلبات الأولياء، مع ملاحظة تصل للولي في إشعاراته."
+        icon={<CalendarClock className="h-8 w-8" />}
+      />
       <div className="flex flex-wrap gap-2">
         {FILTERS.map((f) => (
-          <Button key={f} size="sm" variant={filter === f ? "default" : "outline"} onClick={() => setFilter(f)}>
-            {f === "all" ? "الكل" : LABEL[f]} ({(data ?? []).filter((r) => f === "all" || r.status === f).length})
+          <Button
+            key={f}
+            size="sm"
+            variant={filter === f ? "default" : "outline"}
+            onClick={() => setFilter(f)}
+          >
+            {f === "all" ? "الكل" : LABEL[f]} (
+            {(data ?? []).filter((r) => f === "all" || r.status === f).length})
           </Button>
         ))}
       </div>
@@ -93,23 +133,51 @@ function MeetingsPage() {
             <CardContent className="space-y-2 pt-5 text-sm">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <p className="font-medium">
-                  {r.students?.full_name ?? "—"} <span className="text-muted-foreground">— {r.students?.classes?.name ?? ""}</span>
+                  {r.students?.full_name ?? "—"}{" "}
+                  <span className="text-muted-foreground">— {r.students?.classes?.name ?? ""}</span>
                 </p>
-                <Badge variant={r.status === "rejected" ? "destructive" : r.status === "pending" ? "outline" : "default"}>{LABEL[r.status] ?? r.status}</Badge>
+                <Badge
+                  variant={
+                    r.status === "rejected"
+                      ? "destructive"
+                      : r.status === "pending"
+                        ? "outline"
+                        : "default"
+                  }
+                >
+                  {LABEL[r.status] ?? r.status}
+                </Badge>
               </div>
-              <p className="ltr text-muted-foreground">{r.preferred_date ?? "—"} {r.preferred_slot ? `· ${r.preferred_slot}` : ""}</p>
+              <p className="ltr text-muted-foreground">
+                {r.preferred_date ?? "—"} {r.preferred_slot ? `· ${r.preferred_slot}` : ""}
+              </p>
               {r.message && <p>{r.message}</p>}
               {r.review_note && <p className="text-muted-foreground">الملاحظة: {r.review_note}</p>}
               <div className="flex flex-wrap items-center gap-2">
                 {r.status === "pending" && (
                   <>
-                    <Input className="max-w-sm" placeholder="ملاحظة للولي (مثلاً: الموعد الساعة 10:00)" value={notes[r.id] ?? ""} onChange={(e) => setNotes({ ...notes, [r.id]: e.target.value })} />
-                    <Button size="sm" onClick={() => setStatus(r, "approved")}>قبول</Button>
-                    <Button size="sm" variant="destructive" onClick={() => setStatus(r, "rejected")}>رفض</Button>
+                    <Input
+                      className="max-w-sm"
+                      placeholder="ملاحظة للولي (مثلاً: الموعد الساعة 10:00)"
+                      value={notes[r.id] ?? ""}
+                      onChange={(e) => setNotes({ ...notes, [r.id]: e.target.value })}
+                    />
+                    <Button size="sm" onClick={() => setStatus(r, "approved")}>
+                      قبول
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => setStatus(r, "rejected")}
+                    >
+                      رفض
+                    </Button>
                   </>
                 )}
                 {r.status === "approved" && (
-                  <Button size="sm" variant="outline" onClick={() => setStatus(r, "done")}>تمت المقابلة</Button>
+                  <Button size="sm" variant="outline" onClick={() => setStatus(r, "done")}>
+                    تمت المقابلة
+                  </Button>
                 )}
               </div>
             </CardContent>

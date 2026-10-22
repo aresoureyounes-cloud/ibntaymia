@@ -10,7 +10,22 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/dashboard/today")({
-  head: () => ({ meta: [{ title: "حصص اليوم — إداروم" }] }),
+  head: () => ({
+    meta: [
+      {
+        name: "description",
+        content: "حصص اليوم — إداروم: صفحة في منصة إداروم للثانوية الجزائرية.",
+      },
+      { property: "og:title", content: "حصص اليوم — إداروم" },
+      {
+        property: "og:description",
+        content: "حصص اليوم — إداروم: صفحة في منصة إداروم للثانوية الجزائرية.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { title: "حصص اليوم — إداروم" },
+    ],
+  }),
   component: TodayPage,
 });
 
@@ -72,12 +87,18 @@ function TodayPage() {
       ).data ?? [],
   });
 
-  const missing = slots.filter((s) => s.end_time.slice(0, 5) <= nowHM && !sessions.some((x) => x.slot_id === s.id));
+  const missing = slots.filter(
+    (s) => s.end_time.slice(0, 5) <= nowHM && !sessions.some((x) => x.slot_id === s.id),
+  );
   const extra = sessions.filter((x) => !x.slot_id || !slots.some((s) => s.id === x.slot_id));
 
   return (
     <div className="space-y-6">
-      <PageHeader title={`حصص اليوم — ${DAYS[weekday]}`} description={today} icon={<CalendarCheck className="h-8 w-8" />} />
+      <PageHeader
+        title={`حصص اليوم — ${DAYS[weekday]}`}
+        description={today}
+        icon={<CalendarCheck className="h-8 w-8" />}
+      />
 
       {missing.length > 0 && (
         <Card className="border-destructive/50">
@@ -94,7 +115,8 @@ function TodayPage() {
             <p className="font-medium">حصص استخلاف مكلّف بها اليوم:</p>
             {subs.map((s) => (
               <p key={s.id} className="text-muted-foreground">
-                {s.schedule_slots?.start_time.slice(0, 5)}–{s.schedule_slots?.end_time.slice(0, 5)} · {s.schedule_slots?.subject} · {s.classes?.name}
+                {s.schedule_slots?.start_time.slice(0, 5)}–{s.schedule_slots?.end_time.slice(0, 5)}{" "}
+                · {s.schedule_slots?.subject} · {s.classes?.name}
               </p>
             ))}
           </CardContent>
@@ -102,7 +124,9 @@ function TodayPage() {
       )}
 
       {isLoading && <p className="text-sm text-muted-foreground">جارٍ التحميل...</p>}
-      {!isLoading && slots.length === 0 && <p className="text-sm text-muted-foreground">لا حصص لك في جدول اليوم.</p>}
+      {!isLoading && slots.length === 0 && (
+        <p className="text-sm text-muted-foreground">لا حصص لك في جدول اليوم.</p>
+      )}
 
       <div className="space-y-2">
         {slots.map((s) => {
@@ -114,18 +138,33 @@ function TodayPage() {
               <CardContent className="flex flex-wrap items-center justify-between gap-3 pt-4">
                 <div className="space-y-1 text-sm">
                   <p className="font-medium">
-                    <span className="ltr">{s.start_time.slice(0, 5)}–{s.end_time.slice(0, 5)}</span> · {s.subject} · {s.classes?.name}
+                    <span className="ltr">
+                      {s.start_time.slice(0, 5)}–{s.end_time.slice(0, 5)}
+                    </span>{" "}
+                    · {s.subject} · {s.classes?.name}
                     {s.group_label !== "all" ? ` (${s.group_label})` : ""}
                   </p>
-                  <p className="text-xs text-muted-foreground">{s.room ? `القاعة ${s.room}` : ""}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {s.room ? `القاعة ${s.room}` : ""}
+                  </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  {current && <Badge><Clock className="me-1 h-3 w-3" />الآن</Badge>}
+                  {current && (
+                    <Badge>
+                      <Clock className="me-1 h-3 w-3" />
+                      الآن
+                    </Badge>
+                  )}
                   {done ? (
-                    <Badge variant="secondary"><CheckCircle2 className="me-1 h-3 w-3" />مسجَّل · {absent} غائب</Badge>
+                    <Badge variant="secondary">
+                      <CheckCircle2 className="me-1 h-3 w-3" />
+                      مسجَّل · {absent} غائب
+                    </Badge>
                   ) : (
                     <Link to="/dashboard/attendance">
-                      <Button size="lg" className="min-h-11">تسجيل الحضور</Button>
+                      <Button size="lg" className="min-h-11">
+                        تسجيل الحضور
+                      </Button>
                     </Link>
                   )}
                 </div>
@@ -139,7 +178,9 @@ function TodayPage() {
         <div className="space-y-1 text-sm">
           <p className="font-medium">جلسات أخرى سجلتها اليوم (استخلاف / إضافية):</p>
           {extra.map((x) => (
-            <p key={x.id} className="text-muted-foreground">{x.subject ?? "—"} · {x.classes?.name} · {x.attendance_records.length} تلميذ</p>
+            <p key={x.id} className="text-muted-foreground">
+              {x.subject ?? "—"} · {x.classes?.name} · {x.attendance_records.length} تلميذ
+            </p>
           ))}
         </div>
       )}

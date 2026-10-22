@@ -9,7 +9,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/dashboard/weekly")({
-  head: () => ({ meta: [{ title: "الملخص الأسبوعي — إداروم" }] }),
+  head: () => ({
+    meta: [
+      {
+        name: "description",
+        content: "الملخص الأسبوعي — إداروم: صفحة في منصة إداروم للثانوية الجزائرية.",
+      },
+      { property: "og:title", content: "الملخص الأسبوعي — إداروم" },
+      {
+        property: "og:description",
+        content: "الملخص الأسبوعي — إداروم: صفحة في منصة إداروم للثانوية الجزائرية.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { title: "الملخص الأسبوعي — إداروم" },
+    ],
+  }),
   component: WeeklyPage,
 });
 
@@ -35,13 +50,29 @@ function WeeklyPage() {
       const [sess, just, meet, subs, events] = await Promise.all([
         supabase
           .from("attendance_sessions")
-          .select("id, session_date, session_type, classes(name), attendance_records(status, student_id, students(full_name, classes(name)))")
+          .select(
+            "id, session_date, session_type, classes(name), attendance_records(status, student_id, students(full_name, classes(name)))",
+          )
           .gte("session_date", from)
           .lte("session_date", to),
-        supabase.from("absence_justifications").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("meeting_requests").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("substitution_requests").select("id", { count: "exact", head: true }).eq("status", "pending"),
-        supabase.from("school_events").select("id, title, starts_on, event_type").gte("starts_on", fmt(new Date())).order("starts_on").limit(8),
+        supabase
+          .from("absence_justifications")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "pending"),
+        supabase
+          .from("meeting_requests")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "pending"),
+        supabase
+          .from("substitution_requests")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "pending"),
+        supabase
+          .from("school_events")
+          .select("id, title, starts_on, event_type")
+          .gte("starts_on", fmt(new Date()))
+          .order("starts_on")
+          .limit(8),
       ]);
       if (sess.error) throw sess.error;
       return {
@@ -58,17 +89,26 @@ function WeeklyPage() {
   const records = sessions.flatMap((s) => s.attendance_records);
   const absent = records.filter((r) => r.status === "absent").length;
   const late = records.filter((r) => r.status === "late").length;
-  const rate = records.length ? Math.round(((records.length - absent) / records.length) * 100) : null;
+  const rate = records.length
+    ? Math.round(((records.length - absent) / records.length) * 100)
+    : null;
 
   const perStudent = new Map<string, { name: string; cls: string; absent: number; late: number }>();
   for (const r of records) {
     if (r.status !== "absent" && r.status !== "late") continue;
-    const e = perStudent.get(r.student_id) ?? { name: r.students?.full_name ?? "—", cls: r.students?.classes?.name ?? "", absent: 0, late: 0 };
+    const e = perStudent.get(r.student_id) ?? {
+      name: r.students?.full_name ?? "—",
+      cls: r.students?.classes?.name ?? "",
+      absent: 0,
+      late: 0,
+    };
     if (r.status === "absent") e.absent++;
     else e.late++;
     perStudent.set(r.student_id, e);
   }
-  const top = [...perStudent.values()].sort((a, b) => b.absent - a.absent || b.late - a.late).slice(0, 15);
+  const top = [...perStudent.values()]
+    .sort((a, b) => b.absent - a.absent || b.late - a.late)
+    .slice(0, 15);
 
   const perClass = new Map<string, { sessions: number; absent: number; total: number }>();
   for (const s of sessions) {
@@ -94,11 +134,28 @@ function WeeklyPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="الملخص الأسبوعي" description={`من ${from} إلى ${to}`} icon={<CalendarRange className="h-8 w-8" />} />
+      <PageHeader
+        title="الملخص الأسبوعي"
+        description={`من ${from} إلى ${to}`}
+        icon={<CalendarRange className="h-8 w-8" />}
+      />
       <div className="flex items-center gap-2">
-        <Button size="sm" variant="outline" onClick={() => setOffset(offset - 1)}><ChevronRight className="h-4 w-4" />الأسبوع السابق</Button>
-        <Button size="sm" variant="outline" onClick={() => setOffset(0)} disabled={offset === 0}>هذا الأسبوع</Button>
-        <Button size="sm" variant="outline" onClick={() => setOffset(offset + 1)} disabled={offset >= 0}>الأسبوع التالي<ChevronLeft className="h-4 w-4" /></Button>
+        <Button size="sm" variant="outline" onClick={() => setOffset(offset - 1)}>
+          <ChevronRight className="h-4 w-4" />
+          الأسبوع السابق
+        </Button>
+        <Button size="sm" variant="outline" onClick={() => setOffset(0)} disabled={offset === 0}>
+          هذا الأسبوع
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setOffset(offset + 1)}
+          disabled={offset >= 0}
+        >
+          الأسبوع التالي
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
       </div>
       {isLoading && <p className="text-sm text-muted-foreground">جارٍ التحميل...</p>}
 
@@ -107,47 +164,82 @@ function WeeklyPage() {
         <Stat label="نسبة الحضور" value={rate === null ? "—" : `${rate}%`} />
         <Stat label="حالات الغياب" value={absent} />
         <Stat label="حالات التأخر" value={late} />
-        <Stat label="تبريرات غياب تنتظر الرد" value={data?.pendingJust ?? 0} to="/dashboard/absence-report" />
-        <Stat label="طلبات مقابلة تنتظر الرد" value={data?.pendingMeet ?? 0} to="/dashboard/meetings" />
-        <Stat label="طلبات استبدال تنتظر الرد" value={data?.pendingSubs ?? 0} to="/dashboard/substitutions" />
+        <Stat
+          label="تبريرات غياب تنتظر الرد"
+          value={data?.pendingJust ?? 0}
+          to="/dashboard/absence-report"
+        />
+        <Stat
+          label="طلبات مقابلة تنتظر الرد"
+          value={data?.pendingMeet ?? 0}
+          to="/dashboard/meetings"
+        />
+        <Stat
+          label="طلبات استبدال تنتظر الرد"
+          value={data?.pendingSubs ?? 0}
+          to="/dashboard/substitutions"
+        />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base">الأكثر غياباً هذا الأسبوع</CardTitle>
-            <ExportButtons filename="weekly-absences" title={`الأكثر غياباً ${from} → ${to}`} rows={top.map((s) => ({ التلميذ: s.name, القسم: s.cls, الغياب: s.absent, التأخر: s.late }))} />
+            <ExportButtons
+              filename="weekly-absences"
+              title={`الأكثر غياباً ${from} → ${to}`}
+              rows={top.map((s) => ({
+                التلميذ: s.name,
+                القسم: s.cls,
+                الغياب: s.absent,
+                التأخر: s.late,
+              }))}
+            />
           </CardHeader>
           <CardContent className="space-y-1 text-sm">
             {top.length === 0 && <p className="text-muted-foreground">لا غيابات مسجلة.</p>}
             {top.map((s, i) => (
               <div key={i} className="flex justify-between rounded border px-3 py-1.5">
-                <span>{s.name} <span className="text-muted-foreground">— {s.cls}</span></span>
-                <span>{s.absent} غ · {s.late} ت</span>
+                <span>
+                  {s.name} <span className="text-muted-foreground">— {s.cls}</span>
+                </span>
+                <span>
+                  {s.absent} غ · {s.late} ت
+                </span>
               </div>
             ))}
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">حسب القسم</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-base">حسب القسم</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-1 text-sm">
             {perClass.size === 0 && <p className="text-muted-foreground">لا بيانات.</p>}
             {[...perClass.entries()].sort().map(([k, v]) => (
               <div key={k} className="flex justify-between rounded border px-3 py-1.5">
                 <span>{k}</span>
-                <span className="text-muted-foreground">{v.sessions} جلسة · {v.absent} غياب من {v.total}</span>
+                <span className="text-muted-foreground">
+                  {v.sessions} جلسة · {v.absent} غياب من {v.total}
+                </span>
               </div>
             ))}
           </CardContent>
         </Card>
 
         <Card className="lg:col-span-2">
-          <CardHeader><CardTitle className="text-base">المواعيد القادمة</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-base">المواعيد القادمة</CardTitle>
+          </CardHeader>
           <CardContent className="space-y-1 text-sm">
-            {(data?.events ?? []).length === 0 && <p className="text-muted-foreground">لا مواعيد قادمة.</p>}
+            {(data?.events ?? []).length === 0 && (
+              <p className="text-muted-foreground">لا مواعيد قادمة.</p>
+            )}
             {(data?.events ?? []).map((e) => (
-              <p key={e.id}><span className="ltr text-muted-foreground">{e.starts_on}</span> · {e.title}</p>
+              <p key={e.id}>
+                <span className="ltr text-muted-foreground">{e.starts_on}</span> · {e.title}
+              </p>
             ))}
           </CardContent>
         </Card>

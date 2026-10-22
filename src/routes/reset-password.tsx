@@ -12,7 +12,21 @@ import { HandDrawnStar } from "@/components/HandDrawnStar";
 
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
-    meta: [{ title: "تعيين كلمة مرور جديدة — إداروم" }, { name: "robots", content: "noindex" }],
+    meta: [
+      {
+        name: "description",
+        content: "تعيين كلمة مرور جديدة — إداروم: صفحة في منصة إداروم للثانوية الجزائرية.",
+      },
+      { property: "og:title", content: "تعيين كلمة مرور جديدة — إداروم" },
+      {
+        property: "og:description",
+        content: "تعيين كلمة مرور جديدة — إداروم: صفحة في منصة إداروم للثانوية الجزائرية.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { title: "تعيين كلمة مرور جديدة — إداروم" },
+      { name: "robots", content: "noindex" },
+    ],
   }),
   component: ResetPasswordPage,
 });
