@@ -268,9 +268,14 @@ export const bulkImportAccounts = createServerFn({ method: "POST" })
       } catch (e) {
         let cleanupError: string | null = null;
         if (createdUserId) {
-          const studentCleanup = await supabaseAdmin.from("students").delete().eq("user_id", createdUserId);
+          const studentCleanup = await supabaseAdmin
+            .from("students")
+            .delete()
+            .eq("user_id", createdUserId);
           const cleanup = await supabaseAdmin.auth.admin.deleteUser(createdUserId);
-          cleanupError = [studentCleanup.error?.message, cleanup.error?.message].filter(Boolean).join("؛ ") || null;
+          cleanupError =
+            [studentCleanup.error?.message, cleanup.error?.message].filter(Boolean).join("؛ ") ||
+            null;
         }
         results.push({
           full_name: row.full_name,
