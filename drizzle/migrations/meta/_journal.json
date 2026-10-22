@@ -29,6 +29,13 @@
       "when": 1792606149774,
       "tag": "0003_restrict_role_writes_to_server",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792683464822,
+      "tag": "0004_student_official_import_identity",
+      "breakpoints": true
     }
   ]
 }

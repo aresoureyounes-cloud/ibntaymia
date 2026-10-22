@@ -1121,11 +1121,13 @@ export type Database = {
           class_id: string | null
           created_at: string
           date_of_birth: string | null
+          enrollment_data: Json | null
           fake_email: string | null
           fake_phone: string | null
           full_name: string
           gender: string | null
           id: string
+          national_student_id: string | null
           updated_at: string
           user_id: string | null
         }
@@ -1133,11 +1135,13 @@ export type Database = {
           class_id?: string | null
           created_at?: string
           date_of_birth?: string | null
+          enrollment_data?: Json | null
           fake_email?: string | null
           fake_phone?: string | null
           full_name: string
           gender?: string | null
           id?: string
+          national_student_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -1145,11 +1149,13 @@ export type Database = {
           class_id?: string | null
           created_at?: string
           date_of_birth?: string | null
+          enrollment_data?: Json | null
           fake_email?: string | null
           fake_phone?: string | null
           full_name?: string
           gender?: string | null
           id?: string
+          national_student_id?: string | null
           updated_at?: string
           user_id?: string | null
         }
