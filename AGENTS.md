@@ -13,3 +13,4 @@
 - Treat external notification simulation as recording only, never successful delivery; this prevents staff relying on unsent parent alerts.
 - Account imports must use cryptographic temporary credentials, enumerate existing auth users across all pages, check every dependent write, and attempt cleanup of newly created incomplete accounts; this prevents false success and duplicate or orphaned accounts.
 - Parent homework queries must use the selected child's class ID in both the filter and query key; class labels are not unique identifiers.
+- Browser clients may only read user roles; role mutations go through authorized server handlers that check caller privileges with the caller-scoped client before loading privileged access, preventing direct privilege escalation.
