@@ -10,6 +10,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export const Route = createFileRoute("/dashboard/diagnostics")({
   head: () => ({
     meta: [
+      { property: "og:title", content: "تقرير فحص النظام — إداروم" },
+      {
+        property: "og:description",
+        content: "تقرير فحص النظام — إداروم: صفحة في منصة إداروم للثانوية الجزائرية.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "تقرير فحص النظام — إداروم" },
       {
         name: "description",

@@ -34,7 +34,10 @@ export const Route = createFileRoute("/")({
           "إداروم لإدارة الثانوية الجزائرية: متابعة الحضور والحصص والحسابات وإشعارات الأولياء داخل التطبيق.",
       },
       { property: "og:title", content: "إداروم — إدارة الثانوية الجزائرية" },
-      { property: "og:description", content: "متابعة الحضور والحصص والحسابات وإشعارات الأولياء داخل التطبيق." },
+      {
+        property: "og:description",
+        content: "متابعة الحضور والحصص والحسابات وإشعارات الأولياء داخل التطبيق.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -132,10 +135,7 @@ function Index() {
               </div>
 
               {/* Right dashboard preview grid */}
-              <div
-                className="animate-reveal lg:col-span-7"
-                style={{ animationDelay: "0.1s" }}
-              >
+              <div className="animate-reveal lg:col-span-7" style={{ animationDelay: "0.1s" }}>
                 <div className="grid h-[520px] grid-cols-6 gap-4 sm:h-[600px]">
                   {/* Main stats widget */}
                   <Card className="col-span-6 row-span-2 glass squircle-lg contour border-border p-6 shadow-soft transition-all duration-500 hover:-translate-y-1 sm:p-8">
@@ -185,7 +185,9 @@ function Index() {
                         <p className="text-xs opacity-80">{t("landing.preview_growth")}</p>
                         <p className="text-xl font-bold tracking-tight sm:text-2xl">
                           +12.4%
-                          <span className="mr-1 text-xs font-normal opacity-70">{t("landing.preview_growth_period")}</span>
+                          <span className="mr-1 text-xs font-normal opacity-70">
+                            {t("landing.preview_growth_period")}
+                          </span>
                         </p>
                       </div>
                     </CardContent>
@@ -200,7 +202,9 @@ function Index() {
                         <div className="h-10 w-10 rounded-full border-[3px] border-background bg-secondary shadow-sm sm:h-11 sm:w-11" />
                       </div>
                       <div>
-                        <p className="text-base font-bold text-foreground sm:text-lg">{t("landing.preview_next_session")}</p>
+                        <p className="text-base font-bold text-foreground sm:text-lg">
+                          {t("landing.preview_next_session")}
+                        </p>
                         <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground sm:text-sm">
                           <span className="h-1.5 w-1.5 rounded-full bg-accent" />
                           {t("landing.preview_room_time")}

@@ -92,7 +92,10 @@ export const listAccounts = createServerFn({ method: "POST" })
     }
 
     const ids = users.map((u) => u.id);
-    const { data: roleRows } = await db.from("user_roles").select("user_id, role").in("user_id", ids);
+    const { data: roleRows } = await db
+      .from("user_roles")
+      .select("user_id, role")
+      .in("user_id", ids);
     const { data: profiles } = await db.from("profiles").select("id, full_name").in("id", ids);
 
     return users
@@ -130,7 +133,9 @@ export const createAccount = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     const uid = created.user.id;
 
-    await db.from("profiles").upsert({ id: uid, full_name: data.fullName, preferred_language: "ar" });
+    await db
+      .from("profiles")
+      .upsert({ id: uid, full_name: data.fullName, preferred_language: "ar" });
     await db.from("user_roles").delete().eq("user_id", uid);
     const { error: rErr } = await db
       .from("user_roles")
@@ -185,8 +190,7 @@ export const setAccountRoles = createServerFn({ method: "POST" })
     const next = Array.from(new Set(data.roles));
 
     const touchesDeveloper =
-      current.includes("developer") !== next.includes("developer") ||
-      current.includes("developer");
+      current.includes("developer") !== next.includes("developer") || current.includes("developer");
     if (touchesDeveloper && !isDeveloper) throw new Error(DENY_DEVELOPER_ONLY);
 
     if (
@@ -283,8 +287,6 @@ export const resetAccountPassword = createServerFn({ method: "POST" })
 
     return { password, email, emailSent, emailError };
   });
-
-
 
 /* ------------------------------------------------------- enable / disable */
 

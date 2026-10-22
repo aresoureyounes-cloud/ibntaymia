@@ -24,6 +24,16 @@ import {
 } from "@/components/ui/select";
 
 export const Route = createFileRoute("/dashboard/notifications")({
+  head: () => ({
+    meta: [
+      { title: "سجل الإشعارات — إداروم" },
+      { name: "description", content: "إداروم: سجل الإشعارات في الثانوية الجزائرية." },
+      { property: "og:title", content: "سجل الإشعارات — إداروم" },
+      { property: "og:description", content: "إداروم: سجل الإشعارات في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: NotificationsPage,
 });
 
@@ -106,11 +116,7 @@ function NotificationsPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 md:grid-cols-2">
-          <Input
-            placeholder="العنوان"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
+          <Input placeholder="العنوان" value={title} onChange={(e) => setTitle(e.target.value)} />
           <Input
             placeholder="المستهدَف (اختياري)"
             value={recipientLabel}

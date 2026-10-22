@@ -6,6 +6,13 @@ import { Cloud, HandMetal, Fingerprint, Send, Lock } from "lucide-react";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
+      { property: "og:title", content: "حول منصة إداروم — IDAROOM" },
+      {
+        property: "og:description",
+        content: "حول منصة إداروم — IDAROOM: صفحة في منصة إداروم للثانوية الجزائرية.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "حول منصة إداروم — IDAROOM" },
       {
         name: "description",

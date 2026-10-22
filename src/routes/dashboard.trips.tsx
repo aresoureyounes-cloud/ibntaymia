@@ -13,7 +13,19 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/PageHeader";
 
-export const Route = createFileRoute("/dashboard/trips")({ component: TripsPage });
+export const Route = createFileRoute("/dashboard/trips")({
+  head: () => ({
+    meta: [
+      { title: "الرحلات — إداروم" },
+      { name: "description", content: "إداروم: الرحلات في الثانوية الجزائرية." },
+      { property: "og:title", content: "الرحلات — إداروم" },
+      { property: "og:description", content: "إداروم: الرحلات في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: TripsPage,
+});
 
 const db = supabase;
 type Trip = {

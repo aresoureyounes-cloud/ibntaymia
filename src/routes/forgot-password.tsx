@@ -14,6 +14,8 @@ import { HandDrawnStar } from "@/components/HandDrawnStar";
 export const Route = createFileRoute("/forgot-password")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "استعادة كلمة المرور — إداروم" },
       {
         name: "description",

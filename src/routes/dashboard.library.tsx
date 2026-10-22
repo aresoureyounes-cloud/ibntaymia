@@ -13,7 +13,19 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/PageHeader";
 
-export const Route = createFileRoute("/dashboard/library")({ component: LibraryPage });
+export const Route = createFileRoute("/dashboard/library")({
+  head: () => ({
+    meta: [
+      { title: "المكتبة — إداروم" },
+      { name: "description", content: "إداروم: المكتبة في الثانوية الجزائرية." },
+      { property: "og:title", content: "المكتبة — إداروم" },
+      { property: "og:description", content: "إداروم: المكتبة في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: LibraryPage,
+});
 
 type Item = {
   id: string;

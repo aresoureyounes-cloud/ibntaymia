@@ -11,14 +11,21 @@ import { useAppUpdate } from "@/lib/use-app-update";
 import { UpdateProgressDialog } from "@/components/UpdateProgressDialog";
 import logoAsset from "@/assets/idaroom-logo.png.asset.json";
 
-
 export const Route = createFileRoute("/dashboard/settings")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "الإعدادات — إداروم" },
-      { name: "description", content: "معلومات الإصدار وسجل التغييرات وإدارة التخزين المؤقت لتطبيق إداروم." },
+      {
+        name: "description",
+        content: "معلومات الإصدار وسجل التغييرات وإدارة التخزين المؤقت لتطبيق إداروم.",
+      },
       { property: "og:title", content: "الإعدادات — إداروم" },
-      { property: "og:description", content: "معلومات الإصدار وسجل التغييرات وإدارة التخزين المؤقت لتطبيق إداروم." },
+      {
+        property: "og:description",
+        content: "معلومات الإصدار وسجل التغييرات وإدارة التخزين المؤقت لتطبيق إداروم.",
+      },
     ],
   }),
   component: SettingsPage,
@@ -51,7 +58,6 @@ function SettingsPage() {
     await apply();
   }
 
-
   async function clearCache() {
     setClearing(true);
     try {
@@ -76,10 +82,7 @@ function SettingsPage() {
   return (
     <div className="space-y-6">
       <UpdateProgressDialog open={applying} progress={progress} remote={remote} />
-      <PageHeader
-        title="الإعدادات"
-        description="معلومات التطبيق وإدارة التخزين المؤقت."
-      />
+      <PageHeader title="الإعدادات" description="معلومات التطبيق وإدارة التخزين المؤقت." />
 
       {/* Version card */}
       <Card>
@@ -96,9 +99,7 @@ function SettingsPage() {
                 <Sparkles className="h-3 w-3" />v{APP_VERSION}
               </Badge>
             </CardTitle>
-            <p className="mt-1 text-xs text-muted-foreground">
-              صدر في {RELEASE_DATE}
-            </p>
+            <p className="mt-1 text-xs text-muted-foreground">صدر في {RELEASE_DATE}</p>
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -129,7 +130,6 @@ function SettingsPage() {
             </Button>
           </div>
         </CardContent>
-
       </Card>
 
       {/* Connectivity card */}

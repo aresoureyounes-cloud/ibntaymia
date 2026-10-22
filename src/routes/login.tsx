@@ -19,6 +19,8 @@ import { DemoLoginPanel } from "@/components/DemoLoginPanel";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "تسجيل الدخول — إداروم" },
       {
         name: "description",

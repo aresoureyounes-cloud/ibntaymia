@@ -38,6 +38,16 @@ import {
 } from "@/components/ui/select";
 
 export const Route = createFileRoute("/dashboard/gate-log")({
+  head: () => ({
+    meta: [
+      { title: "سجل البوابة المؤجلة — إداروم" },
+      { name: "description", content: "إداروم: سجل البوابة المؤجلة في الثانوية الجزائرية." },
+      { property: "og:title", content: "سجل البوابة المؤجلة — إداروم" },
+      { property: "og:description", content: "إداروم: سجل البوابة المؤجلة في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: GateLogPage,
 });
 
@@ -249,7 +259,9 @@ function GateLogPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div className="flex items-start gap-3">
-          <span className="mt-1 text-primary"><History className="h-8 w-8" /></span>
+          <span className="mt-1 text-primary">
+            <History className="h-8 w-8" />
+          </span>
           <div>
             <h1 className="font-display text-3xl leading-tight md:text-4xl">
               <span className="underline-sketch">سجلّ البوابة</span>

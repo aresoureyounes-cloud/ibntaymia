@@ -19,6 +19,16 @@ import { PageHeader } from "@/components/PageHeader";
 import { exportToExcel, exportToPdf } from "@/lib/export-utils";
 
 export const Route = createFileRoute("/dashboard/students")({
+  head: () => ({
+    meta: [
+      { title: "قائمة التلاميذ — إداروم" },
+      { name: "description", content: "إداروم: قائمة التلاميذ في الثانوية الجزائرية." },
+      { property: "og:title", content: "قائمة التلاميذ — إداروم" },
+      { property: "og:description", content: "إداروم: قائمة التلاميذ في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: StudentsPage,
 });
 

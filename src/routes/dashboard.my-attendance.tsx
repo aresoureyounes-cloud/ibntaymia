@@ -17,11 +17,29 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/dashboard/my-attendance")({
-  head: () => ({ meta: [{ title: "سجل الحضور والغياب — إداروم" }] }),
+  head: () => ({
+    meta: [
+      {
+        name: "description",
+        content: "سجل الحضور والغياب — إداروم: صفحة في منصة إداروم للثانوية الجزائرية.",
+      },
+      { property: "og:title", content: "سجل الحضور والغياب — إداروم" },
+      {
+        property: "og:description",
+        content: "سجل الحضور والغياب — إداروم: صفحة في منصة إداروم للثانوية الجزائرية.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { title: "سجل الحضور والغياب — إداروم" },
+    ],
+  }),
   component: MyAttendancePage,
 });
 
-const ST: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+const ST: Record<
+  string,
+  { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
+> = {
   present: { label: "حاضر", variant: "secondary" },
   absent: { label: "غائب", variant: "destructive" },
   late: { label: "متأخر", variant: "outline" },
@@ -38,9 +56,32 @@ function schoolYearStart() {
 }
 
 const PRESETS = [
-  { k: "month", l: "هذا الشهر", from: () => { const n = new Date(); return fmt(new Date(n.getFullYear(), n.getMonth(), 1)); } },
-  { k: "30", l: "آخر 30 يوماً", from: () => { const n = new Date(); n.setDate(n.getDate() - 30); return fmt(n); } },
-  { k: "trim", l: "آخر 3 أشهر", from: () => { const n = new Date(); n.setMonth(n.getMonth() - 3); return fmt(n); } },
+  {
+    k: "month",
+    l: "هذا الشهر",
+    from: () => {
+      const n = new Date();
+      return fmt(new Date(n.getFullYear(), n.getMonth(), 1));
+    },
+  },
+  {
+    k: "30",
+    l: "آخر 30 يوماً",
+    from: () => {
+      const n = new Date();
+      n.setDate(n.getDate() - 30);
+      return fmt(n);
+    },
+  },
+  {
+    k: "trim",
+    l: "آخر 3 أشهر",
+    from: () => {
+      const n = new Date();
+      n.setMonth(n.getMonth() - 3);
+      return fmt(n);
+    },
+  },
   { k: "year", l: "السنة الدراسية", from: schoolYearStart },
 ];
 
@@ -63,14 +104,20 @@ function MyAttendancePage() {
     enabled: !!user,
     queryFn: async () => {
       if (isStudent) {
-        const { data } = await supabase.from("students").select("id, full_name").eq("user_id", user!.id);
+        const { data } = await supabase
+          .from("students")
+          .select("id, full_name")
+          .eq("user_id", user!.id);
         return data ?? [];
       }
       const { data } = await supabase
         .from("parent_student")
         .select("students(id, full_name)")
         .eq("parent_user_id", user!.id);
-      return (data ?? []).map((r) => r.students).filter(Boolean) as { id: string; full_name: string }[];
+      return (data ?? []).map((r) => r.students).filter(Boolean) as {
+        id: string;
+        full_name: string;
+      }[];
     },
   });
   const sid = studentId || kids[0]?.id || "";
@@ -81,7 +128,9 @@ function MyAttendancePage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("attendance_records")
-        .select("id, status, note, justified_at, attendance_sessions!inner(session_date, period, subject, session_type)")
+        .select(
+          "id, status, note, justified_at, attendance_sessions!inner(session_date, period, subject, session_type)",
+        )
         .eq("student_id", sid)
         .gte("attendance_sessions.session_date", from)
         .lte("attendance_sessions.session_date", to);
@@ -104,7 +153,10 @@ function MyAttendancePage() {
   const rate = rows.length ? Math.round(((rows.length - totals.absent) / rows.length) * 100) : null;
 
   const months = useMemo(() => {
-    const m = new Map<string, { present: number; absent: number; late: number; excused: number; days: Set<string> }>();
+    const m = new Map<
+      string,
+      { present: number; absent: number; late: number; excused: number; days: Set<string> }
+    >();
     for (const r of rows) {
       const d = r.attendance_sessions.session_date;
       const k = d.slice(0, 7);
@@ -115,7 +167,8 @@ function MyAttendancePage() {
     }
     return [...m.entries()].sort((a, b) => b[0].localeCompare(a[0]));
   }, [rows]);
-  const monthName = (k: string) => new Date(k + "-01T12:00:00").toLocaleDateString("ar-DZ", { month: "long", year: "numeric" });
+  const monthName = (k: string) =>
+    new Date(k + "-01T12:00:00").toLocaleDateString("ar-DZ", { month: "long", year: "numeric" });
   const kidName = kids.find((k) => k.id === sid)?.full_name ?? "";
 
   const askQuestion = async () => {
@@ -180,7 +233,9 @@ function MyAttendancePage() {
       {!isLoading && kids.length === 0 && (
         <Card>
           <CardContent className="py-8 text-center text-sm text-muted-foreground">
-            {isStudent ? "حسابك غير مربوط بملف تلميذ بعد. راجع الإدارة." : "لم يُربط أي تلميذ بحسابك بعد. راجع الإدارة."}
+            {isStudent
+              ? "حسابك غير مربوط بملف تلميذ بعد. راجع الإدارة."
+              : "لم يُربط أي تلميذ بحسابك بعد. راجع الإدارة."}
           </CardContent>
         </Card>
       )}
@@ -191,24 +246,55 @@ function MyAttendancePage() {
             {kids.length > 1 && (
               <div className="space-y-1 md:col-span-4">
                 <Label>التلميذ</Label>
-                <select className="h-9 w-full rounded-md border bg-background px-2 text-sm" value={sid} onChange={(e) => setStudentId(e.target.value)}>
-                  {kids.map((k) => <option key={k.id} value={k.id}>{k.full_name}</option>)}
+                <select
+                  className="h-9 w-full rounded-md border bg-background px-2 text-sm"
+                  value={sid}
+                  onChange={(e) => setStudentId(e.target.value)}
+                >
+                  {kids.map((k) => (
+                    <option key={k.id} value={k.id}>
+                      {k.full_name}
+                    </option>
+                  ))}
                 </select>
               </div>
             )}
             <div className="flex flex-wrap gap-2 md:col-span-4">
               {PRESETS.map((p) => (
-                <Button key={p.k} size="sm" variant={from === p.from() && to === fmt(new Date()) ? "default" : "outline"} onClick={() => { setFrom(p.from()); setTo(fmt(new Date())); }}>
+                <Button
+                  key={p.k}
+                  size="sm"
+                  variant={from === p.from() && to === fmt(new Date()) ? "default" : "outline"}
+                  onClick={() => {
+                    setFrom(p.from());
+                    setTo(fmt(new Date()));
+                  }}
+                >
                   {p.l}
                 </Button>
               ))}
             </div>
-            <div className="space-y-1"><Label>من</Label><Input type="date" value={from} max={to} onChange={(e) => setFrom(e.target.value)} /></div>
-            <div className="space-y-1"><Label>إلى</Label><Input type="date" value={to} min={from} onChange={(e) => setTo(e.target.value)} /></div>
-            <div className="space-y-1 md:col-span-2"><Label>الحالة</Label>
-              <select className="h-9 w-full rounded-md border bg-background px-2 text-sm" value={status} onChange={(e) => setStatus(e.target.value)}>
+            <div className="space-y-1">
+              <Label>من</Label>
+              <Input type="date" value={from} max={to} onChange={(e) => setFrom(e.target.value)} />
+            </div>
+            <div className="space-y-1">
+              <Label>إلى</Label>
+              <Input type="date" value={to} min={from} onChange={(e) => setTo(e.target.value)} />
+            </div>
+            <div className="space-y-1 md:col-span-2">
+              <Label>الحالة</Label>
+              <select
+                className="h-9 w-full rounded-md border bg-background px-2 text-sm"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+              >
                 <option value="all">الكل</option>
-                {Object.entries(ST).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+                {Object.entries(ST).map(([k, v]) => (
+                  <option key={k} value={k}>
+                    {v.label}
+                  </option>
+                ))}
               </select>
             </div>
           </CardContent>
@@ -225,26 +311,42 @@ function MyAttendancePage() {
               ["متأخر", totals.late],
               ["نسبة الحضور", rate === null ? "—" : `${rate}%`],
             ].map(([l, v]) => (
-              <Card key={l as string}><CardContent className="pt-5"><p className="text-xs text-muted-foreground">{l}</p><p className="text-2xl font-bold">{v}</p></CardContent></Card>
+              <Card key={l as string}>
+                <CardContent className="pt-5">
+                  <p className="text-xs text-muted-foreground">{l}</p>
+                  <p className="text-2xl font-bold">{v}</p>
+                </CardContent>
+              </Card>
             ))}
           </div>
 
           <Card>
-            <CardHeader><CardTitle className="text-base">الملخص الشهري</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="text-base">الملخص الشهري</CardTitle>
+            </CardHeader>
             <CardContent className="overflow-x-auto">
               {months.length === 0 ? (
                 <p className="text-sm text-muted-foreground">لا بيانات في هذه الفترة.</p>
               ) : (
                 <table className="w-full text-sm">
                   <thead className="text-muted-foreground">
-                    <tr className="border-b"><th className="py-2 text-start">الشهر</th><th>حاضر</th><th>غائب</th><th>أيام الغياب</th><th>متأخر</th><th>مبرر</th></tr>
+                    <tr className="border-b">
+                      <th className="py-2 text-start">الشهر</th>
+                      <th>حاضر</th>
+                      <th>غائب</th>
+                      <th>أيام الغياب</th>
+                      <th>متأخر</th>
+                      <th>مبرر</th>
+                    </tr>
                   </thead>
                   <tbody>
                     {months.map(([k, m]) => (
                       <tr key={k} className="border-b text-center last:border-0">
                         <td className="py-2 text-start font-medium">{monthName(k)}</td>
                         <td>{m.present}</td>
-                        <td className={m.absent ? "font-semibold text-destructive" : ""}>{m.absent}</td>
+                        <td className={m.absent ? "font-semibold text-destructive" : ""}>
+                          {m.absent}
+                        </td>
                         <td>{m.days.size}</td>
                         <td>{m.late}</td>
                         <td>{m.excused}</td>
@@ -278,14 +380,19 @@ function MyAttendancePage() {
               />
               <div className="flex items-center justify-between gap-2">
                 <p className="text-xs text-muted-foreground">
-                  تُرسل السجلات المعروضة حالياً (حسب الفترة والتصفية) إلى خدمة الذكاء الاصطناعي. يتطلب اتصالاً.
+                  تُرسل السجلات المعروضة حالياً (حسب الفترة والتصفية) إلى خدمة الذكاء الاصطناعي.
+                  يتطلب اتصالاً.
                 </p>
                 <Button
                   size="sm"
                   onClick={() => void askQuestion()}
                   disabled={asking || !sid || question.trim().length < 2}
                 >
-                  {asking ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}{" "}
+                  {asking ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-4 w-4" />
+                  )}{" "}
                   اسأل
                 </Button>
               </div>
@@ -295,7 +402,9 @@ function MyAttendancePage() {
                   {qaLog.map((item, i) => (
                     <li key={i} className="rounded-md border border-border p-3">
                       <p className="text-sm font-medium">{item.q}</p>
-                      <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">{item.a}</p>
+                      <p className="mt-1 whitespace-pre-line text-sm text-muted-foreground">
+                        {item.a}
+                      </p>
                     </li>
                   ))}
                 </ul>
@@ -304,22 +413,33 @@ function MyAttendancePage() {
           </Card>
 
           <Card>
-            <CardHeader><CardTitle className="text-base">التفاصيل ({filtered.length})</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="text-base">التفاصيل ({filtered.length})</CardTitle>
+            </CardHeader>
             <CardContent className="space-y-2">
               {isLoading && <p className="text-sm text-muted-foreground">جارٍ التحميل...</p>}
-              {!isLoading && filtered.length === 0 && <p className="text-sm text-muted-foreground">لا سجلات.</p>}
+              {!isLoading && filtered.length === 0 && (
+                <p className="text-sm text-muted-foreground">لا سجلات.</p>
+              )}
               {filtered.map((r) => {
                 const s = ST[r.status] ?? { label: r.status, variant: "outline" as const };
                 return (
-                  <div key={r.id} className="flex items-center justify-between gap-2 rounded border px-3 py-2 text-sm">
+                  <div
+                    key={r.id}
+                    className="flex items-center justify-between gap-2 rounded border px-3 py-2 text-sm"
+                  >
                     <div>
                       <p className="font-medium">{r.attendance_sessions.subject ?? "—"}</p>
                       <p className="ltr text-xs text-muted-foreground">
-                        {r.attendance_sessions.session_date}{r.attendance_sessions.period ? ` · ${r.attendance_sessions.period}` : ""}
+                        {r.attendance_sessions.session_date}
+                        {r.attendance_sessions.period ? ` · ${r.attendance_sessions.period}` : ""}
                       </p>
                       {r.note && <p className="text-xs text-muted-foreground">{r.note}</p>}
                     </div>
-                    <Badge variant={s.variant}>{s.label}{r.justified_at ? " · مبرر" : ""}</Badge>
+                    <Badge variant={s.variant}>
+                      {s.label}
+                      {r.justified_at ? " · مبرر" : ""}
+                    </Badge>
                   </div>
                 );
               })}

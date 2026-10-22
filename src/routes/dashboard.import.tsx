@@ -33,6 +33,16 @@ import { exportToExcel } from "@/lib/export-utils";
 import { downloadTemplateExcel, downloadTemplateCsv } from "@/lib/import-templates";
 
 export const Route = createFileRoute("/dashboard/import")({
+  head: () => ({
+    meta: [
+      { title: "استيراد الحسابات — إداروم" },
+      { name: "description", content: "إداروم: استيراد الحسابات في الثانوية الجزائرية." },
+      { property: "og:title", content: "استيراد الحسابات — إداروم" },
+      { property: "og:description", content: "إداروم: استيراد الحسابات في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: ImportPage,
 });
 
@@ -212,9 +222,9 @@ function ImportPage() {
 
           <div className="rounded-md bg-muted/50 p-3 text-xs text-muted-foreground">
             <p className="mb-1 font-medium">الأعمدة المتعرف عليها (اختيارية عدا الاسم):</p>
-            <code>الاسم / name</code> · <code>البريد / email</code> ·{" "}
-            <code>الهاتف / phone</code> · <code>الجنس / gender (M/F)</code> ·{" "}
-            <code>تاريخ الميلاد / dob</code> · <code>القسم / class</code>
+            <code>الاسم / name</code> · <code>البريد / email</code> · <code>الهاتف / phone</code> ·{" "}
+            <code>الجنس / gender (M/F)</code> · <code>تاريخ الميلاد / dob</code> ·{" "}
+            <code>القسم / class</code>
           </div>
 
           <div className="rounded-md border border-dashed border-primary/40 bg-primary/5 p-3">
@@ -242,7 +252,8 @@ function ImportPage() {
               </Button>
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              القالب يحتوي على أعمدة مطلوبة + صفوف عينة صحيحة — احذف العينات ثم أضف بياناتك ثم ارفع الملف.
+              القالب يحتوي على أعمدة مطلوبة + صفوف عينة صحيحة — احذف العينات ثم أضف بياناتك ثم ارفع
+              الملف.
             </p>
           </div>
         </CardContent>

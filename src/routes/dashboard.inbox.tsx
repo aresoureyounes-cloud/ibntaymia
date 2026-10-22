@@ -13,7 +13,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/dashboard/inbox")({
-  head: () => ({ meta: [{ title: "رسائلي — إداروم" }] }),
+  head: () => ({
+    meta: [
+      { name: "description", content: "رسائلي — إداروم: صفحة في منصة إداروم للثانوية الجزائرية." },
+      { property: "og:title", content: "رسائلي — إداروم" },
+      {
+        property: "og:description",
+        content: "رسائلي — إداروم: صفحة في منصة إداروم للثانوية الجزائرية.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+      { title: "رسائلي — إداروم" },
+    ],
+  }),
   component: InboxPage,
 });
 
@@ -46,7 +58,10 @@ function InboxPage() {
   };
 
   const markRead = async (id: string) => {
-    const { error } = await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id);
+    const { error } = await supabase
+      .from("notifications")
+      .update({ read_at: new Date().toISOString() })
+      .eq("id", id);
     if (error) return toast.error(friendlyError(error));
     refresh();
   };
@@ -63,16 +78,40 @@ function InboxPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="رسائلي" description={`${unread} رسالة غير مقروءة`} icon={<Inbox className="h-8 w-8" />} />
+      <PageHeader
+        title="رسائلي"
+        description={`${unread} رسالة غير مقروءة`}
+        icon={<Inbox className="h-8 w-8" />}
+      />
       <div className="flex flex-wrap gap-2">
-        <Button size="sm" variant={onlyUnread ? "outline" : "default"} onClick={() => setOnlyUnread(false)}>الكل ({data.length})</Button>
-        <Button size="sm" variant={onlyUnread ? "default" : "outline"} onClick={() => setOnlyUnread(true)}>غير المقروءة ({unread})</Button>
-        <Button size="sm" variant="outline" onClick={markAll} disabled={!unread} className="ms-auto">
+        <Button
+          size="sm"
+          variant={onlyUnread ? "outline" : "default"}
+          onClick={() => setOnlyUnread(false)}
+        >
+          الكل ({data.length})
+        </Button>
+        <Button
+          size="sm"
+          variant={onlyUnread ? "default" : "outline"}
+          onClick={() => setOnlyUnread(true)}
+        >
+          غير المقروءة ({unread})
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={markAll}
+          disabled={!unread}
+          className="ms-auto"
+        >
           <CheckCheck className="me-1 h-4 w-4" /> تعليم الكل كمقروء
         </Button>
       </div>
       {isLoading && <p className="text-sm text-muted-foreground">جارٍ التحميل...</p>}
-      {!isLoading && rows.length === 0 && <p className="text-sm text-muted-foreground">لا توجد رسائل.</p>}
+      {!isLoading && rows.length === 0 && (
+        <p className="text-sm text-muted-foreground">لا توجد رسائل.</p>
+      )}
       <div className="space-y-2">
         {rows.map((n) => (
           <Card key={n.id} className={n.read_at ? "opacity-70" : "border-primary/50"}>
@@ -83,9 +122,14 @@ function InboxPage() {
               </div>
               {n.body && <p className="whitespace-pre-wrap">{n.body}</p>}
               <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
-                <span>{new Date(n.created_at).toLocaleString("ar-DZ")}{n.recipient_label ? ` · ${n.recipient_label}` : ""}</span>
+                <span>
+                  {new Date(n.created_at).toLocaleString("ar-DZ")}
+                  {n.recipient_label ? ` · ${n.recipient_label}` : ""}
+                </span>
                 {!n.read_at && (
-                  <Button size="sm" variant="ghost" onClick={() => markRead(n.id)}>تعليم كمقروء</Button>
+                  <Button size="sm" variant="ghost" onClick={() => markRead(n.id)}>
+                    تعليم كمقروء
+                  </Button>
                 )}
               </div>
             </CardContent>
