@@ -17,6 +17,16 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard/")({
+  head: () => ({
+    meta: [
+      { title: "لوحة التحكم — إداروم" },
+      { name: "description", content: "إداروم: لوحة التحكم في الثانوية الجزائرية." },
+      { property: "og:title", content: "لوحة التحكم — إداروم" },
+      { property: "og:description", content: "إداروم: لوحة التحكم في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: DashboardHome,
 });
 

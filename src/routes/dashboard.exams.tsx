@@ -30,7 +30,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export const Route = createFileRoute("/dashboard/exams")({ component: ExamsPage });
+export const Route = createFileRoute("/dashboard/exams")({
+  head: () => ({
+    meta: [
+      { title: "مواعيد الاختبارات — إداروم" },
+      { name: "description", content: "إداروم: مواعيد الاختبارات في الثانوية الجزائرية." },
+      { property: "og:title", content: "مواعيد الاختبارات — إداروم" },
+      { property: "og:description", content: "إداروم: مواعيد الاختبارات في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: ExamsPage,
+});
 
 const db = supabase;
 
@@ -106,7 +118,9 @@ function ExamsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div className="flex items-start gap-3">
-          <span className="mt-1 text-primary"><HandDrawnStar size={36} /></span>
+          <span className="mt-1 text-primary">
+            <HandDrawnStar size={36} />
+          </span>
           <div>
             <h1 className="font-display text-3xl leading-tight md:text-4xl">
               <span className="underline-sketch">تنظيم الامتحانات</span>

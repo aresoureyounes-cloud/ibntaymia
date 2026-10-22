@@ -9,6 +9,16 @@ import { Button } from "@/components/ui/button";
 import { HandDrawnStar } from "@/components/HandDrawnStar";
 
 export const Route = createFileRoute("/dashboard/cards/print")({
+  head: () => ({
+    meta: [
+      { title: "طباعة البطاقات — إداروم" },
+      { name: "description", content: "إداروم: طباعة البطاقات في الثانوية الجزائرية." },
+      { property: "og:title", content: "طباعة البطاقات — إداروم" },
+      { property: "og:description", content: "إداروم: طباعة البطاقات في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: CardsPrintPage,
 });
 

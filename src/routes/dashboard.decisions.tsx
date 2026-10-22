@@ -16,6 +16,19 @@ import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/PageHeader";
 
 export const Route = createFileRoute("/dashboard/decisions")({
+  head: () => ({
+    meta: [
+      { title: "القرارات والاستدعاءات — إداروم" },
+      { name: "description", content: "إداروم: القرارات والاستدعاءات في الثانوية الجزائرية." },
+      { property: "og:title", content: "القرارات والاستدعاءات — إداروم" },
+      {
+        property: "og:description",
+        content: "إداروم: القرارات والاستدعاءات في الثانوية الجزائرية.",
+      },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: DecisionsPage,
 });
 

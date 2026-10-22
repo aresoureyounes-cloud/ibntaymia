@@ -21,7 +21,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export const Route = createFileRoute("/dashboard/behavior")({ component: BehaviorPage });
+export const Route = createFileRoute("/dashboard/behavior")({
+  head: () => ({
+    meta: [
+      { title: "سجل السلوك — إداروم" },
+      { name: "description", content: "إداروم: سجل السلوك في الثانوية الجزائرية." },
+      { property: "og:title", content: "سجل السلوك — إداروم" },
+      { property: "og:description", content: "إداروم: سجل السلوك في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: BehaviorPage,
+});
 
 type Student = { id: string; full_name: string; classes: { name: string } | null };
 type Behavior = {

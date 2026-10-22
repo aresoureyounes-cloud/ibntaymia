@@ -14,6 +14,16 @@ import { CommandSearch } from "@/components/CommandSearch";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
 
 export const Route = createFileRoute("/dashboard")({
+  head: () => ({
+    meta: [
+      { title: "مساحة الحساب — إداروم" },
+      { name: "description", content: "إداروم: مساحة الحساب في الثانوية الجزائرية." },
+      { property: "og:title", content: "مساحة الحساب — إداروم" },
+      { property: "og:description", content: "إداروم: مساحة الحساب في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: DashboardLayout,
 });
 
@@ -74,7 +84,9 @@ function DashboardLayout() {
           <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border/60 bg-background/80 px-4 backdrop-blur-md">
             <SidebarTrigger />
             <div className="flex items-center gap-1" data-tour="header-tools">
-              <span data-tour="search"><CommandSearch /></span>
+              <span data-tour="search">
+                <CommandSearch />
+              </span>
               <Button
                 variant="ghost"
                 size="icon"

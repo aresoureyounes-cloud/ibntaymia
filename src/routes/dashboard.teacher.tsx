@@ -10,6 +10,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/dashboard/teacher")({
+  head: () => ({
+    meta: [
+      { title: "لوحة الأستاذ — إداروم" },
+      { name: "description", content: "إداروم: لوحة الأستاذ في الثانوية الجزائرية." },
+      { property: "og:title", content: "لوحة الأستاذ — إداروم" },
+      { property: "og:description", content: "إداروم: لوحة الأستاذ في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: TeacherDashboard,
 });
 

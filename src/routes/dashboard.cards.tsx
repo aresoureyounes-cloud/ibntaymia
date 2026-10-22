@@ -30,6 +30,16 @@ import {
 } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/dashboard/cards")({
+  head: () => ({
+    meta: [
+      { title: "البطاقات المؤجلة — إداروم" },
+      { name: "description", content: "إداروم: البطاقات المؤجلة في الثانوية الجزائرية." },
+      { property: "og:title", content: "البطاقات المؤجلة — إداروم" },
+      { property: "og:description", content: "إداروم: البطاقات المؤجلة في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: CardsPage,
 });
 
@@ -162,7 +172,9 @@ function CardsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex items-start gap-3">
-          <span className="mt-1 text-primary"><HandDrawnStar size={36} /></span>
+          <span className="mt-1 text-primary">
+            <HandDrawnStar size={36} />
+          </span>
           <div>
             <h1 className="font-display text-3xl leading-tight md:text-4xl">
               <span className="underline-sketch">البطاقات الرقمية (RFID)</span>

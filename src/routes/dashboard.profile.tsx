@@ -23,6 +23,16 @@ import { PageHeader } from "@/components/PageHeader";
 import { HandDrawnStar } from "@/components/HandDrawnStar";
 
 export const Route = createFileRoute("/dashboard/profile")({
+  head: () => ({
+    meta: [
+      { title: "الملف الشخصي — إداروم" },
+      { name: "description", content: "إداروم: الملف الشخصي في الثانوية الجزائرية." },
+      { property: "og:title", content: "الملف الشخصي — إداروم" },
+      { property: "og:description", content: "إداروم: الملف الشخصي في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: ProfilePage,
 });
 

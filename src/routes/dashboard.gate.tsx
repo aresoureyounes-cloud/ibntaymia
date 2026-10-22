@@ -40,6 +40,16 @@ import { HandDrawnStar } from "@/components/HandDrawnStar";
 import { Label } from "@/components/ui/label";
 
 export const Route = createFileRoute("/dashboard/gate")({
+  head: () => ({
+    meta: [
+      { title: "البوابة المؤجلة — إداروم" },
+      { name: "description", content: "إداروم: البوابة المؤجلة في الثانوية الجزائرية." },
+      { property: "og:title", content: "البوابة المؤجلة — إداروم" },
+      { property: "og:description", content: "إداروم: البوابة المؤجلة في الثانوية الجزائرية." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
   component: GatePage,
 });
 
@@ -398,7 +408,9 @@ function GatePage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-start gap-3">
-          <span className="mt-1 text-primary"><HandDrawnStar size={36} /></span>
+          <span className="mt-1 text-primary">
+            <HandDrawnStar size={36} />
+          </span>
           <div>
             <h1 className="font-display text-3xl leading-tight md:text-4xl">
               <span className="underline-sketch">نقطة المراقبة — البوابة</span>
