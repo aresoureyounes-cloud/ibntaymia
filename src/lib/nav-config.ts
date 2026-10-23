@@ -7,6 +7,7 @@ export type NavItem = {
 };
 
 export const NAV_ITEMS: NavItem[] = [
+  { url: "/dashboard/sms-alert", labelKey: "nav.notifications", roles: ["admin", "director", "supervisor"] },
   { url: "/dashboard", labelKey: "nav.dashboard" },
   { url: "/dashboard/inbox", labelKey: "nav.inbox" },
   { url: "/dashboard/my-attendance", labelKey: "nav.my_attendance", roles: ["parent", "student"] },

@@ -49,6 +49,7 @@ import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile
 import { Route as DashboardReportsRouteImport } from './routes/dashboard.reports'
 import { Route as DashboardScheduleRouteImport } from './routes/dashboard.schedule'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
+import { Route as DashboardSmsAlertRouteImport } from './routes/dashboard.sms-alert'
 import { Route as DashboardStudentRouteImport } from './routes/dashboard.student'
 import { Route as DashboardStudentsRouteImport } from './routes/dashboard.students'
 import { Route as DashboardSubstitutionsRouteImport } from './routes/dashboard.substitutions'
@@ -262,6 +263,11 @@ const DashboardSettingsRoute = DashboardSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardSmsAlertRoute = DashboardSmsAlertRouteImport.update({
+  id: '/sms-alert',
+  path: '/sms-alert',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardStudentRoute = DashboardStudentRouteImport.update({
   id: '/student',
   path: '/student',
@@ -363,6 +369,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/reports': typeof DashboardReportsRoute
   '/dashboard/schedule': typeof DashboardScheduleRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/sms-alert': typeof DashboardSmsAlertRoute
   '/dashboard/student': typeof DashboardStudentRoute
   '/dashboard/students': typeof DashboardStudentsRoute
   '/dashboard/substitutions': typeof DashboardSubstitutionsRoute
@@ -416,6 +423,7 @@ export interface FileRoutesByTo {
   '/dashboard/reports': typeof DashboardReportsRoute
   '/dashboard/schedule': typeof DashboardScheduleRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/sms-alert': typeof DashboardSmsAlertRoute
   '/dashboard/student': typeof DashboardStudentRoute
   '/dashboard/students': typeof DashboardStudentsRoute
   '/dashboard/substitutions': typeof DashboardSubstitutionsRoute
@@ -471,6 +479,7 @@ export interface FileRoutesById {
   '/dashboard/reports': typeof DashboardReportsRoute
   '/dashboard/schedule': typeof DashboardScheduleRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
+  '/dashboard/sms-alert': typeof DashboardSmsAlertRoute
   '/dashboard/student': typeof DashboardStudentRoute
   '/dashboard/students': typeof DashboardStudentsRoute
   '/dashboard/substitutions': typeof DashboardSubstitutionsRoute
@@ -527,6 +536,7 @@ export interface FileRouteTypes {
     | '/dashboard/reports'
     | '/dashboard/schedule'
     | '/dashboard/settings'
+    | '/dashboard/sms-alert'
     | '/dashboard/student'
     | '/dashboard/students'
     | '/dashboard/substitutions'
@@ -580,6 +590,7 @@ export interface FileRouteTypes {
     | '/dashboard/reports'
     | '/dashboard/schedule'
     | '/dashboard/settings'
+    | '/dashboard/sms-alert'
     | '/dashboard/student'
     | '/dashboard/students'
     | '/dashboard/substitutions'
@@ -634,6 +645,7 @@ export interface FileRouteTypes {
     | '/dashboard/reports'
     | '/dashboard/schedule'
     | '/dashboard/settings'
+    | '/dashboard/sms-alert'
     | '/dashboard/student'
     | '/dashboard/students'
     | '/dashboard/substitutions'
@@ -946,6 +958,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardSettingsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/sms-alert': {
+      id: '/dashboard/sms-alert'
+      path: '/sms-alert'
+      fullPath: '/dashboard/sms-alert'
+      preLoaderRoute: typeof DashboardSmsAlertRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/student': {
       id: '/dashboard/student'
       path: '/student'
@@ -1075,6 +1094,7 @@ interface DashboardRouteChildren {
   DashboardReportsRoute: typeof DashboardReportsRoute
   DashboardScheduleRoute: typeof DashboardScheduleRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
+  DashboardSmsAlertRoute: typeof DashboardSmsAlertRoute
   DashboardStudentRoute: typeof DashboardStudentRoute
   DashboardStudentsRoute: typeof DashboardStudentsRoute
   DashboardSubstitutionsRoute: typeof DashboardSubstitutionsRoute
@@ -1117,6 +1137,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardReportsRoute: DashboardReportsRoute,
   DashboardScheduleRoute: DashboardScheduleRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
+  DashboardSmsAlertRoute: DashboardSmsAlertRoute,
   DashboardStudentRoute: DashboardStudentRoute,
   DashboardStudentsRoute: DashboardStudentsRoute,
   DashboardSubstitutionsRoute: DashboardSubstitutionsRoute,
