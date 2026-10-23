@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { PageHeader } from "@/components/PageHeader";
 import { BulkMessageCard } from "@/components/BulkMessageCard";
+import { TelegramAlertsPanel } from "@/components/TelegramAlertsPanel";
 import {
   Select,
   SelectContent,
@@ -108,6 +109,7 @@ function NotificationsPage() {
       />
 
       <BulkMessageCard />
+      <TelegramAlertsPanel />
 
       <Card className="cinema-shadow">
         <CardHeader>
