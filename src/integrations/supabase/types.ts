@@ -1232,6 +1232,95 @@ export type Database = {
           },
         ]
       }
+      telegram_alerts: {
+        Row: {
+          class_name: string
+          created_at: string
+          decided_at: string | null
+          decided_by: string | null
+          decision: string
+          details: string
+          event_at: string
+          event_type: string
+          guardian_name: string
+          guardian_phone: string | null
+          id: string
+          is_test: boolean
+          source_key: string
+          student_id: string | null
+          student_name: string
+          telegram_error: string | null
+          telegram_message_id: number | null
+          telegram_status: string
+        }
+        Insert: {
+          class_name?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision?: string
+          details?: string
+          event_at?: string
+          event_type: string
+          guardian_name?: string
+          guardian_phone?: string | null
+          id?: string
+          is_test?: boolean
+          source_key: string
+          student_id?: string | null
+          student_name: string
+          telegram_error?: string | null
+          telegram_message_id?: number | null
+          telegram_status?: string
+        }
+        Update: {
+          class_name?: string
+          created_at?: string
+          decided_at?: string | null
+          decided_by?: string | null
+          decision?: string
+          details?: string
+          event_at?: string
+          event_type?: string
+          guardian_name?: string
+          guardian_phone?: string | null
+          id?: string
+          is_test?: boolean
+          source_key?: string
+          student_id?: string | null
+          student_name?: string
+          telegram_error?: string | null
+          telegram_message_id?: number | null
+          telegram_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telegram_alerts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      telegram_settings: {
+        Row: {
+          chat_id: string
+          enabled: boolean
+          id: boolean
+        }
+        Insert: {
+          chat_id: string
+          enabled?: boolean
+          id?: boolean
+        }
+        Update: {
+          chat_id?: string
+          enabled?: boolean
+          id?: boolean
+        }
+        Relationships: []
+      }
       trip_participants: {
         Row: {
           attended: boolean

@@ -43,6 +43,13 @@
       "when": 1792683525564,
       "tag": "0005_student_identity_upsert_constraint",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1792747381440,
+      "tag": "0006_telegram_staff_alerts",
+      "breakpoints": true
     }
   ]
 }
