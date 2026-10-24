@@ -61,6 +61,7 @@ import { Route as DashboardUsersRouteImport } from './routes/dashboard.users'
 import { Route as DashboardWeeklyRouteImport } from './routes/dashboard.weekly'
 import { Route as ApiPublicCliRouteImport } from './routes/api/public/cli'
 import { Route as ApiPublicCliDemoRouteImport } from './routes/api/public/cli-demo'
+import { Route as ApiPublicTelegramDispatchRouteImport } from './routes/api/public/telegram-dispatch'
 import { Route as DashboardCardsPrintRouteImport } from './routes/dashboard.cards.print'
 
 const IndexRoute = IndexRouteImport.update({
@@ -323,6 +324,12 @@ const ApiPublicCliDemoRoute = ApiPublicCliDemoRouteImport.update({
   path: '/api/public/cli-demo',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTelegramDispatchRoute =
+  ApiPublicTelegramDispatchRouteImport.update({
+    id: '/api/public/telegram-dispatch',
+    path: '/api/public/telegram-dispatch',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const DashboardCardsPrintRoute = DashboardCardsPrintRouteImport.update({
   id: '/print',
   path: '/print',
@@ -382,6 +389,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/': typeof DashboardIndexRoute
   '/api/public/cli': typeof ApiPublicCliRoute
   '/api/public/cli-demo': typeof ApiPublicCliDemoRoute
+  '/api/public/telegram-dispatch': typeof ApiPublicTelegramDispatchRoute
   '/dashboard/cards/print': typeof DashboardCardsPrintRoute
 }
 export interface FileRoutesByTo {
@@ -436,6 +444,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardIndexRoute
   '/api/public/cli': typeof ApiPublicCliRoute
   '/api/public/cli-demo': typeof ApiPublicCliDemoRoute
+  '/api/public/telegram-dispatch': typeof ApiPublicTelegramDispatchRoute
   '/dashboard/cards/print': typeof DashboardCardsPrintRoute
 }
 export interface FileRoutesById {
@@ -492,6 +501,7 @@ export interface FileRoutesById {
   '/dashboard/': typeof DashboardIndexRoute
   '/api/public/cli': typeof ApiPublicCliRoute
   '/api/public/cli-demo': typeof ApiPublicCliDemoRoute
+  '/api/public/telegram-dispatch': typeof ApiPublicTelegramDispatchRoute
   '/dashboard/cards/print': typeof DashboardCardsPrintRoute
 }
 export interface FileRouteTypes {
@@ -549,6 +559,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/api/public/cli'
     | '/api/public/cli-demo'
+    | '/api/public/telegram-dispatch'
     | '/dashboard/cards/print'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -603,6 +614,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/api/public/cli'
     | '/api/public/cli-demo'
+    | '/api/public/telegram-dispatch'
     | '/dashboard/cards/print'
   id:
     | '__root__'
@@ -658,6 +670,7 @@ export interface FileRouteTypes {
     | '/dashboard/'
     | '/api/public/cli'
     | '/api/public/cli-demo'
+    | '/api/public/telegram-dispatch'
     | '/dashboard/cards/print'
   fileRoutesById: FileRoutesById
 }
@@ -674,6 +687,7 @@ export interface RootRouteChildren {
   TrustRoute: typeof TrustRoute
   ApiPublicCliRoute: typeof ApiPublicCliRoute
   ApiPublicCliDemoRoute: typeof ApiPublicCliDemoRoute
+  ApiPublicTelegramDispatchRoute: typeof ApiPublicTelegramDispatchRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -1042,6 +1056,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicCliDemoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/telegram-dispatch': {
+      id: '/api/public/telegram-dispatch'
+      path: '/api/public/telegram-dispatch'
+      fullPath: '/api/public/telegram-dispatch'
+      preLoaderRoute: typeof ApiPublicTelegramDispatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/cards/print': {
       id: '/dashboard/cards/print'
       path: '/print'
@@ -1167,6 +1188,7 @@ const rootRouteChildren: RootRouteChildren = {
   TrustRoute: TrustRoute,
   ApiPublicCliRoute: ApiPublicCliRoute,
   ApiPublicCliDemoRoute: ApiPublicCliDemoRoute,
+  ApiPublicTelegramDispatchRoute: ApiPublicTelegramDispatchRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
