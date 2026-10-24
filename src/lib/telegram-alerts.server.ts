@@ -1,6 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
-import type { TelegramAlert } from "./telegram-alerts";
 
 export async function authorizeTelegramStaff(db: SupabaseClient<Database>, userId: string, configure = false) {
   const roles = configure ? ["admin", "director", "developer"] as const : ["admin", "director", "supervisor", "developer"] as const;
@@ -20,7 +19,6 @@ export async function dispatchTelegramAlerts(db: SupabaseClient<Database>, gatew
     const { data: claimed, error: claimError } = await db.from("telegram_alerts").update({ telegram_status: "sending" }).eq("id", row.id).eq("telegram_status", "pending").select("id").maybeSingle();
     if (claimError) throw new Error(claimError.message);
     if (!claimed) continue;
-    const alert = row as TelegramAlert;
     const link = `${origin}/dashboard/sms-alert?alert=${encodeURIComponent(row.id)}`;
     try {
       const response = await fetch("https://connector-gateway.lovable.dev/telegram/sendMessage", {
