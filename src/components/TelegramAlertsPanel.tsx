@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 
 export function TelegramAlertsPanel() {
   const { hasRole } = useAuth();
-  const allowed = ["admin", "director", "supervisor", "developer"].some(role => hasRole(role as "admin"));
+  const allowed = hasRole("admin") || hasRole("director") || hasRole("supervisor") || hasRole("developer");
   const configure = useServerFn(configureTelegram), test = useServerFn(sendTelegramTest), flush = useServerFn(flushTelegram);
   const qc = useQueryClient();
   const [chatId, setChatId] = useState("");
