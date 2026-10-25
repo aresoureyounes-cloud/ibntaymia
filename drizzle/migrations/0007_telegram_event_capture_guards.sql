@@ -1,0 +1,31 @@
+CREATE OR REPLACE FUNCTION public.queue_telegram_student_event() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE st public.students%ROWTYPE; class_label text; event_label text; info text; when_at timestamptz; session_info public.attendance_sessions%ROWTYPE; guardian record;
+BEGIN
+ IF TG_TABLE_NAME = 'attendance_records' THEN
+  IF TG_OP='UPDATE' AND OLD.status=NEW.status THEN RETURN NEW; END IF;
+  IF TG_OP='UPDATE' THEN
+   UPDATE public.telegram_alerts SET decision='cancelled' WHERE source_key LIKE 'attendance_records:' || NEW.id::text || ':%' AND decision IN ('pending','composer_opened');
+  END IF;
+  IF NEW.status NOT IN ('absent','late') THEN RETURN NEW; END IF;
+  SELECT * INTO session_info FROM public.attendance_sessions WHERE id=NEW.session_id;
+  SELECT * INTO st FROM public.students WHERE id=NEW.student_id;
+  event_label := CASE WHEN NEW.status='absent' THEN 'غياب' ELSE 'تأخر' END;
+  info := 'التاريخ: ' || session_info.session_date::text || '، الحصة: ' || coalesce(session_info.period,'غير محددة') || '، المادة: ' || coalesce(session_info.subject,'غير محددة');
+  when_at := now();
+ ELSIF TG_TABLE_NAME='behavior_records' THEN
+  SELECT * INTO st FROM public.students WHERE id=NEW.student_id;
+  event_label := 'تقرير سلوك'; info := NEW.title || CASE WHEN NEW.note IS NULL THEN '' ELSE ' — ' || NEW.note END; when_at := NEW.recorded_at;
+ ELSE
+  IF NEW.related_student_id IS NULL OR NEW.channel <> 'inapp' THEN RETURN NEW; END IF;
+  SELECT * INTO st FROM public.students WHERE id=NEW.related_student_id;
+  event_label := NEW.title; info := coalesce(NEW.body,''); when_at := NEW.created_at;
+ END IF;
+ IF st.id IS NULL THEN RETURN NEW; END IF;
+ SELECT name INTO class_label FROM public.classes WHERE id=st.class_id;
+ FOR guardian IN SELECT p.id,p.full_name,p.phone FROM public.parent_student ps JOIN public.profiles p ON p.id=ps.parent_user_id WHERE ps.student_id=st.id LOOP
+  INSERT INTO public.telegram_alerts(source_key,student_id,event_type,student_name,class_name,guardian_name,guardian_phone,details,event_at)
+  VALUES (TG_TABLE_NAME || ':' || NEW.id::text || ':' || guardian.id::text || ':' || event_label || ':' || when_at::text,st.id,event_label,st.full_name,coalesce(class_label,''),coalesce(guardian.full_name,''),nullif(trim(guardian.phone),''),info,when_at)
+  ON CONFLICT(source_key) DO NOTHING;
+ END LOOP;
+ RETURN NEW;
+END $$;
