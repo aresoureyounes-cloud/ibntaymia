@@ -14,4 +14,11 @@ describe("guardian SMS decisions", () => {
   test("cancelled corrected event prevents composing", () => expect(canPrepareSms({ ...alert, decision: "cancelled" })).toBe(false));
   test("missing guardian phone cannot compose", () => expect(canPrepareSms({ ...alert, guardian_phone: null })).toBe(false));
   test("Apple composer has its own separator", () => expect(smsComposerLink("0563691828", "غياب", true)).toBe("sms:+213563691828&body=%D8%BA%D9%8A%D8%A7%D8%A8"));
+  test("composer opens messages scheme with the entire supplied message, not a browser URL", () => {
+    const body = preparedSms(alert);
+    const link = smsComposerLink("0563691828", body, false);
+    expect(link.startsWith("sms:+213563691828?body=")).toBe(true);
+    expect(decodeURIComponent(link.slice(link.indexOf("body=") + 5))).toBe(body);
+    expect(link.startsWith("https:")).toBe(false);
+  });
 });

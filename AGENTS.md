@@ -16,3 +16,4 @@
 - Browser clients may only read user roles; role mutations go through authorized server handlers that check caller privileges with the caller-scoped client before loading privileged access, preventing direct privilege escalation.
 - Official student rosters use a unique textual national_student_id for repeatable imports and preserve original enrollment fields in enrollment_data; this avoids duplicate students and loss of registry identifiers.
 - Telegram event alerts use a durable database queue and staff-authorized SMS preparation page; gateway acceptance and composer opening never mean SMS delivery, and corrected attendance cancels pending preparation.
+- Launch the SMS composer through a direct user-clicked sms: anchor after authorized preparation, not asynchronous window navigation; mobile browsers can block external app launches after an awaited request, and Telegram inline URL buttons support HTTP/tg links rather than sms links.

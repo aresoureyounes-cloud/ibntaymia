@@ -37,10 +37,11 @@ function SmsAlertPage() {
       if (result.phone) {
         const url = smsComposerLink(result.phone, result.body, /iPad|iPhone|iPod/.test(navigator.userAgent));
         setLink(url);
-        window.location.href = url;
+      } else {
+        setLink(null);
       }
       await refetch();
-      toast.success(decision === "ignored" ? "تم تجاهل التنبيه؛ لم تُرسل SMS" : "تم تجهيز الرسالة؛ أرسلها من تطبيق هاتفك إن أردت");
+      toast.success(decision === "ignored" ? "تم تجاهل التنبيه؛ لم تُرسل SMS" : "الرقم والنص جاهزان؛ اضغط فتح تطبيق الرسائل");
     } catch (err) { toast.error(err instanceof Error ? err.message : "تعذرت العملية"); }
     finally { setBusy(false); }
   }
@@ -61,11 +62,12 @@ function SmsAlertPage() {
       <p className="text-sm text-muted-foreground">الإرسال بقرارك من هاتفك وعلى حساب شريحتك؛ فتح الرسالة لا يثبت إرسالها أو وصولها.</p>
       {action === "ignore" && data.decision === "pending" && <p>هل تريد تجاهل هذا التنبيه؟</p>}
       <div className="flex flex-wrap gap-3">
-        <Button disabled={busy || !canPrepareSms(data)} onClick={() => choose("composer_opened")}><Smartphone className="me-2 h-4 w-4" />ابعث SMS</Button>
+        {link && canPrepareSms(data)
+          ? <Button asChild disabled={busy}><a href={link} onClick={(event) => { if (busy) event.preventDefault(); }}><Smartphone className="me-2 h-4 w-4" />فتح تطبيق الرسائل</a></Button>
+          : <Button disabled={busy || !canPrepareSms(data)} onClick={() => choose("composer_opened")}><Smartphone className="me-2 h-4 w-4" />{busy ? "جارٍ التجهيز..." : "تجهيز SMS"}</Button>}
         <Button variant="outline" disabled={busy || ["ignored", "cancelled"].includes(data.decision)} onClick={() => choose("ignored")}><X className="me-2 h-4 w-4" />تجاهل</Button>
         <Button variant="ghost" onClick={async () => { try { await navigator.clipboard.writeText(preparedSms(data)); toast.success("تم نسخ الرسالة"); } catch { toast.error("تعذر النسخ"); } }}><Copy className="me-2 h-4 w-4" />نسخ</Button>
       </div>
-      {link && canPrepareSms(data) && <Button asChild variant="outline"><a href={link}>فتح تطبيق الرسائل مجدداً</a></Button>}
       {data.decision === "ignored" && <p>تم تجاهل التنبيه. لم تُرسل SMS.</p>}
       {data.decision === "cancelled" && <p>ألغي التنبيه بعد تصحيح السجل؛ لا ترسل هذه الرسالة.</p>}
       {data.decision === "composer_opened" && <p>تم تجهيز SMS؛ الإرسال والوصول غير مؤكدين.</p>}
