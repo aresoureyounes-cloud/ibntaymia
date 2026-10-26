@@ -20,6 +20,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { HandDrawnStar } from "@/components/HandDrawnStar";
+import { MessageSquare } from "lucide-react";
+import { smsComposerLink } from "@/lib/telegram-alerts";
+
+function absenceSms(r: Row, date: string) {
+  const phone = r.students?.guardian_phone;
+  if (!phone) return null;
+  const body = `إداروم — ثانوية\nالسيد/السيدة ${r.students?.guardian_name || "ولي التلميذ"}، نعلمكم بتسجيل ${STATUS_LABEL[r.status]} للتلميذ(ة) ${r.students?.full_name ?? ""}، القسم ${r.attendance_sessions?.classes?.name ?? ""}، بتاريخ ${date}${r.attendance_sessions?.period ? `، الحصة ${r.attendance_sessions.period}` : ""}.\nيرجى التواصل مع إدارة الثانوية.`;
+  try { return smsComposerLink(phone, body, typeof navigator !== "undefined" && /iPad|iPhone|iPod/.test(navigator.userAgent)); } catch { return null; }
+}
 
 export const Route = createFileRoute("/dashboard/absence-report")({
   component: AbsenceReportPage,
@@ -48,7 +57,7 @@ type Row = {
   status: Status;
   justified_at: string | null;
   justification_note: string | null;
-  students: { id: string; full_name: string; class_id: string | null } | null;
+  students: { id: string; full_name: string; class_id: string | null; guardian_name: string | null; guardian_phone: string | null } | null;
   attendance_sessions: {
     session_date: string;
     period: string | null;
@@ -82,7 +91,7 @@ function AbsenceReportPage() {
       const { data, error } = await supabase
         .from("attendance_records")
         .select(
-          "student_id, status, justified_at, justification_note, students(id, full_name, class_id), attendance_sessions!inner(session_date, period, subject, classes(name))",
+          "student_id, status, justified_at, justification_note, students(id, full_name, class_id, guardian_name, guardian_phone), attendance_sessions!inner(session_date, period, subject, classes(name))",
         )
         .in("status", ["absent", "late", "excused"])
         .eq("attendance_sessions.session_date", date);
@@ -303,6 +312,16 @@ function AbsenceReportPage() {
                           {r.justified_at ? "مبرَّر" : "غير مبرَّر"}
                         </Badge>
                       )}
+                      {(() => {
+                        const link = absenceSms(r, date);
+                        return link ? (
+                          <Button asChild size="sm" className="gap-1">
+                            <a href={link}><MessageSquare className="h-4 w-4" /> SMS للولي</a>
+                          </Button>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">لا يوجد رقم ولي</span>
+                        );
+                      })()}
                     </div>
                   </div>
                 ))}
