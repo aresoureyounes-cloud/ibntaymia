@@ -57,6 +57,13 @@
       "when": 1792933572519,
       "tag": "0007_telegram_event_capture_guards",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793020622976,
+      "tag": "0008_student_guardian_contact",
+      "breakpoints": true
     }
   ]
 }
