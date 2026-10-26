@@ -1126,6 +1126,8 @@ export type Database = {
           fake_phone: string | null
           full_name: string
           gender: string | null
+          guardian_name: string | null
+          guardian_phone: string | null
           id: string
           national_student_id: string | null
           updated_at: string
@@ -1140,6 +1142,8 @@ export type Database = {
           fake_phone?: string | null
           full_name: string
           gender?: string | null
+          guardian_name?: string | null
+          guardian_phone?: string | null
           id?: string
           national_student_id?: string | null
           updated_at?: string
@@ -1154,6 +1158,8 @@ export type Database = {
           fake_phone?: string | null
           full_name?: string
           gender?: string | null
+          guardian_name?: string | null
+          guardian_phone?: string | null
           id?: string
           national_student_id?: string | null
           updated_at?: string
