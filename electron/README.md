@@ -1,7 +1,7 @@
 # IDAROOM — Linux Desktop (AppImage)
 
 This folder contains an Electron wrapper that opens the published IDAROOM site
-(`https://idarroom.lovable.app`) as a native Linux desktop application.
+(`https://idara25.lovable.app`) as a native Linux desktop application.
 
 The main web app is a server-rendered TanStack Start app running on Cloudflare
 Workers, so it **cannot** be bundled as a fully offline `.AppImage`. The wrapper
