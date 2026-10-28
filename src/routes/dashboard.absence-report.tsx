@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { HandDrawnStar } from "@/components/HandDrawnStar";
 import { MessageSquare } from "lucide-react";
-import { smsComposerLink } from "@/lib/telegram-alerts";
+import { preparedSms, smsComposerLink, type TelegramAlert } from "@/lib/telegram-alerts";
 
 function absenceSms(r: Row, date: string) {
   const phone = r.students?.guardian_phone;
@@ -84,6 +84,25 @@ function AbsenceReportPage() {
   const { user } = useAuth();
   const [date, setDate] = useState(today());
   const [sending, setSending] = useState(false);
+
+  const { data: smsTest } = useQuery({
+    queryKey: ["absence-sms-test", user?.id],
+    enabled: Boolean(user),
+    queryFn: async (): Promise<TelegramAlert | null> => {
+      const { data, error } = await supabase
+        .from("telegram_alerts")
+        .select("id, event_type, student_name, class_name, guardian_name, guardian_phone, details, event_at, is_test, decision, telegram_status")
+        .eq("is_test", true)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+  const testSmsLink = smsTest?.guardian_phone
+    ? smsComposerLink(smsTest.guardian_phone, preparedSms(smsTest), typeof navigator !== "undefined" && /iPad|iPhone|iPod/.test(navigator.userAgent))
+    : null;
 
   const { data: rows, isLoading } = useQuery({
     queryKey: ["absence-report", date],
@@ -248,6 +267,27 @@ function AbsenceReportPage() {
           </Button>
         </div>
       </div>
+
+      {smsTest && (
+        <section aria-label="غياب تجريبي" className="space-y-3 border-y border-border py-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="font-semibold">غياب تجريبي</h2>
+                <Badge variant="outline">لا يُحتسب في سجل الحضور</Badge>
+              </div>
+              <p className="text-sm">{smsTest.student_name} — {smsTest.class_name}</p>
+              <p className="text-sm text-muted-foreground">الولي: {smsTest.guardian_name} — <bdi>{smsTest.guardian_phone}</bdi></p>
+            </div>
+            {testSmsLink && (
+              <Button asChild className="gap-2">
+                <a href={testSmsLink}><MessageSquare className="h-4 w-4" /> SMS للولي — تجربة</a>
+              </Button>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground">تجربة فقط؛ لم يُسجّل غياب حقيقي ولم تُرسل SMS.</p>
+        </section>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {[
