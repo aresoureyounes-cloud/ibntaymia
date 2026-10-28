@@ -5,7 +5,7 @@ const { app, BrowserWindow, Menu, shell } = require("electron");
 const path = require("path");
 const { spawn } = require("child_process");
 
-const DEFAULT_URL = "https://test25.lovable.app";
+const DEFAULT_URL = "https://idara25.lovable.app";
 const APP_URL = process.env.IDAROOM_URL || DEFAULT_URL;
 
 const APP_VERSION = "1.1.0";
