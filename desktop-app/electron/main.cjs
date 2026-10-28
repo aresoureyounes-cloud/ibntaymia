@@ -1,6 +1,6 @@
 const { app, BrowserWindow, Menu, shell } = require("electron");
 const path = require("path");
-const APP_URL = process.env.IDAROOM_URL || "https://idarroom.lovable.app";
+const APP_URL = process.env.IDAROOM_URL || "https://idara25.lovable.app";
 function createWindow() {
   const win = new BrowserWindow({
     width: 1280, height: 840, minWidth: 360, minHeight: 600,
