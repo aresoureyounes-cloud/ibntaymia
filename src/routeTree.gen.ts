@@ -31,6 +31,7 @@ import { Route as DashboardConsoleRouteImport } from './routes/dashboard.console
 import { Route as DashboardDecisionsRouteImport } from './routes/dashboard.decisions'
 import { Route as DashboardDiagnosticsRouteImport } from './routes/dashboard.diagnostics'
 import { Route as DashboardDirectorRouteImport } from './routes/dashboard.director'
+import { Route as DashboardEntryPermitsRouteImport } from './routes/dashboard.entry-permits'
 import { Route as DashboardExamsRouteImport } from './routes/dashboard.exams'
 import { Route as DashboardFreePeriodsRouteImport } from './routes/dashboard.free-periods'
 import { Route as DashboardGateRouteImport } from './routes/dashboard.gate'
@@ -174,6 +175,11 @@ const DashboardDiagnosticsRoute = DashboardDiagnosticsRouteImport.update({
 const DashboardDirectorRoute = DashboardDirectorRouteImport.update({
   id: '/director',
   path: '/director',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardEntryPermitsRoute = DashboardEntryPermitsRouteImport.update({
+  id: '/entry-permits',
+  path: '/entry-permits',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardExamsRoute = DashboardExamsRouteImport.update({
@@ -370,6 +376,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/decisions': typeof DashboardDecisionsRoute
   '/dashboard/diagnostics': typeof DashboardDiagnosticsRoute
   '/dashboard/director': typeof DashboardDirectorRoute
+  '/dashboard/entry-permits': typeof DashboardEntryPermitsRoute
   '/dashboard/exams': typeof DashboardExamsRoute
   '/dashboard/free-periods': typeof DashboardFreePeriodsRoute
   '/dashboard/gate': typeof DashboardGateRoute
@@ -427,6 +434,7 @@ export interface FileRoutesByTo {
   '/dashboard/decisions': typeof DashboardDecisionsRoute
   '/dashboard/diagnostics': typeof DashboardDiagnosticsRoute
   '/dashboard/director': typeof DashboardDirectorRoute
+  '/dashboard/entry-permits': typeof DashboardEntryPermitsRoute
   '/dashboard/exams': typeof DashboardExamsRoute
   '/dashboard/free-periods': typeof DashboardFreePeriodsRoute
   '/dashboard/gate': typeof DashboardGateRoute
@@ -486,6 +494,7 @@ export interface FileRoutesById {
   '/dashboard/decisions': typeof DashboardDecisionsRoute
   '/dashboard/diagnostics': typeof DashboardDiagnosticsRoute
   '/dashboard/director': typeof DashboardDirectorRoute
+  '/dashboard/entry-permits': typeof DashboardEntryPermitsRoute
   '/dashboard/exams': typeof DashboardExamsRoute
   '/dashboard/free-periods': typeof DashboardFreePeriodsRoute
   '/dashboard/gate': typeof DashboardGateRoute
@@ -546,6 +555,7 @@ export interface FileRouteTypes {
     | '/dashboard/decisions'
     | '/dashboard/diagnostics'
     | '/dashboard/director'
+    | '/dashboard/entry-permits'
     | '/dashboard/exams'
     | '/dashboard/free-periods'
     | '/dashboard/gate'
@@ -603,6 +613,7 @@ export interface FileRouteTypes {
     | '/dashboard/decisions'
     | '/dashboard/diagnostics'
     | '/dashboard/director'
+    | '/dashboard/entry-permits'
     | '/dashboard/exams'
     | '/dashboard/free-periods'
     | '/dashboard/gate'
@@ -661,6 +672,7 @@ export interface FileRouteTypes {
     | '/dashboard/decisions'
     | '/dashboard/diagnostics'
     | '/dashboard/director'
+    | '/dashboard/entry-permits'
     | '/dashboard/exams'
     | '/dashboard/free-periods'
     | '/dashboard/gate'
@@ -868,6 +880,13 @@ declare module '@tanstack/react-router' {
       path: '/director'
       fullPath: '/dashboard/director'
       preLoaderRoute: typeof DashboardDirectorRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/entry-permits': {
+      id: '/dashboard/entry-permits'
+      path: '/entry-permits'
+      fullPath: '/dashboard/entry-permits'
+      preLoaderRoute: typeof DashboardEntryPermitsRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/exams': {
@@ -1135,6 +1154,7 @@ interface DashboardRouteChildren {
   DashboardDecisionsRoute: typeof DashboardDecisionsRoute
   DashboardDiagnosticsRoute: typeof DashboardDiagnosticsRoute
   DashboardDirectorRoute: typeof DashboardDirectorRoute
+  DashboardEntryPermitsRoute: typeof DashboardEntryPermitsRoute
   DashboardExamsRoute: typeof DashboardExamsRoute
   DashboardFreePeriodsRoute: typeof DashboardFreePeriodsRoute
   DashboardGateRoute: typeof DashboardGateRoute
@@ -1180,6 +1200,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardDecisionsRoute: DashboardDecisionsRoute,
   DashboardDiagnosticsRoute: DashboardDiagnosticsRoute,
   DashboardDirectorRoute: DashboardDirectorRoute,
+  DashboardEntryPermitsRoute: DashboardEntryPermitsRoute,
   DashboardExamsRoute: DashboardExamsRoute,
   DashboardFreePeriodsRoute: DashboardFreePeriodsRoute,
   DashboardGateRoute: DashboardGateRoute,
