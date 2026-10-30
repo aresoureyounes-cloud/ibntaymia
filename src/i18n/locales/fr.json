@@ -41,7 +41,10 @@
     "inbox": "Mes messages",
     "today": "Cours du jour",
     "weekly": "Résumé hebdomadaire",
-    "my_attendance": "Historique des présences"
+    "my_attendance": "Historique des présences",
+    "entry_permits": "Billets d'entrée",
+    "legal_notices": "Avis d'absence",
+    "free_periods": "Heures libres"
   },
   "landing": {
     "hero_title": "Une gestion scolaire intelligente, sécurisée, qui fonctionne hors ligne",

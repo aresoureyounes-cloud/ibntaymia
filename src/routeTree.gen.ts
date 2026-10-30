@@ -31,12 +31,15 @@ import { Route as DashboardConsoleRouteImport } from './routes/dashboard.console
 import { Route as DashboardDecisionsRouteImport } from './routes/dashboard.decisions'
 import { Route as DashboardDiagnosticsRouteImport } from './routes/dashboard.diagnostics'
 import { Route as DashboardDirectorRouteImport } from './routes/dashboard.director'
+import { Route as DashboardEntryPermitsRouteImport } from './routes/dashboard.entry-permits'
 import { Route as DashboardExamsRouteImport } from './routes/dashboard.exams'
+import { Route as DashboardFreePeriodsRouteImport } from './routes/dashboard.free-periods'
 import { Route as DashboardGateRouteImport } from './routes/dashboard.gate'
 import { Route as DashboardGateLogRouteImport } from './routes/dashboard.gate-log'
 import { Route as DashboardGuidanceRouteImport } from './routes/dashboard.guidance'
 import { Route as DashboardImportRouteImport } from './routes/dashboard.import'
 import { Route as DashboardInboxRouteImport } from './routes/dashboard.inbox'
+import { Route as DashboardLegalNoticesRouteImport } from './routes/dashboard.legal-notices'
 import { Route as DashboardLibraryRouteImport } from './routes/dashboard.library'
 import { Route as DashboardMeRouteImport } from './routes/dashboard.me'
 import { Route as DashboardMeetingsRouteImport } from './routes/dashboard.meetings'
@@ -174,9 +177,19 @@ const DashboardDirectorRoute = DashboardDirectorRouteImport.update({
   path: '/director',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardEntryPermitsRoute = DashboardEntryPermitsRouteImport.update({
+  id: '/entry-permits',
+  path: '/entry-permits',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardExamsRoute = DashboardExamsRouteImport.update({
   id: '/exams',
   path: '/exams',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardFreePeriodsRoute = DashboardFreePeriodsRouteImport.update({
+  id: '/free-periods',
+  path: '/free-periods',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardGateRoute = DashboardGateRouteImport.update({
@@ -202,6 +215,11 @@ const DashboardImportRoute = DashboardImportRouteImport.update({
 const DashboardInboxRoute = DashboardInboxRouteImport.update({
   id: '/inbox',
   path: '/inbox',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardLegalNoticesRoute = DashboardLegalNoticesRouteImport.update({
+  id: '/legal-notices',
+  path: '/legal-notices',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardLibraryRoute = DashboardLibraryRouteImport.update({
@@ -358,12 +376,15 @@ export interface FileRoutesByFullPath {
   '/dashboard/decisions': typeof DashboardDecisionsRoute
   '/dashboard/diagnostics': typeof DashboardDiagnosticsRoute
   '/dashboard/director': typeof DashboardDirectorRoute
+  '/dashboard/entry-permits': typeof DashboardEntryPermitsRoute
   '/dashboard/exams': typeof DashboardExamsRoute
+  '/dashboard/free-periods': typeof DashboardFreePeriodsRoute
   '/dashboard/gate': typeof DashboardGateRoute
   '/dashboard/gate-log': typeof DashboardGateLogRoute
   '/dashboard/guidance': typeof DashboardGuidanceRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/inbox': typeof DashboardInboxRoute
+  '/dashboard/legal-notices': typeof DashboardLegalNoticesRoute
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/me': typeof DashboardMeRoute
   '/dashboard/meetings': typeof DashboardMeetingsRoute
@@ -413,12 +434,15 @@ export interface FileRoutesByTo {
   '/dashboard/decisions': typeof DashboardDecisionsRoute
   '/dashboard/diagnostics': typeof DashboardDiagnosticsRoute
   '/dashboard/director': typeof DashboardDirectorRoute
+  '/dashboard/entry-permits': typeof DashboardEntryPermitsRoute
   '/dashboard/exams': typeof DashboardExamsRoute
+  '/dashboard/free-periods': typeof DashboardFreePeriodsRoute
   '/dashboard/gate': typeof DashboardGateRoute
   '/dashboard/gate-log': typeof DashboardGateLogRoute
   '/dashboard/guidance': typeof DashboardGuidanceRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/inbox': typeof DashboardInboxRoute
+  '/dashboard/legal-notices': typeof DashboardLegalNoticesRoute
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/me': typeof DashboardMeRoute
   '/dashboard/meetings': typeof DashboardMeetingsRoute
@@ -470,12 +494,15 @@ export interface FileRoutesById {
   '/dashboard/decisions': typeof DashboardDecisionsRoute
   '/dashboard/diagnostics': typeof DashboardDiagnosticsRoute
   '/dashboard/director': typeof DashboardDirectorRoute
+  '/dashboard/entry-permits': typeof DashboardEntryPermitsRoute
   '/dashboard/exams': typeof DashboardExamsRoute
+  '/dashboard/free-periods': typeof DashboardFreePeriodsRoute
   '/dashboard/gate': typeof DashboardGateRoute
   '/dashboard/gate-log': typeof DashboardGateLogRoute
   '/dashboard/guidance': typeof DashboardGuidanceRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/inbox': typeof DashboardInboxRoute
+  '/dashboard/legal-notices': typeof DashboardLegalNoticesRoute
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/me': typeof DashboardMeRoute
   '/dashboard/meetings': typeof DashboardMeetingsRoute
@@ -528,12 +555,15 @@ export interface FileRouteTypes {
     | '/dashboard/decisions'
     | '/dashboard/diagnostics'
     | '/dashboard/director'
+    | '/dashboard/entry-permits'
     | '/dashboard/exams'
+    | '/dashboard/free-periods'
     | '/dashboard/gate'
     | '/dashboard/gate-log'
     | '/dashboard/guidance'
     | '/dashboard/import'
     | '/dashboard/inbox'
+    | '/dashboard/legal-notices'
     | '/dashboard/library'
     | '/dashboard/me'
     | '/dashboard/meetings'
@@ -583,12 +613,15 @@ export interface FileRouteTypes {
     | '/dashboard/decisions'
     | '/dashboard/diagnostics'
     | '/dashboard/director'
+    | '/dashboard/entry-permits'
     | '/dashboard/exams'
+    | '/dashboard/free-periods'
     | '/dashboard/gate'
     | '/dashboard/gate-log'
     | '/dashboard/guidance'
     | '/dashboard/import'
     | '/dashboard/inbox'
+    | '/dashboard/legal-notices'
     | '/dashboard/library'
     | '/dashboard/me'
     | '/dashboard/meetings'
@@ -639,12 +672,15 @@ export interface FileRouteTypes {
     | '/dashboard/decisions'
     | '/dashboard/diagnostics'
     | '/dashboard/director'
+    | '/dashboard/entry-permits'
     | '/dashboard/exams'
+    | '/dashboard/free-periods'
     | '/dashboard/gate'
     | '/dashboard/gate-log'
     | '/dashboard/guidance'
     | '/dashboard/import'
     | '/dashboard/inbox'
+    | '/dashboard/legal-notices'
     | '/dashboard/library'
     | '/dashboard/me'
     | '/dashboard/meetings'
@@ -846,11 +882,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardDirectorRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/entry-permits': {
+      id: '/dashboard/entry-permits'
+      path: '/entry-permits'
+      fullPath: '/dashboard/entry-permits'
+      preLoaderRoute: typeof DashboardEntryPermitsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/exams': {
       id: '/dashboard/exams'
       path: '/exams'
       fullPath: '/dashboard/exams'
       preLoaderRoute: typeof DashboardExamsRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/free-periods': {
+      id: '/dashboard/free-periods'
+      path: '/free-periods'
+      fullPath: '/dashboard/free-periods'
+      preLoaderRoute: typeof DashboardFreePeriodsRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/gate': {
@@ -886,6 +936,13 @@ declare module '@tanstack/react-router' {
       path: '/inbox'
       fullPath: '/dashboard/inbox'
       preLoaderRoute: typeof DashboardInboxRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/legal-notices': {
+      id: '/dashboard/legal-notices'
+      path: '/legal-notices'
+      fullPath: '/dashboard/legal-notices'
+      preLoaderRoute: typeof DashboardLegalNoticesRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/library': {
@@ -1097,12 +1154,15 @@ interface DashboardRouteChildren {
   DashboardDecisionsRoute: typeof DashboardDecisionsRoute
   DashboardDiagnosticsRoute: typeof DashboardDiagnosticsRoute
   DashboardDirectorRoute: typeof DashboardDirectorRoute
+  DashboardEntryPermitsRoute: typeof DashboardEntryPermitsRoute
   DashboardExamsRoute: typeof DashboardExamsRoute
+  DashboardFreePeriodsRoute: typeof DashboardFreePeriodsRoute
   DashboardGateRoute: typeof DashboardGateRoute
   DashboardGateLogRoute: typeof DashboardGateLogRoute
   DashboardGuidanceRoute: typeof DashboardGuidanceRoute
   DashboardImportRoute: typeof DashboardImportRoute
   DashboardInboxRoute: typeof DashboardInboxRoute
+  DashboardLegalNoticesRoute: typeof DashboardLegalNoticesRoute
   DashboardLibraryRoute: typeof DashboardLibraryRoute
   DashboardMeRoute: typeof DashboardMeRoute
   DashboardMeetingsRoute: typeof DashboardMeetingsRoute
@@ -1140,12 +1200,15 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardDecisionsRoute: DashboardDecisionsRoute,
   DashboardDiagnosticsRoute: DashboardDiagnosticsRoute,
   DashboardDirectorRoute: DashboardDirectorRoute,
+  DashboardEntryPermitsRoute: DashboardEntryPermitsRoute,
   DashboardExamsRoute: DashboardExamsRoute,
+  DashboardFreePeriodsRoute: DashboardFreePeriodsRoute,
   DashboardGateRoute: DashboardGateRoute,
   DashboardGateLogRoute: DashboardGateLogRoute,
   DashboardGuidanceRoute: DashboardGuidanceRoute,
   DashboardImportRoute: DashboardImportRoute,
   DashboardInboxRoute: DashboardInboxRoute,
+  DashboardLegalNoticesRoute: DashboardLegalNoticesRoute,
   DashboardLibraryRoute: DashboardLibraryRoute,
   DashboardMeRoute: DashboardMeRoute,
   DashboardMeetingsRoute: DashboardMeetingsRoute,

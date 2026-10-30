@@ -28,6 +28,9 @@ export const NAV_ITEMS: NavItem[] = [
     labelKey: "nav.absence_report",
     roles: ["admin", "director", "supervisor", "teacher"],
   },
+  { url: "/dashboard/entry-permits", labelKey: "nav.entry_permits", roles: ["admin", "director", "supervisor"] },
+  { url: "/dashboard/legal-notices", labelKey: "nav.legal_notices", roles: ["admin", "director", "supervisor"] },
+  { url: "/dashboard/free-periods", labelKey: "nav.free_periods", roles: ["admin", "director", "supervisor"] },
   {
     url: "/dashboard/cards",
     labelKey: "nav.cards",
