@@ -37,6 +37,7 @@ import { Route as DashboardGateLogRouteImport } from './routes/dashboard.gate-lo
 import { Route as DashboardGuidanceRouteImport } from './routes/dashboard.guidance'
 import { Route as DashboardImportRouteImport } from './routes/dashboard.import'
 import { Route as DashboardInboxRouteImport } from './routes/dashboard.inbox'
+import { Route as DashboardLegalNoticesRouteImport } from './routes/dashboard.legal-notices'
 import { Route as DashboardLibraryRouteImport } from './routes/dashboard.library'
 import { Route as DashboardMeRouteImport } from './routes/dashboard.me'
 import { Route as DashboardMeetingsRouteImport } from './routes/dashboard.meetings'
@@ -204,6 +205,11 @@ const DashboardInboxRoute = DashboardInboxRouteImport.update({
   path: '/inbox',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardLegalNoticesRoute = DashboardLegalNoticesRouteImport.update({
+  id: '/legal-notices',
+  path: '/legal-notices',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardLibraryRoute = DashboardLibraryRouteImport.update({
   id: '/library',
   path: '/library',
@@ -364,6 +370,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/guidance': typeof DashboardGuidanceRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/inbox': typeof DashboardInboxRoute
+  '/dashboard/legal-notices': typeof DashboardLegalNoticesRoute
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/me': typeof DashboardMeRoute
   '/dashboard/meetings': typeof DashboardMeetingsRoute
@@ -419,6 +426,7 @@ export interface FileRoutesByTo {
   '/dashboard/guidance': typeof DashboardGuidanceRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/inbox': typeof DashboardInboxRoute
+  '/dashboard/legal-notices': typeof DashboardLegalNoticesRoute
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/me': typeof DashboardMeRoute
   '/dashboard/meetings': typeof DashboardMeetingsRoute
@@ -476,6 +484,7 @@ export interface FileRoutesById {
   '/dashboard/guidance': typeof DashboardGuidanceRoute
   '/dashboard/import': typeof DashboardImportRoute
   '/dashboard/inbox': typeof DashboardInboxRoute
+  '/dashboard/legal-notices': typeof DashboardLegalNoticesRoute
   '/dashboard/library': typeof DashboardLibraryRoute
   '/dashboard/me': typeof DashboardMeRoute
   '/dashboard/meetings': typeof DashboardMeetingsRoute
@@ -534,6 +543,7 @@ export interface FileRouteTypes {
     | '/dashboard/guidance'
     | '/dashboard/import'
     | '/dashboard/inbox'
+    | '/dashboard/legal-notices'
     | '/dashboard/library'
     | '/dashboard/me'
     | '/dashboard/meetings'
@@ -589,6 +599,7 @@ export interface FileRouteTypes {
     | '/dashboard/guidance'
     | '/dashboard/import'
     | '/dashboard/inbox'
+    | '/dashboard/legal-notices'
     | '/dashboard/library'
     | '/dashboard/me'
     | '/dashboard/meetings'
@@ -645,6 +656,7 @@ export interface FileRouteTypes {
     | '/dashboard/guidance'
     | '/dashboard/import'
     | '/dashboard/inbox'
+    | '/dashboard/legal-notices'
     | '/dashboard/library'
     | '/dashboard/me'
     | '/dashboard/meetings'
@@ -888,6 +900,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardInboxRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/legal-notices': {
+      id: '/dashboard/legal-notices'
+      path: '/legal-notices'
+      fullPath: '/dashboard/legal-notices'
+      preLoaderRoute: typeof DashboardLegalNoticesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/library': {
       id: '/dashboard/library'
       path: '/library'
@@ -1103,6 +1122,7 @@ interface DashboardRouteChildren {
   DashboardGuidanceRoute: typeof DashboardGuidanceRoute
   DashboardImportRoute: typeof DashboardImportRoute
   DashboardInboxRoute: typeof DashboardInboxRoute
+  DashboardLegalNoticesRoute: typeof DashboardLegalNoticesRoute
   DashboardLibraryRoute: typeof DashboardLibraryRoute
   DashboardMeRoute: typeof DashboardMeRoute
   DashboardMeetingsRoute: typeof DashboardMeetingsRoute
@@ -1146,6 +1166,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardGuidanceRoute: DashboardGuidanceRoute,
   DashboardImportRoute: DashboardImportRoute,
   DashboardInboxRoute: DashboardInboxRoute,
+  DashboardLegalNoticesRoute: DashboardLegalNoticesRoute,
   DashboardLibraryRoute: DashboardLibraryRoute,
   DashboardMeRoute: DashboardMeRoute,
   DashboardMeetingsRoute: DashboardMeetingsRoute,
