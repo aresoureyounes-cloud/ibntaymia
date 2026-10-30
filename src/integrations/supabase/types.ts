@@ -383,6 +383,59 @@ export type Database = {
         }
         Relationships: []
       }
+      entry_permits: {
+        Row: {
+          created_at: string
+          daily_no: number
+          entry_time: string
+          id: string
+          issued_by: string | null
+          justified: boolean
+          kind: string
+          period: string | null
+          permit_date: string
+          reason: string | null
+          record_ids: string[]
+          student_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_no?: number
+          entry_time?: string
+          id?: string
+          issued_by?: string | null
+          justified: boolean
+          kind: string
+          period?: string | null
+          permit_date?: string
+          reason?: string | null
+          record_ids?: string[]
+          student_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_no?: number
+          entry_time?: string
+          id?: string
+          issued_by?: string | null
+          justified?: boolean
+          kind?: string
+          period?: string | null
+          permit_date?: string
+          reason?: string | null
+          record_ids?: string[]
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entry_permits_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exams: {
         Row: {
           class_id: string | null
@@ -426,6 +479,60 @@ export type Database = {
             columns: ["class_id"]
             isOneToOne: false
             referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      free_period_decisions: {
+        Row: {
+          class_id: string
+          created_at: string
+          decided_by: string | null
+          decision: string
+          decision_date: string
+          id: string
+          note: string | null
+          slot_id: string
+          substitute_teacher_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          decided_by?: string | null
+          decision: string
+          decision_date: string
+          id?: string
+          note?: string | null
+          slot_id: string
+          substitute_teacher_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          decided_by?: string | null
+          decision?: string
+          decision_date?: string
+          id?: string
+          note?: string | null
+          slot_id?: string
+          substitute_teacher_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "free_period_decisions_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "free_period_decisions_slot_id_fkey"
+            columns: ["slot_id"]
+            isOneToOne: false
+            referencedRelation: "schedule_slots"
             referencedColumns: ["id"]
           },
         ]
@@ -521,6 +628,89 @@ export type Database = {
             columns: ["class_id"]
             isOneToOne: false
             referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      legal_notice_settings: {
+        Row: {
+          confirmed: boolean
+          id: boolean
+          notice1_days: number
+          notice2_days: number
+          notice3_days: number
+          strike_off_days: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          confirmed?: boolean
+          id?: boolean
+          notice1_days?: number
+          notice2_days?: number
+          notice3_days?: number
+          strike_off_days?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          confirmed?: boolean
+          id?: boolean
+          notice1_days?: number
+          notice2_days?: number
+          notice3_days?: number
+          strike_off_days?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      legal_notices: {
+        Row: {
+          absence_dates: string[]
+          delivery_method: string
+          guardian_response_on: string | null
+          id: string
+          issued_at: string
+          issued_by: string | null
+          level: number
+          note: string | null
+          serial: number
+          student_id: string
+          unjustified_days: number
+        }
+        Insert: {
+          absence_dates?: string[]
+          delivery_method?: string
+          guardian_response_on?: string | null
+          id?: string
+          issued_at?: string
+          issued_by?: string | null
+          level: number
+          note?: string | null
+          serial?: never
+          student_id: string
+          unjustified_days: number
+        }
+        Update: {
+          absence_dates?: string[]
+          delivery_method?: string
+          guardian_response_on?: string | null
+          id?: string
+          issued_at?: string
+          issued_by?: string | null
+          level?: number
+          note?: string | null
+          serial?: never
+          student_id?: string
+          unjustified_days?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "legal_notices_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
             referencedColumns: ["id"]
           },
         ]
@@ -1122,6 +1312,7 @@ export type Database = {
           created_at: string
           date_of_birth: string | null
           enrollment_data: Json | null
+          enrollment_status: string
           fake_email: string | null
           fake_phone: string | null
           full_name: string
@@ -1130,6 +1321,9 @@ export type Database = {
           guardian_phone: string | null
           id: string
           national_student_id: string | null
+          struck_off_at: string | null
+          struck_off_by: string | null
+          struck_off_reason: string | null
           updated_at: string
           user_id: string | null
         }
@@ -1138,6 +1332,7 @@ export type Database = {
           created_at?: string
           date_of_birth?: string | null
           enrollment_data?: Json | null
+          enrollment_status?: string
           fake_email?: string | null
           fake_phone?: string | null
           full_name: string
@@ -1146,6 +1341,9 @@ export type Database = {
           guardian_phone?: string | null
           id?: string
           national_student_id?: string | null
+          struck_off_at?: string | null
+          struck_off_by?: string | null
+          struck_off_reason?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -1154,6 +1352,7 @@ export type Database = {
           created_at?: string
           date_of_birth?: string | null
           enrollment_data?: Json | null
+          enrollment_status?: string
           fake_email?: string | null
           fake_phone?: string | null
           full_name?: string
@@ -1162,6 +1361,9 @@ export type Database = {
           guardian_phone?: string | null
           id?: string
           national_student_id?: string | null
+          struck_off_at?: string | null
+          struck_off_by?: string | null
+          struck_off_reason?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -1237,6 +1439,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      teacher_absences: {
+        Row: {
+          absence_date: string
+          created_at: string
+          created_by: string | null
+          id: string
+          reason: string | null
+          slot_ids: string[] | null
+          teacher_id: string
+        }
+        Insert: {
+          absence_date: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          reason?: string | null
+          slot_ids?: string[] | null
+          teacher_id: string
+        }
+        Update: {
+          absence_date?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          reason?: string | null
+          slot_ids?: string[] | null
+          teacher_id?: string
+        }
+        Relationships: []
       }
       telegram_alerts: {
         Row: {
@@ -1454,6 +1686,24 @@ export type Database = {
           _title: string
         }
         Returns: number
+      }
+      set_student_enrollment: {
+        Args: { _reason: string; _status: string; _student: string }
+        Returns: undefined
+      }
+      student_absence_standing: {
+        Args: never
+        Returns: {
+          absence_dates: string[]
+          class_name: string
+          enrollment_status: string
+          full_name: string
+          guardian_name: string
+          guardian_phone: string
+          last_notice_level: number
+          student_id: string
+          unjustified_days: number
+        }[]
       }
     }
     Enums: {

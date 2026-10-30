@@ -64,6 +64,13 @@
       "when": 1793020622976,
       "tag": "0008_student_guardian_contact",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793349383200,
+      "tag": "0009_legal_notices_free_periods_entry_permits",
+      "breakpoints": true
     }
   ]
 }
