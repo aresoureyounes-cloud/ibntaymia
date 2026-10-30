@@ -41,7 +41,10 @@
     "inbox": "رسائلي",
     "today": "حصص اليوم",
     "weekly": "الملخص الأسبوعي",
-    "my_attendance": "سجل الحضور"
+    "my_attendance": "سجل الحضور",
+    "entry_permits": "تصاريح الدخول",
+    "legal_notices": "المسار القانوني للغياب",
+    "free_periods": "حصص الفراغ"
   },
   "landing": {
     "hero_title": "إدارة مدرسية ذكية، آمنة، وتعمل بدون إنترنت",

@@ -41,7 +41,10 @@
     "inbox": "My messages",
     "today": "Today's classes",
     "weekly": "Weekly summary",
-    "my_attendance": "Attendance record"
+    "my_attendance": "Attendance record",
+    "entry_permits": "Entry permits",
+    "legal_notices": "Absence notices",
+    "free_periods": "Free periods"
   },
   "landing": {
     "hero_title": "Smart, secure school management — works offline",
