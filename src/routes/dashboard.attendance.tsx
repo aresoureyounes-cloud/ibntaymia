@@ -172,9 +172,18 @@ function AttendancePage() {
         .from("students")
         .select("id, full_name")
         .eq("class_id", classId)
+        .eq("enrollment_status", "active")
         .order("full_name");
       if (error) throw error;
       return data ?? [];
+    },
+  });
+
+  const { data: permitIds = new Set<string>() } = useQuery({
+    queryKey: ["permits-for-date", date],
+    queryFn: async () => {
+      const { data } = await supabase.from("entry_permits").select("student_id").eq("permit_date", date);
+      return new Set((data ?? []).map((p) => p.student_id));
     },
   });
 
@@ -579,6 +588,7 @@ function AttendancePage() {
                 >
                   <div className="flex flex-col">
                     <span className="font-medium">{s.full_name}</span>
+                    {permitIds.has(s.id) && <Badge variant="secondary">دخل بتصريح</Badge>}
                     {locked && (
                       <span className="text-xs text-orange-600 dark:text-orange-400">
                         مقفل: تأخر مسجَّل من البوابة، يستوجب التبرير قبل التعديل

@@ -18,3 +18,5 @@
 - Telegram event alerts use a durable database queue and staff-authorized SMS preparation page; gateway acceptance and composer opening never mean SMS delivery, and corrected attendance cancels pending preparation.
 - Launch the SMS composer through a direct user-clicked sms: anchor after authorized preparation, not asynchronous window navigation; mobile browsers can block external app launches after an awaited request, and Telegram inline URL buttons support HTTP/tg links rather than sms links.
 - Absence-report SMS trials reuse staff-readable is_test alert rows in a separate section, never attendance records or report totals; this keeps experiments out of official student history.
+- Legal absence notices count only unjustified absence days, go in order without skipping, and strike-off is a director-only database function requiring the third notice; students are never deleted, only marked struck_off and hidden from attendance.
+- Entry permits get a per-day number from a locked trigger and justify only the attendance records explicitly selected; this keeps permits and the legal counter consistent.
