@@ -77,7 +77,7 @@ function LegalNoticesPage() {
     },
   });
 
-  const s: LegalSettings | null = settings ?? null;
+  const s: (LegalSettings & { confirmed: boolean }) | null = settings ?? null;
   const rows = useMemo(() => {
     if (!s) return [];
     return standing
