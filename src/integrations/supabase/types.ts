@@ -632,6 +632,48 @@ export type Database = {
           },
         ]
       }
+      institution_settings: {
+        Row: {
+          academic_year: string
+          address: string
+          deployment_id: string
+          email: string
+          id: boolean
+          logo_data_url: string
+          name: string
+          phone: string
+          published_origin: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          academic_year?: string
+          address?: string
+          deployment_id?: string
+          email?: string
+          id?: boolean
+          logo_data_url?: string
+          name?: string
+          phone?: string
+          published_origin?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          academic_year?: string
+          address?: string
+          deployment_id?: string
+          email?: string
+          id?: boolean
+          logo_data_url?: string
+          name?: string
+          phone?: string
+          published_origin?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       legal_notice_settings: {
         Row: {
           confirmed: boolean
