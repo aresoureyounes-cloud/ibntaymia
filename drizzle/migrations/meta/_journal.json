@@ -78,6 +78,13 @@
       "when": 1793349771599,
       "tag": "0010_fix_substitute_notify_channel",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793617256358,
+      "tag": "0011_institution_deployment_settings",
+      "breakpoints": true
     }
   ]
 }

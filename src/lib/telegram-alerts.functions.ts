@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { authorizeTelegramStaff, dispatchTelegramAlerts } from "./telegram-alerts.server";
 import { canPrepareSms, normalizeGuardianPhone, preparedSms } from "./telegram-alerts";
+import { requirePublishedOrigin } from "./institution";
 
 const alertId = z.object({ id: z.string().uuid() });
 
@@ -49,5 +50,7 @@ export const flushTelegram = createServerFn({ method: "POST" }).middleware([requ
   const connectionKey = process.env["TELEGRAM_API_KEY"];
   if (!gatewayKey || !connectionKey) throw new Error("اتصال تيليجرام غير مضبوط.");
   const { supabaseAdmin: db } = await import("@/integrations/supabase/client.server");
-  return dispatchTelegramAlerts(db, gatewayKey, connectionKey, "https://idara25.lovable.app");
+  const { data: institution, error } = await context.supabase.from("institution_settings").select("published_origin").eq("id", true).maybeSingle();
+  if (error) throw new Error("تعذر قراءة عنوان المؤسسة.");
+  return dispatchTelegramAlerts(db, gatewayKey, connectionKey, requirePublishedOrigin(institution?.published_origin));
 });

@@ -13,6 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { InstitutionLetterhead } from "@/components/InstitutionLetterhead";
+import { useInstitution } from "@/lib/use-institution";
 
 export const Route = createFileRoute("/dashboard/legal-notices")({
   component: LegalNoticesPage,
@@ -168,7 +170,8 @@ function LegalNoticesPage() {
           const due = nextNoticeDue(st.unjustified_days, st.last_notice_level, s);
           const suggest = strikeOffSuggested(st.unjustified_days, st.last_notice_level, s);
           const mine = notices.filter((n) => n.student_id === st.student_id);
-          const sms = st.guardian_phone && due ? (() => { try { return smsComposerLink(st.guardian_phone!, noticeText(st, due), isIos()); } catch { return null; } })() : null;
+          const phone = st.guardian_phone;
+          const sms = phone && due ? (() => { try { return smsComposerLink(phone, noticeText(st, due), isIos()); } catch { return null; } })() : null;
           return (
             <Card key={st.student_id}>
               <CardContent className="space-y-3 pt-4">
@@ -220,17 +223,14 @@ function LegalNoticesPage() {
 }
 
 function NoticePrint({ st, n, onClose }: { st: Standing; n: Notice; onClose: () => void }) {
+  const { data: institution } = useInstitution();
   return (
     <div dir="rtl" className="mx-auto max-w-2xl space-y-6 bg-background p-8 text-foreground">
       <div className="flex gap-2 print:hidden">
-        <Button onClick={() => window.print()}><Printer className="h-4 w-4" /> طباعة</Button>
+        <Button disabled={!institution?.name} onClick={() => window.print()}><Printer className="h-4 w-4" /> طباعة</Button>
         <Button variant="outline" onClick={onClose}>رجوع</Button>
       </div>
-      <div className="text-center text-sm leading-7">
-        <p>الجمهورية الجزائرية الديمقراطية الشعبية</p>
-        <p>وزارة التربية الوطنية</p>
-        <p className="font-semibold">ثانوية ابن تيمية</p>
-      </div>
+      <InstitutionLetterhead />
       <div className="flex justify-between text-sm"><span>الرقم: {n.serial}</span><span>التاريخ: {new Date(n.issued_at).toLocaleDateString("ar-DZ")}</span></div>
       <h2 className="text-center text-xl font-bold">{NOTICE_LABEL[n.level]} بالغياب</h2>
       <div className="space-y-3 leading-8">
