@@ -10,6 +10,7 @@ import { APP_VERSION, RELEASE_DATE, CHANGELOG } from "@/lib/app-version";
 import { useAppUpdate } from "@/lib/use-app-update";
 import { UpdateProgressDialog } from "@/components/UpdateProgressDialog";
 import logoAsset from "@/assets/idaroom-logo.png.asset.json";
+import { InstitutionSettings } from "@/components/InstitutionSettings";
 
 export const Route = createFileRoute("/dashboard/settings")({
   head: () => ({
@@ -19,12 +20,12 @@ export const Route = createFileRoute("/dashboard/settings")({
       { title: "الإعدادات — إداروم" },
       {
         name: "description",
-        content: "معلومات الإصدار وسجل التغييرات وإدارة التخزين المؤقت لتطبيق إداروم.",
+        content: "بيانات المؤسسة ومعلومات الإصدار وسجل التغييرات وإدارة التخزين المؤقت لإداروم.",
       },
       { property: "og:title", content: "الإعدادات — إداروم" },
       {
         property: "og:description",
-        content: "معلومات الإصدار وسجل التغييرات وإدارة التخزين المؤقت لتطبيق إداروم.",
+        content: "بيانات المؤسسة ومعلومات الإصدار وسجل التغييرات وإدارة التخزين المؤقت لإداروم.",
       },
     ],
   }),
@@ -83,6 +84,7 @@ function SettingsPage() {
     <div className="space-y-6">
       <UpdateProgressDialog open={applying} progress={progress} remote={remote} />
       <PageHeader title="الإعدادات" description="معلومات التطبيق وإدارة التخزين المؤقت." />
+      <InstitutionSettings />
 
       {/* Version card */}
       <Card>

@@ -10,7 +10,10 @@ export const Route = createFileRoute("/api/public/telegram-dispatch")({
     if (!gatewayKey || !connectionKey) return Response.json({ error: "Telegram not configured" }, { status: 503 });
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { dispatchTelegramAlerts } = await import("@/lib/telegram-alerts.server");
-    const result = await dispatchTelegramAlerts(supabaseAdmin, gatewayKey, connectionKey, "https://idara25.lovable.app");
+    const { requirePublishedOrigin } = await import("@/lib/institution");
+    const { data: institution, error } = await supabaseAdmin.from("institution_settings").select("published_origin").eq("id", true).maybeSingle();
+    if (error || !institution?.published_origin) return Response.json({ error: "Institution URL not configured" }, { status: 503 });
+    const result = await dispatchTelegramAlerts(supabaseAdmin, gatewayKey, connectionKey, requirePublishedOrigin(institution.published_origin));
     return Response.json(result, { headers: { "Cache-Control": "no-store" } });
   } } },
 });

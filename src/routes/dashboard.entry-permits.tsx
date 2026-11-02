@@ -10,6 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { InstitutionLetterhead } from "@/components/InstitutionLetterhead";
+import { useInstitution } from "@/lib/use-institution";
 
 export const Route = createFileRoute("/dashboard/entry-permits")({
   component: EntryPermitsPage,
@@ -59,9 +61,10 @@ function EntryPermitsPage() {
     queryKey: ["permit-records", student?.id],
     enabled: !!student,
     queryFn: async () => {
+      if (!student) return [];
       const { data, error } = await supabase.from("attendance_records")
         .select("id, status, attendance_sessions!inner(session_date, period, subject)")
-        .eq("student_id", student!.id).in("status", ["absent", "late"]).is("justified_at", null)
+        .eq("student_id", student.id).in("status", ["absent", "late"]).is("justified_at", null)
         .order("created_at", { ascending: false }).limit(30);
       if (error) throw error;
       return (data ?? []) as unknown as { id: string; status: string; attendance_sessions: { session_date: string; period: string | null; subject: string | null } }[];
@@ -186,14 +189,16 @@ function EntryPermitsPage() {
 }
 
 function PermitSlip({ p, onClose }: { p: Permit; onClose: () => void }) {
+  const { data: institution } = useInstitution();
   return (
     <div dir="rtl" className="space-y-4">
       <div className="flex gap-2 print:hidden">
-        <Button onClick={() => window.print()}><Printer className="h-4 w-4" /> طباعة</Button>
+        <Button disabled={!institution?.name} onClick={() => window.print()}><Printer className="h-4 w-4" /> طباعة</Button>
         <Button variant="outline" onClick={onClose}>رجوع</Button>
       </div>
-      <div className="w-[105mm] space-y-2 border-2 border-foreground p-4 text-sm">
-        <p className="text-center font-bold">ثانوية ابن تيمية — تصريح دخول</p>
+      <div className="w-[105mm] max-w-full space-y-2 border-2 border-foreground p-4 text-sm">
+        <InstitutionLetterhead />
+        <p className="text-center font-bold">تصريح دخول</p>
         <div className="flex justify-between"><span>رقم: {p.daily_no}</span><span>{p.permit_date}</span></div>
         <p>التلميذ(ة): <b>{p.students?.full_name}</b></p>
         <p>القسم: <b>{p.students?.classes?.name}</b></p>
