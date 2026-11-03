@@ -5,7 +5,7 @@ const { app, BrowserWindow, Menu, shell } = require("electron");
 const path = require("path");
 const { spawn } = require("child_process");
 
-const DEFAULT_URL = "https://idara25.lovable.app";
+const DEFAULT_URL = require("./deployment.json").url || "";
 const APP_URL = process.env.IDAROOM_URL || DEFAULT_URL;
 
 const APP_VERSION = "1.1.0";
@@ -982,6 +982,20 @@ function createMain(opts) {
 }
 
 const cli = parseArgs(process.argv);
+if (!["help", "version", "routes"].includes(cli.command)) {
+  try {
+    const configured = new URL(cli.url);
+    if (!["https:", "http:"].includes(configured.protocol)) throw new Error("Invalid protocol");
+    app.setPath("userData", path.join(app.getPath("appData"), "IDAROOM", configured.hostname));
+  } catch {
+    process.stderr.write("اضبط عنوان المؤسسة في deployment.json أو IDAROOM_URL قبل التشغيل.\n");
+    app.whenReady().then(() => {
+      if (!HEADLESS.has(cli.command)) require("electron").dialog.showErrorBox("عنوان المؤسسة غير مضبوط", "اضبط عنوان المؤسسة في deployment.json أو IDAROOM_URL قبل التشغيل.");
+      app.exit(EXIT.USAGE);
+    });
+    throw new Error("Institution deployment URL is required");
+  }
+}
 logger.configure(cli);
 logger.debug("boot", "parsed arguments", {
   command: cli.command,

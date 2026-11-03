@@ -1,7 +1,14 @@
 # IDAROOM — Linux Desktop (AppImage)
 
 This folder contains an Electron wrapper that opens the published IDAROOM site
-(`https://idara25.lovable.app`) as a native Linux desktop application.
+configured for that institution as a native Linux desktop application.
+
+Before packaging, set `url` in `deployment.json` to the institution's published
+HTTPS origin, or provide `IDAROOM_URL` at launch. There is no default school URL:
+an unconfigured commercial copy refuses to open another school's site.
+Include `deployment.json` beside `main.cjs` in the package. Session storage uses
+a separate folder per configured hostname. Existing downloadable binaries are
+unchanged and must not be reused for a new customer without verification.
 
 The main web app is a server-rendered TanStack Start app running on Cloudflare
 Workers, so it **cannot** be bundled as a fully offline `.AppImage`. The wrapper
