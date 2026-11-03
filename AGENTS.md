@@ -21,3 +21,5 @@
 - Legal absence notices count only unjustified absence days, go in order without skipping, and strike-off is a director-only database function requiring the third notice; students are never deleted, only marked struck_off and hidden from attendance.
 - Entry permits get a per-day number from a locked trigger and justify only the attendance records explicitly selected; this keeps permits and the legal counter consistent.
 - Commercial deployments use a separate project and backend per institution, including auth, storage, notification credentials and backups; copying frontend code alone cannot isolate school records.
+- Institution identity is a singleton backend setting with immutable deployment ID, authorized writes and no inherited customer identity defaults; printed legal documents and Telegram links use it rather than a hardcoded school.
+- Desktop source requires explicit deployment URL configuration and separates browser data by hostname; never reuse existing downloadable binaries for customer deployments without repackaging and verification.
