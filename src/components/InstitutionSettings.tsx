@@ -54,7 +54,8 @@ export function InstitutionSettings() {
     if (!parsed.success) return toast.error(parsed.error.issues[0]?.message ?? "راجع البيانات");
     setSaving(true);
     try {
-      await save({ data: parsed.data });
+      const saved = await save({ data: parsed.data });
+      qc.setQueriesData({ queryKey: ["institution-settings"] }, saved);
       setDirty(false);
       await qc.invalidateQueries({ queryKey: ["institution-settings"] });
       toast.success("حُفظت بيانات المؤسسة");

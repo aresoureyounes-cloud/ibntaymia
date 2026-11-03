@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Download, Monitor, HardDrive, RefreshCw, Sparkles, CheckCircle2, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -49,6 +49,8 @@ const BUILDS: Build[] = [
 
 export function DesktopDownloads() {
   const [checking, setChecking] = useState(false);
+  const [origin, setOrigin] = useState("");
+  useEffect(() => setOrigin(window.location.origin), []);
 
   async function checkForUpdates() {
     setChecking(true);
@@ -148,11 +150,11 @@ export function DesktopDownloads() {
 
               <pre
                 dir="ltr"
-                className="overflow-x-auto rounded-lg bg-[#0d1512] px-4 py-3 font-mono text-[12px] leading-6 text-emerald-100"
+                className="overflow-x-auto rounded-lg bg-muted px-4 py-3 font-mono text-[12px] leading-6 text-foreground"
               >
-{`curl -fsSL https://idarroom.lovable.app/cli/install.sh | sh
+{origin ? `curl -fsSL ${origin}/cli/install.sh | IDAROOM_BASE_URL=${origin} sh
 # أو لكل المستخدمين:
-curl -fsSL https://idarroom.lovable.app/cli/install.sh | sudo sh`}
+curl -fsSL ${origin}/cli/install.sh | sudo env IDAROOM_BASE_URL=${origin} sh` : "…"}
               </pre>
 
               <pre

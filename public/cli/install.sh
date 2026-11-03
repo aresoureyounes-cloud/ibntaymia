@@ -4,7 +4,11 @@
 #   curl -fsSL https://idarroom.lovable.app/cli/install.sh | sudo sh   (تثبيت للجميع)
 set -e
 
-BASE_URL="${IDAROOM_BASE_URL:-https://idarroom.lovable.app}"
+BASE_URL="${IDAROOM_BASE_URL:-}"
+if [ -z "$BASE_URL" ]; then
+  echo "اضبط IDAROOM_BASE_URL بعنوان الموقع المنشور للمؤسسة قبل التثبيت." >&2
+  exit 1
+fi
 SRC="$BASE_URL/cli/idaroom"
 
 if ! command -v node >/dev/null 2>&1; then

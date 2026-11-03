@@ -209,8 +209,8 @@ export const COMMANDS: CommandSpec[] = [
     description: "أوامر الطرفية الحقيقية في لينكس (idaroom ...)",
     run: () => [
       "أداة سطر أوامر مستقلة (بدون واجهة، Node.js 18+) — التثبيت بأمر واحد:",
-      "  curl -fsSL https://idarroom.lovable.app/cli/install.sh | sh",
-      "  curl -fsSL https://idarroom.lovable.app/cli/install.sh | sudo sh   # لكل المستخدمين",
+      `  curl -fsSL ${window.location.origin}/cli/install.sh | IDAROOM_BASE_URL=${window.location.origin} sh`,
+      `  curl -fsSL ${window.location.origin}/cli/install.sh | sudo env IDAROOM_BASE_URL=${window.location.origin} sh`,
       "",
       "أوامر الأداة المستقلة:",
       "  idaroom shell                        وضع تفاعلي: موجه مباشر وأوامر متسلسلة",

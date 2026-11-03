@@ -1,6 +1,6 @@
 const { app, BrowserWindow, Menu, shell } = require("electron");
 const path = require("path");
-const APP_URL = process.env.IDAROOM_URL || "https://idara25.lovable.app";
+const APP_URL = process.env.IDAROOM_URL || require("./deployment.json").url || "";
 function createWindow() {
   const win = new BrowserWindow({
     width: 1280, height: 840, minWidth: 360, minHeight: 600,
@@ -20,6 +20,15 @@ function createWindow() {
   Menu.setApplicationMenu(null);
 }
 app.whenReady().then(() => {
+  try {
+    const configured = new URL(APP_URL);
+    if (!["https:", "http:"].includes(configured.protocol)) throw new Error("Invalid protocol");
+    app.setPath("userData", path.join(app.getPath("appData"), "IDAROOM", configured.hostname));
+  } catch {
+    require("electron").dialog.showErrorBox("عنوان المؤسسة غير مضبوط", "اضبط عنوان المؤسسة في deployment.json أو IDAROOM_URL قبل التشغيل.");
+    app.quit();
+    return;
+  }
   createWindow();
   app.on("activate", () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 });
