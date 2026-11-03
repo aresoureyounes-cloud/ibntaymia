@@ -1,1 +1,0 @@
-CREATE UNIQUE INDEX IF NOT EXISTS students_national_student_id_upsert_unique ON public.students(national_student_id);
