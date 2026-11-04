@@ -1,14 +1,15 @@
-CREATE OR REPLACE FUNCTION public.notify_substitute_teacher() RETURNS trigger
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-DECLARE sl record;
-BEGIN
-  IF NEW.decision = 'substitute' AND NEW.substitute_teacher_id IS NOT NULL
-     AND (TG_OP = 'INSERT' OR OLD.substitute_teacher_id IS DISTINCT FROM NEW.substitute_teacher_id OR OLD.decision <> NEW.decision) THEN
-    SELECT s.subject, s.start_time, c.name AS cname INTO sl FROM schedule_slots s JOIN classes c ON c.id = s.class_id WHERE s.id = NEW.slot_id;
-    INSERT INTO notifications (recipient_id, title, body, channel, status)
-    VALUES (NEW.substitute_teacher_id, 'حصة استخلاف',
-      format('كُلّفت بحصة استخلاف للقسم %s يوم %s على الساعة %s (%s).', sl.cname, NEW.decision_date, to_char(sl.start_time,'HH24:MI'), sl.subject),
-      'inapp', 'sent');
-  END IF;
-  RETURN NEW;
-END $$;
+-- The content of this migration cannot be applied: it was copied from the original project and its changes already exist in this database.
+-- CREATE OR REPLACE FUNCTION public.notify_substitute_teacher() RETURNS trigger
+-- LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+-- DECLARE sl record;
+-- BEGIN
+--   IF NEW.decision = 'substitute' AND NEW.substitute_teacher_id IS NOT NULL
+--      AND (TG_OP = 'INSERT' OR OLD.substitute_teacher_id IS DISTINCT FROM NEW.substitute_teacher_id OR OLD.decision <> NEW.decision) THEN
+--     SELECT s.subject, s.start_time, c.name AS cname INTO sl FROM schedule_slots s JOIN classes c ON c.id = s.class_id WHERE s.id = NEW.slot_id;
+--     INSERT INTO notifications (recipient_id, title, body, channel, status)
+--     VALUES (NEW.substitute_teacher_id, 'حصة استخلاف',
+--       format('كُلّفت بحصة استخلاف للقسم %s يوم %s على الساعة %s (%s).', sl.cname, NEW.decision_date, to_char(sl.start_time,'HH24:MI'), sl.subject),
+--       'inapp', 'sent');
+--   END IF;
+--   RETURN NEW;
+-- END $$;

@@ -1,1 +1,2 @@
-CREATE UNIQUE INDEX IF NOT EXISTS students_national_student_id_upsert_unique ON public.students(national_student_id);
+-- The content of this migration cannot be applied: it was copied from the original project and its changes already exist in this database.
+-- CREATE UNIQUE INDEX IF NOT EXISTS students_national_student_id_upsert_unique ON public.students(national_student_id);

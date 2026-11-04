@@ -1,1 +1,2 @@
-ALTER TABLE public.students ADD COLUMN IF NOT EXISTS guardian_name text, ADD COLUMN IF NOT EXISTS guardian_phone text;
+-- The content of this migration cannot be applied: it was copied from the original project and its changes already exist in this database.
+-- ALTER TABLE public.students ADD COLUMN IF NOT EXISTS guardian_name text, ADD COLUMN IF NOT EXISTS guardian_phone text;
