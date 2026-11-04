@@ -1,0 +1,34 @@
+-- The content of this migration cannot be applied: it was copied from the original project and its changes already exist in this database.
+-- CREATE TABLE public.institution_settings (
+--  id boolean PRIMARY KEY DEFAULT true CHECK (id = true),
+--  deployment_id uuid NOT NULL DEFAULT gen_random_uuid(),
+--  name text NOT NULL DEFAULT '' CHECK (char_length(name) <= 160),
+--  address text NOT NULL DEFAULT '' CHECK (char_length(address) <= 300),
+--  phone text NOT NULL DEFAULT '' CHECK (char_length(phone) <= 40),
+--  email text NOT NULL DEFAULT '' CHECK (char_length(email) <= 160),
+--  academic_year text NOT NULL DEFAULT '' CHECK (char_length(academic_year) <= 40),
+--  logo_data_url text NOT NULL DEFAULT '' CHECK (char_length(logo_data_url) <= 300000 AND (logo_data_url = '' OR logo_data_url ~ '^data:image/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$')),
+--  published_origin text NOT NULL DEFAULT '' CHECK (published_origin = '' OR published_origin ~ '^https://[a-zA-Z0-9.-]+(:[0-9]+)?$'),
+--  updated_at timestamptz NOT NULL DEFAULT now(),
+--  updated_by uuid
+-- );
+-- GRANT SELECT, INSERT, UPDATE ON public.institution_settings TO authenticated;
+-- GRANT ALL ON public.institution_settings TO service_role;
+-- ALTER TABLE public.institution_settings ENABLE ROW LEVEL SECURITY;
+-- CREATE POLICY "Authenticated read institution identity" ON public.institution_settings FOR SELECT TO authenticated USING (true);
+-- CREATE POLICY "Institution administrators insert settings" ON public.institution_settings FOR INSERT TO authenticated WITH CHECK (
+--  (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'director') OR public.has_role(auth.uid(), 'developer')) AND updated_by = auth.uid()
+-- );
+-- CREATE POLICY "Institution administrators update settings" ON public.institution_settings FOR UPDATE TO authenticated USING (
+--  public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'director') OR public.has_role(auth.uid(), 'developer')
+-- ) WITH CHECK (
+--  (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'director') OR public.has_role(auth.uid(), 'developer')) AND updated_by = auth.uid()
+-- );
+-- CREATE FUNCTION public.protect_institution_deployment_id() RETURNS trigger LANGUAGE plpgsql SET search_path = public AS $$
+-- BEGIN
+--  IF NEW.deployment_id IS DISTINCT FROM OLD.deployment_id THEN RAISE EXCEPTION 'Deployment identity cannot be changed'; END IF;
+--  RETURN NEW;
+-- END;
+-- $$;
+-- CREATE TRIGGER institution_deployment_identity_immutable BEFORE UPDATE ON public.institution_settings FOR EACH ROW EXECUTE FUNCTION public.protect_institution_deployment_id();
+-- COMMENT ON TABLE public.institution_settings IS 'One institution per independently provisioned backend. This table configures a deployment; it does not create tenant isolation in a shared backend.';

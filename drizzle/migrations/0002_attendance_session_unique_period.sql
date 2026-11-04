@@ -1,0 +1,3 @@
+-- The content of this migration cannot be applied: it was copied from the original project and its changes already exist in this database.
+-- CREATE UNIQUE INDEX IF NOT EXISTS attendance_sessions_class_date_period_unique ON public.attendance_sessions (class_id, session_date, (COALESCE(NULLIF(btrim(period), ''), '')));
+-- COMMENT ON INDEX public.attendance_sessions_class_date_period_unique IS 'Prevents simultaneous duplicate attendance sessions for the same class, date and period, including unset periods.';

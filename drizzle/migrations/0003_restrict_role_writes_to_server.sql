@@ -1,0 +1,7 @@
+-- The content of this migration cannot be applied: it was copied from the original project and its changes already exist in this database.
+-- DROP POLICY IF EXISTS "Admins can manage all roles" ON public.user_roles;
+-- CREATE POLICY "Staff can read account roles" ON public.user_roles FOR SELECT TO authenticated USING (public.has_role(auth.uid(), 'admin') OR public.has_role(auth.uid(), 'developer'));
+-- REVOKE INSERT, UPDATE, DELETE ON public.user_roles FROM anon, authenticated;
+-- GRANT SELECT ON public.user_roles TO authenticated;
+-- GRANT ALL ON public.user_roles TO service_role;
+-- COMMENT ON TABLE public.user_roles IS 'Role writes are restricted to authenticated, authorized server account-management handlers; browser role writes are forbidden.';

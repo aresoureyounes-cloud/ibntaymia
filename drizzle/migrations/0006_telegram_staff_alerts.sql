@@ -1,0 +1,68 @@
+-- The content of this migration cannot be applied: it was copied from the original project and its changes already exist in this database.
+-- CREATE TABLE public.telegram_alerts (
+--  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+--  source_key text UNIQUE NOT NULL,
+--  student_id uuid REFERENCES public.students(id) ON DELETE SET NULL,
+--  event_type text NOT NULL,
+--  student_name text NOT NULL,
+--  class_name text NOT NULL DEFAULT '',
+--  guardian_name text NOT NULL DEFAULT '',
+--  guardian_phone text,
+--  details text NOT NULL DEFAULT '',
+--  event_at timestamptz NOT NULL DEFAULT now(),
+--  is_test boolean NOT NULL DEFAULT false,
+--  telegram_status text NOT NULL DEFAULT 'pending' CHECK (telegram_status IN ('pending','sending','accepted','failed')),
+--  telegram_message_id bigint,
+--  telegram_error text,
+--  decision text NOT NULL DEFAULT 'pending' CHECK (decision IN ('pending','composer_opened','ignored','cancelled')),
+--  decided_by uuid,
+--  decided_at timestamptz,
+--  created_at timestamptz NOT NULL DEFAULT now()
+-- );
+-- GRANT SELECT ON public.telegram_alerts TO authenticated;
+-- GRANT ALL ON public.telegram_alerts TO service_role;
+-- ALTER TABLE public.telegram_alerts ENABLE ROW LEVEL SECURITY;
+-- CREATE POLICY "Administrative staff read Telegram alerts" ON public.telegram_alerts FOR SELECT TO authenticated USING (public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'director') OR public.has_role(auth.uid(),'supervisor') OR public.has_role(auth.uid(),'developer'));
+-- CREATE TABLE public.telegram_settings (
+--  id boolean PRIMARY KEY DEFAULT true CHECK (id),
+--  chat_id text NOT NULL,
+--  enabled boolean NOT NULL DEFAULT false
+-- );
+-- GRANT SELECT ON public.telegram_settings TO authenticated;
+-- GRANT ALL ON public.telegram_settings TO service_role;
+-- ALTER TABLE public.telegram_settings ENABLE ROW LEVEL SECURITY;
+-- CREATE POLICY "Administrators read Telegram settings" ON public.telegram_settings FOR SELECT TO authenticated USING (public.has_role(auth.uid(),'admin') OR public.has_role(auth.uid(),'director') OR public.has_role(auth.uid(),'developer'));
+-- CREATE OR REPLACE FUNCTION public.queue_telegram_student_event() RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+-- DECLARE st public.students%ROWTYPE; class_label text; event_label text; info text; when_at timestamptz; session_info public.attendance_sessions%ROWTYPE; guardian record;
+-- BEGIN
+--  IF TG_TABLE_NAME = 'attendance_records' THEN
+--   IF NEW.status NOT IN ('absent','late') THEN
+--    UPDATE public.telegram_alerts SET decision='cancelled' WHERE source_key LIKE 'attendance:' || NEW.id::text || ':%' AND decision IN ('pending','composer_opened');
+--    RETURN NEW;
+--   END IF;
+--   IF TG_OP='UPDATE' AND OLD.status=NEW.status THEN RETURN NEW; END IF;
+--   SELECT * INTO session_info FROM public.attendance_sessions WHERE id=NEW.session_id;
+--   event_label := CASE WHEN NEW.status='absent' THEN 'غياب' ELSE 'تأخر' END;
+--   info := 'التاريخ: ' || session_info.session_date::text || '، الحصة: ' || coalesce(session_info.period,'غير محددة') || '، المادة: ' || coalesce(session_info.subject,'غير محددة');
+--   when_at := now();
+--  ELSE
+--   IF TG_TABLE_NAME='behavior_records' THEN
+--    event_label := 'تقرير سلوك'; info := NEW.title || CASE WHEN NEW.note IS NULL THEN '' ELSE ' — ' || NEW.note END; when_at := NEW.recorded_at;
+--   ELSE
+--    IF NEW.related_student_id IS NULL OR NEW.channel <> 'inapp' THEN RETURN NEW; END IF;
+--    event_label := NEW.title; info := coalesce(NEW.body,''); when_at := NEW.created_at;
+--   END IF;
+--  END IF;
+--  SELECT * INTO st FROM public.students WHERE id = CASE WHEN TG_TABLE_NAME='notifications' THEN NEW.related_student_id ELSE NEW.student_id END;
+--  IF st.id IS NULL THEN RETURN NEW; END IF;
+--  SELECT name INTO class_label FROM public.classes WHERE id=st.class_id;
+--  FOR guardian IN SELECT p.id,p.full_name,p.phone FROM public.parent_student ps JOIN public.profiles p ON p.id=ps.parent_user_id WHERE ps.student_id=st.id LOOP
+--   INSERT INTO public.telegram_alerts(source_key,student_id,event_type,student_name,class_name,guardian_name,guardian_phone,details,event_at)
+--   VALUES (TG_TABLE_NAME || ':' || NEW.id::text || ':' || guardian.id::text || ':' || event_label,st.id,event_label,st.full_name,coalesce(class_label,''),coalesce(guardian.full_name,''),nullif(trim(guardian.phone),''),info,when_at)
+--   ON CONFLICT(source_key) DO NOTHING;
+--  END LOOP;
+--  RETURN NEW;
+-- END $$;
+-- CREATE TRIGGER telegram_attendance_queue AFTER INSERT OR UPDATE OF status ON public.attendance_records FOR EACH ROW EXECUTE FUNCTION public.queue_telegram_student_event();
+-- CREATE TRIGGER telegram_behavior_queue AFTER INSERT ON public.behavior_records FOR EACH ROW EXECUTE FUNCTION public.queue_telegram_student_event();
+-- CREATE TRIGGER telegram_notification_queue AFTER INSERT ON public.notifications FOR EACH ROW EXECUTE FUNCTION public.queue_telegram_student_event();
