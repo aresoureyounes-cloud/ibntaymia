@@ -57,7 +57,7 @@ async function findUser(identifier: string): Promise<
   | { kind: "ambiguous"; emails: string[] }
 > {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  let needle = normalize(identifier);
+  const needle = normalize(identifier);
   // Account login code (e.g. IDR-1A2B-3C4D-5E6F) resolves to its account's email.
   if (/^idr-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}$/.test(needle)) {
     const { data: row } = await supabaseAdmin

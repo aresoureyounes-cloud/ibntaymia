@@ -154,7 +154,7 @@ function LoginPage() {
 
             <form onSubmit={handleSubmit} className="space-y-3">
               <div className="space-y-1.5">
-                <Label htmlFor="email">{t("auth.email")} / اسم المستخدم</Label>
+                <Label htmlFor="email">{t("auth.email")} / اسم المستخدم / رمز الحساب</Label>
                 <Input
                   id="email"
                   type="text"
