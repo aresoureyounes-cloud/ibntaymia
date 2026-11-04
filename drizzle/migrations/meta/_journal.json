@@ -85,6 +85,13 @@
       "when": 1793617256358,
       "tag": "0011_institution_deployment_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793783438034,
+      "tag": "0012_owner_developer_role",
+      "breakpoints": true
     }
   ]
 }

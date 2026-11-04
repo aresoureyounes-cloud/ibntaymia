@@ -92,6 +92,24 @@ export type Database = {
         }
         Relationships: []
       }
+      account_login_codes: {
+        Row: {
+          code: string
+          created_at: string
+          user_id: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          user_id: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       appearance_settings: {
         Row: {
           created_at: string
