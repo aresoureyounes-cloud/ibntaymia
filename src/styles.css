@@ -293,3 +293,30 @@ html[data-reduced-motion="true"] *::after {
     display: block !important;
   }
 }
+
+/* "Simple look" presentation mode: plain, unpolished appearance */
+html.simple-mode {
+  --radius: 0.125rem;
+  --primary: oklch(0.45 0.15 255);
+  --primary-glow: oklch(0.45 0.15 255);
+  --accent: oklch(0.45 0.15 255);
+  --ring: oklch(0.45 0.15 255);
+}
+html.simple-mode body,
+html.simple-mode .font-display {
+  font-family: Tahoma, Arial, sans-serif !important;
+  letter-spacing: normal !important;
+}
+html.simple-mode *,
+html.simple-mode *::before,
+html.simple-mode *::after {
+  box-shadow: none !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+  animation: none !important;
+  transition: none !important;
+  text-shadow: none !important;
+}
+html.simple-mode [data-simple-hide] {
+  display: none !important;
+}
