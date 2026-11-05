@@ -28,6 +28,7 @@ import { Route as DashboardBehaviorRouteImport } from './routes/dashboard.behavi
 import { Route as DashboardCalendarRouteImport } from './routes/dashboard.calendar'
 import { Route as DashboardCardsRouteImport } from './routes/dashboard.cards'
 import { Route as DashboardConsoleRouteImport } from './routes/dashboard.console'
+import { Route as DashboardDataRouteImport } from './routes/dashboard.data'
 import { Route as DashboardDecisionsRouteImport } from './routes/dashboard.decisions'
 import { Route as DashboardDiagnosticsRouteImport } from './routes/dashboard.diagnostics'
 import { Route as DashboardDirectorRouteImport } from './routes/dashboard.director'
@@ -160,6 +161,11 @@ const DashboardCardsRoute = DashboardCardsRouteImport.update({
 const DashboardConsoleRoute = DashboardConsoleRouteImport.update({
   id: '/console',
   path: '/console',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardDataRoute = DashboardDataRouteImport.update({
+  id: '/data',
+  path: '/data',
   getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardDecisionsRoute = DashboardDecisionsRouteImport.update({
@@ -373,6 +379,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/calendar': typeof DashboardCalendarRoute
   '/dashboard/cards': typeof DashboardCardsRouteWithChildren
   '/dashboard/console': typeof DashboardConsoleRoute
+  '/dashboard/data': typeof DashboardDataRoute
   '/dashboard/decisions': typeof DashboardDecisionsRoute
   '/dashboard/diagnostics': typeof DashboardDiagnosticsRoute
   '/dashboard/director': typeof DashboardDirectorRoute
@@ -431,6 +438,7 @@ export interface FileRoutesByTo {
   '/dashboard/calendar': typeof DashboardCalendarRoute
   '/dashboard/cards': typeof DashboardCardsRouteWithChildren
   '/dashboard/console': typeof DashboardConsoleRoute
+  '/dashboard/data': typeof DashboardDataRoute
   '/dashboard/decisions': typeof DashboardDecisionsRoute
   '/dashboard/diagnostics': typeof DashboardDiagnosticsRoute
   '/dashboard/director': typeof DashboardDirectorRoute
@@ -491,6 +499,7 @@ export interface FileRoutesById {
   '/dashboard/calendar': typeof DashboardCalendarRoute
   '/dashboard/cards': typeof DashboardCardsRouteWithChildren
   '/dashboard/console': typeof DashboardConsoleRoute
+  '/dashboard/data': typeof DashboardDataRoute
   '/dashboard/decisions': typeof DashboardDecisionsRoute
   '/dashboard/diagnostics': typeof DashboardDiagnosticsRoute
   '/dashboard/director': typeof DashboardDirectorRoute
@@ -552,6 +561,7 @@ export interface FileRouteTypes {
     | '/dashboard/calendar'
     | '/dashboard/cards'
     | '/dashboard/console'
+    | '/dashboard/data'
     | '/dashboard/decisions'
     | '/dashboard/diagnostics'
     | '/dashboard/director'
@@ -610,6 +620,7 @@ export interface FileRouteTypes {
     | '/dashboard/calendar'
     | '/dashboard/cards'
     | '/dashboard/console'
+    | '/dashboard/data'
     | '/dashboard/decisions'
     | '/dashboard/diagnostics'
     | '/dashboard/director'
@@ -669,6 +680,7 @@ export interface FileRouteTypes {
     | '/dashboard/calendar'
     | '/dashboard/cards'
     | '/dashboard/console'
+    | '/dashboard/data'
     | '/dashboard/decisions'
     | '/dashboard/diagnostics'
     | '/dashboard/director'
@@ -859,6 +871,13 @@ declare module '@tanstack/react-router' {
       path: '/console'
       fullPath: '/dashboard/console'
       preLoaderRoute: typeof DashboardConsoleRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/dashboard/data': {
+      id: '/dashboard/data'
+      path: '/data'
+      fullPath: '/dashboard/data'
+      preLoaderRoute: typeof DashboardDataRouteImport
       parentRoute: typeof DashboardRoute
     }
     '/dashboard/decisions': {
@@ -1151,6 +1170,7 @@ interface DashboardRouteChildren {
   DashboardCalendarRoute: typeof DashboardCalendarRoute
   DashboardCardsRoute: typeof DashboardCardsRouteWithChildren
   DashboardConsoleRoute: typeof DashboardConsoleRoute
+  DashboardDataRoute: typeof DashboardDataRoute
   DashboardDecisionsRoute: typeof DashboardDecisionsRoute
   DashboardDiagnosticsRoute: typeof DashboardDiagnosticsRoute
   DashboardDirectorRoute: typeof DashboardDirectorRoute
@@ -1197,6 +1217,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardCalendarRoute: DashboardCalendarRoute,
   DashboardCardsRoute: DashboardCardsRouteWithChildren,
   DashboardConsoleRoute: DashboardConsoleRoute,
+  DashboardDataRoute: DashboardDataRoute,
   DashboardDecisionsRoute: DashboardDecisionsRoute,
   DashboardDiagnosticsRoute: DashboardDiagnosticsRoute,
   DashboardDirectorRoute: DashboardDirectorRoute,
