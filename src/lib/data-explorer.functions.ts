@@ -46,7 +46,7 @@ export const listRows = createServerFn({ method: "POST" })
     const from = data.page * data.pageSize;
     const { data: rows, error, count } = await q.range(from, from + data.pageSize - 1);
     if (error) throw new Error(error.message);
-    return { rows: JSON.parse(JSON.stringify(rows ?? [])) as Record<string, unknown>[], count: count ?? 0 };
+    return { rows: JSON.parse(JSON.stringify(rows ?? [])) as Record<string, any>[], count: (count ?? 0) as number };
   });
 
 const rowValues = z.record(z.string(), z.unknown());
