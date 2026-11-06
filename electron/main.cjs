@@ -928,7 +928,7 @@ function createMain(opts) {
     icon: path.join(__dirname, "icon.png"),
     autoHideMenuBar: true,
     title: `IDAROOM v${APP_VERSION}`,
-    webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true },
+    webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, preload: path.join(__dirname, "preload.cjs") },
   });
 
   mainWin.loadURL(targetUrl(opts));
@@ -979,6 +979,75 @@ function createMain(opts) {
   });
 
   Menu.setApplicationMenu(null);
+  registerDesktopKit(opts);
+}
+
+// ---------------------------------------------------------------- desktop kit
+// Backups, printing and extra windows. Only the institution origin may call it.
+let desktopKitReady = false;
+function registerDesktopKit(opts) {
+  if (desktopKitReady) return;
+  desktopKitReady = true;
+  const fs = require("fs");
+  const { ipcMain } = require("electron");
+  const origin = new URL(opts.url).origin;
+  const host = new URL(opts.url).hostname;
+  const backupRoot = path.join(app.getPath("documents"), "IDAROOM-Backups", host);
+  const allowed = (e) => {
+    try { return new URL(e.senderFrame.url).origin === origin; } catch { return false; }
+  };
+  const guard = (fn) => async (e, arg) => {
+    if (!allowed(e)) throw new Error("origin not allowed");
+    return fn(e, arg);
+  };
+  const lastBackup = () => {
+    try {
+      const dirs = fs.readdirSync(backupRoot).filter((d) => /^\d{4}-/.test(d)).sort();
+      return dirs.at(-1) || null;
+    } catch { return null; }
+  };
+
+  ipcMain.handle("desktop:info", guard(() => ({ version: APP_VERSION, backupDir: backupRoot, lastBackup: lastBackup() })));
+
+  ipcMain.handle("desktop:save-backup", guard((_e, payload) => {
+    if (!payload || typeof payload !== "object" || typeof payload.files !== "object") throw new Error("bad payload");
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const dir = path.join(backupRoot, stamp);
+    fs.mkdirSync(dir, { recursive: true });
+    let count = 0;
+    for (const [name, content] of Object.entries(payload.files)) {
+      const safe = String(name).replace(/[^\w.\-]/g, "_").slice(0, 80);
+      if (!safe || typeof content !== "string") continue;
+      fs.writeFileSync(path.join(dir, safe), content, "utf8");
+      count++;
+    }
+    // Keep the 30 most recent backups.
+    const dirs = fs.readdirSync(backupRoot).filter((d) => /^\d{4}-/.test(d)).sort();
+    for (const old of dirs.slice(0, Math.max(0, dirs.length - 30))) {
+      fs.rmSync(path.join(backupRoot, old), { recursive: true, force: true });
+    }
+    return { dir, count };
+  }));
+
+  ipcMain.handle("desktop:open-backups", guard(() => {
+    fs.mkdirSync(backupRoot, { recursive: true });
+    return shell.openPath(backupRoot);
+  }));
+
+  ipcMain.handle("desktop:print", guard((e) => new Promise((resolve) => {
+    e.sender.print({ printBackground: true }, (ok, reason) => resolve({ ok, reason }));
+  })));
+
+  ipcMain.handle("desktop:new-window", guard((_e, pagePath) => {
+    const target = new URL(String(pagePath || "/dashboard"), opts.url);
+    if (target.origin !== origin) throw new Error("origin not allowed");
+    const win = new BrowserWindow({
+      width: 1100, height: 780, autoHideMenuBar: true, icon: path.join(__dirname, "icon.png"),
+      webPreferences: { contextIsolation: true, nodeIntegration: false, sandbox: true, preload: path.join(__dirname, "preload.cjs") },
+    });
+    win.loadURL(target.toString());
+    return true;
+  }));
 }
 
 const cli = parseArgs(process.argv);
