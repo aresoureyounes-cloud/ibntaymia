@@ -320,3 +320,12 @@ html.simple-mode *::after {
 html.simple-mode [data-simple-hide] {
   display: none !important;
 }
+
+/* Hide the hosting platform badge on published deployments. */
+#lovable-badge,
+[id^="lovable-badge"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
