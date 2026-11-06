@@ -10,7 +10,7 @@ export type DataTable = {
 
 // Tables the data browser may touch. Roles, secrets and login codes are deliberately excluded.
 export const DATA_TABLES: DataTable[] = [
-  { name: "students", label: "التلاميذ", key: "id", searchColumns: ["full_name", "national_student_id", "guardian_name", "guardian_phone"], orderBy: "created_at", noDelete: true },
+  { name: "students", label: "التلاميذ", key: "id", searchColumns: ["full_name", "national_student_id", "guardian_name", "guardian_phone", "father_phone", "mother_phone"], orderBy: "created_at", noDelete: true },
   { name: "classes", label: "الأقسام", key: "id", searchColumns: ["name", "level", "branch"], orderBy: "created_at" },
   { name: "staff_whitelist", label: "الأساتذة والعمال", key: "id", searchColumns: ["full_name", "email"], orderBy: "created_at" },
   { name: "profiles", label: "ملفات الحسابات", key: "id", searchColumns: ["full_name", "phone"], orderBy: "created_at", noDelete: true },
