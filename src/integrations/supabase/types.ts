@@ -1373,13 +1373,16 @@ export type Database = {
           date_of_birth: string | null
           enrollment_data: Json | null
           enrollment_status: string
+          extra_fields: Json
           fake_email: string | null
           fake_phone: string | null
+          father_phone: string | null
           full_name: string
           gender: string | null
           guardian_name: string | null
           guardian_phone: string | null
           id: string
+          mother_phone: string | null
           national_student_id: string | null
           struck_off_at: string | null
           struck_off_by: string | null
@@ -1393,13 +1396,16 @@ export type Database = {
           date_of_birth?: string | null
           enrollment_data?: Json | null
           enrollment_status?: string
+          extra_fields?: Json
           fake_email?: string | null
           fake_phone?: string | null
+          father_phone?: string | null
           full_name: string
           gender?: string | null
           guardian_name?: string | null
           guardian_phone?: string | null
           id?: string
+          mother_phone?: string | null
           national_student_id?: string | null
           struck_off_at?: string | null
           struck_off_by?: string | null
@@ -1413,13 +1419,16 @@ export type Database = {
           date_of_birth?: string | null
           enrollment_data?: Json | null
           enrollment_status?: string
+          extra_fields?: Json
           fake_email?: string | null
           fake_phone?: string | null
+          father_phone?: string | null
           full_name?: string
           gender?: string | null
           guardian_name?: string | null
           guardian_phone?: string | null
           id?: string
+          mother_phone?: string | null
           national_student_id?: string | null
           struck_off_at?: string | null
           struck_off_by?: string | null

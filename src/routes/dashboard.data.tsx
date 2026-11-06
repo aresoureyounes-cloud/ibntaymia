@@ -143,14 +143,56 @@ function TableView({ table }: { table: string }) {
   );
 }
 
-const SKIP = new Set(["id", "created_at", "updated_at"]);
+const SKIP = new Set(["id", "created_at", "updated_at", "extra_fields"]);
+
+const LABELS: Record<string, string> = {
+  full_name: "الاسم الكامل", gender: "الجنس", date_of_birth: "تاريخ الميلاد", class_id: "معرف القسم",
+  national_student_id: "رقم التعريف الوطني", guardian_name: "اسم الولي", guardian_phone: "هاتف الولي (يُضبط تلقائياً)",
+  father_phone: "هاتف الأب", mother_phone: "هاتف الأم", enrollment_status: "حالة التسجيل", name: "الاسم",
+  level: "المستوى", branch: "الشعبة", email: "البريد", role: "الدور", note: "ملاحظة", phone: "الهاتف",
+  subject: "المادة", weekday: "اليوم", start_time: "البداية", end_time: "النهاية", room: "القاعة", title: "العنوان",
+};
+const PRIORITY = ["full_name", "national_student_id", "class_id", "father_phone", "mother_phone", "guardian_name", "guardian_phone"];
+
+function ExtraFieldsEditor({ value, onChange }: { value: [string, string][]; onChange: (v: [string, string][]) => void }) {
+  return (
+    <div className="space-y-2 rounded-md border p-3">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium">خانات إضافية حرة</span>
+        <Button type="button" size="sm" variant="outline" onClick={() => onChange([...value, ["", ""]])}>
+          <Plus className="size-4" /> إضافة خانة
+        </Button>
+      </div>
+      {value.length === 0 && <p className="text-xs text-muted-foreground">أضف أي معلومة (مثل: هاتف ثانٍ، فصيلة الدم، ملاحظة صحية).</p>}
+      {value.map(([k, v], i) => (
+        <div key={i} className="flex gap-2">
+          <Input placeholder="اسم الخانة" value={k} aria-label="اسم الخانة"
+            onChange={(e) => onChange(value.map((p, j) => (j === i ? [e.target.value, p[1]] : p)))} />
+          <Input placeholder="القيمة" value={v} aria-label="القيمة"
+            onChange={(e) => onChange(value.map((p, j) => (j === i ? [p[0], e.target.value] : p)))} />
+          <Button type="button" size="icon" variant="ghost" aria-label="حذف الخانة"
+            onClick={() => onChange(value.filter((_, j) => j !== i))}><Trash2 className="size-4" /></Button>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 function RowEditor({ table, row, columns, onClose, onSaved }: {
   table: string; row: Record<string, unknown>; columns: string[]; onClose: () => void; onSaved: () => void;
 }) {
   const meta = DATA_TABLES.find((t) => t.name === table)!;
   const isNew = row[meta.key] === undefined;
-  const fields = columns.filter((c) => !SKIP.has(c));
+  const hasExtra = table === "students";
+  const baseCols = hasExtra ? Array.from(new Set([...columns, "father_phone", "mother_phone"])) : columns;
+  const fields = baseCols.filter((c) => !SKIP.has(c)).sort((a, b) => {
+    const ia = PRIORITY.indexOf(a), ib = PRIORITY.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  });
+  const [extra, setExtra] = useState<[string, string][]>(() => {
+    const e = row.extra_fields;
+    return e && typeof e === "object" ? Object.entries(e as Record<string, unknown>).map(([k, v]) => [k, String(v ?? "")]) : [];
+  });
   const [vals, setVals] = useState<Record<string, string>>(() =>
     Object.fromEntries(fields.map((c) => {
       const v = row[c];
@@ -173,6 +215,11 @@ function RowEditor({ table, row, columns, onClose, onSaved }: {
         else if (typeof orig === "number") values[c] = Number(s);
         else values[c] = s;
       }
+      if (hasExtra) {
+        const obj: Record<string, string> = {};
+        for (const [k, v] of extra) if (k.trim()) obj[k.trim()] = v.trim();
+        values.extra_fields = obj;
+      }
       await save({ data: { table, id: isNew ? undefined : String(row[meta.key]), values } });
       toast.success("تم الحفظ");
       onSaved();
@@ -191,12 +238,13 @@ function RowEditor({ table, row, columns, onClose, onSaved }: {
         <div className="space-y-2">
           {fields.map((c) => (
             <label key={c} className="block text-xs">
-              <span className="text-muted-foreground">{c}</span>
+              <span className="text-muted-foreground">{LABELS[c] ?? c}</span>
               {vals[c].length > 60
                 ? <Textarea value={vals[c]} onChange={(e) => setVals({ ...vals, [c]: e.target.value })} />
                 : <Input value={vals[c]} onChange={(e) => setVals({ ...vals, [c]: e.target.value })} />}
             </label>
           ))}
+          {hasExtra && <ExtraFieldsEditor value={extra} onChange={setExtra} />}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>إلغاء</Button>
