@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/use-auth";
 import { NAV_ITEMS } from "@/lib/nav-config";
+import { SIMPLE_MODE_PAGES, useSimpleMode } from "@/lib/simple-mode";
 import { Button } from "@/components/ui/button";
 import {
   CommandDialog,
@@ -49,9 +50,10 @@ export function CommandSearch() {
     queryFn: async () => (await supabase.from("classes").select("id, name").ilike("name", `%${term}%`).limit(6)).data ?? [],
   });
 
+  const simple = useSimpleMode();
   const pages = NAV_ITEMS.filter(
     (it) => !it.roles || roles.includes("developer") || it.roles.some((r) => roles.includes(r)),
-  );
+  ).filter((it) => !simple || SIMPLE_MODE_PAGES.has(it.url));
 
   const go = (to: string) => {
     setOpen(false);

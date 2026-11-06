@@ -11,6 +11,25 @@ import { useAppUpdate } from "@/lib/use-app-update";
 import { UpdateProgressDialog } from "@/components/UpdateProgressDialog";
 import logoAsset from "@/assets/idaroom-logo.png.asset.json";
 import { InstitutionSettings } from "@/components/InstitutionSettings";
+import { Switch } from "@/components/ui/switch";
+import { setSimpleMode, useSimpleMode } from "@/lib/simple-mode";
+
+function SimpleModeCard() {
+  const on = useSimpleMode();
+  return (
+    <Card>
+      <CardContent className="flex items-center justify-between gap-4 p-4">
+        <div>
+          <div className="font-medium">المظهر البسيط</div>
+          <p className="text-sm text-muted-foreground">
+            شكل عادي جداً مع الصفحات الأساسية فقط في القائمة. لا يُحذف أي شيء، ويخص هذا الجهاز فقط.
+          </p>
+        </div>
+        <Switch checked={on} onCheckedChange={(v) => setSimpleMode(v)} aria-label="المظهر البسيط" />
+      </CardContent>
+    </Card>
+  );
+}
 
 export const Route = createFileRoute("/dashboard/settings")({
   head: () => ({
@@ -84,6 +103,7 @@ function SettingsPage() {
     <div className="space-y-6">
       <UpdateProgressDialog open={applying} progress={progress} remote={remote} />
       <PageHeader title="الإعدادات" description="معلومات التطبيق وإدارة التخزين المؤقت." />
+      <SimpleModeCard />
       <InstitutionSettings />
 
       {/* Version card */}

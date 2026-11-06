@@ -39,6 +39,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/lib/use-auth";
 import { NAV_ITEMS } from "@/lib/nav-config";
+import { SIMPLE_MODE_PAGES, useSimpleMode } from "@/lib/simple-mode";
 import { Button } from "./ui/button";
 import { useRealtimeTable } from "@/lib/use-realtime-table";
 import { Badge } from "./ui/badge";
@@ -76,9 +77,10 @@ export function AppSidebar() {
   const { roles, signOut, user } = useAuth();
   const path = useRouterState({ select: (s) => s.location.pathname });
 
+  const simple = useSimpleMode();
   const visibleItems = NAV_ITEMS.filter(
     (it) => !it.roles || roles.includes("developer") || it.roles.some((r) => roles.includes(r)),
-  );
+  ).filter((it) => !simple || SIMPLE_MODE_PAGES.has(it.url));
 
   useRealtimeTable("notifications", ["sidebar-unread", user?.id]);
   const { data: unread = 0 } = useQuery({
