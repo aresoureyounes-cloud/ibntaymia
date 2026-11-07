@@ -8,7 +8,7 @@ const { spawn } = require("child_process");
 const DEFAULT_URL = require("./deployment.json").url || "";
 const APP_URL = process.env.IDAROOM_URL || DEFAULT_URL;
 
-const APP_VERSION = "1.1.0";
+const APP_VERSION = "1.2.0";
 // Local server on the school network (router). Used when the internet is down.
 const LOCAL_URL = process.env.IDAROOM_LOCAL_URL || "";
 
