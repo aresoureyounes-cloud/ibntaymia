@@ -23,6 +23,7 @@
     "import": "Import Accounts",
     "users": "Accounts & Roles",
     "data_explorer": "Data explorer",
+    "quick_scan": "Quick scan",
     "permissions": "Permissions",
     "console": "Terminal",
     "diagnostics": "Diagnostics Report",

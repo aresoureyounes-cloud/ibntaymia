@@ -10,6 +10,7 @@ export const NAV_ITEMS: NavItem[] = [
   { url: "/dashboard/sms-alert", labelKey: "nav.notifications", roles: ["admin", "director", "supervisor"] },
   { url: "/dashboard", labelKey: "nav.dashboard" },
   { url: "/dashboard/inbox", labelKey: "nav.inbox" },
+  { url: "/dashboard/scan", labelKey: "nav.quick_scan", roles: ["admin", "director", "supervisor", "teacher", "gate_monitor"] },
   { url: "/dashboard/my-attendance", labelKey: "nav.my_attendance", roles: ["parent", "student"] },
   { url: "/dashboard/today", labelKey: "nav.today", roles: ["teacher"] },
   { url: "/dashboard/weekly", labelKey: "nav.weekly", roles: ["admin", "director", "supervisor"] },
