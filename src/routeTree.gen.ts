@@ -51,6 +51,7 @@ import { Route as DashboardParentRouteImport } from './routes/dashboard.parent'
 import { Route as DashboardPermissionsRouteImport } from './routes/dashboard.permissions'
 import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
 import { Route as DashboardReportsRouteImport } from './routes/dashboard.reports'
+import { Route as DashboardScanRouteImport } from './routes/dashboard.scan'
 import { Route as DashboardScheduleRouteImport } from './routes/dashboard.schedule'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard.settings'
 import { Route as DashboardSmsAlertRouteImport } from './routes/dashboard.sms-alert'
@@ -278,6 +279,11 @@ const DashboardReportsRoute = DashboardReportsRouteImport.update({
   path: '/reports',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardScanRoute = DashboardScanRouteImport.update({
+  id: '/scan',
+  path: '/scan',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardScheduleRoute = DashboardScheduleRouteImport.update({
   id: '/schedule',
   path: '/schedule',
@@ -402,6 +408,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/permissions': typeof DashboardPermissionsRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/dashboard/reports': typeof DashboardReportsRoute
+  '/dashboard/scan': typeof DashboardScanRoute
   '/dashboard/schedule': typeof DashboardScheduleRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/sms-alert': typeof DashboardSmsAlertRoute
@@ -461,6 +468,7 @@ export interface FileRoutesByTo {
   '/dashboard/permissions': typeof DashboardPermissionsRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/dashboard/reports': typeof DashboardReportsRoute
+  '/dashboard/scan': typeof DashboardScanRoute
   '/dashboard/schedule': typeof DashboardScheduleRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/sms-alert': typeof DashboardSmsAlertRoute
@@ -522,6 +530,7 @@ export interface FileRoutesById {
   '/dashboard/permissions': typeof DashboardPermissionsRoute
   '/dashboard/profile': typeof DashboardProfileRoute
   '/dashboard/reports': typeof DashboardReportsRoute
+  '/dashboard/scan': typeof DashboardScanRoute
   '/dashboard/schedule': typeof DashboardScheduleRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/sms-alert': typeof DashboardSmsAlertRoute
@@ -584,6 +593,7 @@ export interface FileRouteTypes {
     | '/dashboard/permissions'
     | '/dashboard/profile'
     | '/dashboard/reports'
+    | '/dashboard/scan'
     | '/dashboard/schedule'
     | '/dashboard/settings'
     | '/dashboard/sms-alert'
@@ -643,6 +653,7 @@ export interface FileRouteTypes {
     | '/dashboard/permissions'
     | '/dashboard/profile'
     | '/dashboard/reports'
+    | '/dashboard/scan'
     | '/dashboard/schedule'
     | '/dashboard/settings'
     | '/dashboard/sms-alert'
@@ -703,6 +714,7 @@ export interface FileRouteTypes {
     | '/dashboard/permissions'
     | '/dashboard/profile'
     | '/dashboard/reports'
+    | '/dashboard/scan'
     | '/dashboard/schedule'
     | '/dashboard/settings'
     | '/dashboard/sms-alert'
@@ -1034,6 +1046,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardReportsRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/dashboard/scan': {
+      id: '/dashboard/scan'
+      path: '/scan'
+      fullPath: '/dashboard/scan'
+      preLoaderRoute: typeof DashboardScanRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/dashboard/schedule': {
       id: '/dashboard/schedule'
       path: '/schedule'
@@ -1193,6 +1212,7 @@ interface DashboardRouteChildren {
   DashboardPermissionsRoute: typeof DashboardPermissionsRoute
   DashboardProfileRoute: typeof DashboardProfileRoute
   DashboardReportsRoute: typeof DashboardReportsRoute
+  DashboardScanRoute: typeof DashboardScanRoute
   DashboardScheduleRoute: typeof DashboardScheduleRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardSmsAlertRoute: typeof DashboardSmsAlertRoute
@@ -1240,6 +1260,7 @@ const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardPermissionsRoute: DashboardPermissionsRoute,
   DashboardProfileRoute: DashboardProfileRoute,
   DashboardReportsRoute: DashboardReportsRoute,
+  DashboardScanRoute: DashboardScanRoute,
   DashboardScheduleRoute: DashboardScheduleRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardSmsAlertRoute: DashboardSmsAlertRoute,

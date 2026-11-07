@@ -11,6 +11,7 @@ import { useAppUpdate } from "@/lib/use-app-update";
 import { UpdateProgressDialog } from "@/components/UpdateProgressDialog";
 import logoAsset from "@/assets/idaroom-logo.png.asset.json";
 import { InstitutionSettings } from "@/components/InstitutionSettings";
+import { DesktopKitPanel } from "@/components/DesktopKit";
 import { Switch } from "@/components/ui/switch";
 import { setSimpleMode, useSimpleMode } from "@/lib/simple-mode";
 
@@ -105,6 +106,7 @@ function SettingsPage() {
       <PageHeader title="الإعدادات" description="معلومات التطبيق وإدارة التخزين المؤقت." />
       <SimpleModeCard />
       <InstitutionSettings />
+      <DesktopKitPanel />
 
       {/* Version card */}
       <Card>
