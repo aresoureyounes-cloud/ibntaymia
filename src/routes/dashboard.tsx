@@ -12,6 +12,7 @@ import { HelpCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { CommandSearch } from "@/components/CommandSearch";
 import { MobileBottomNav } from "@/components/MobileBottomNav";
+import { DesktopAutoBackup } from "@/components/DesktopKit";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -108,6 +109,7 @@ function DashboardLayout() {
         </div>
       </div>
       <MobileBottomNav />
+      <DesktopAutoBackup />
       <WelcomeTour open={tour.open} onClose={tour.close} />
     </SidebarProvider>
   );
